@@ -1,5 +1,5 @@
 <?php
-    $conec = mysqli_connect('localhost', 'root', '','inventario');
+  $conec = mysqli_connect('localhost', 'root', '','inventario');
 	if(! $conec) {
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
@@ -13,16 +13,11 @@
 
 		$queryInsertar = 'INSERT INTO articulos_en_inventario(articulo, descripcion, marca, serial, ubicacion) VALUES("'.$articulo.'","'.$descripcion.'","'.$marca.'","'.$serial.'","'.$ubicacion.'")';
     $queryHistorial = "INSERT INTO historial_operaciones(tipo_operacion, serial, destino) VALUES('Adición','".$serial."','".$ubicacion."')"; 
-		mysqli_begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-    mysqli_query($conec,$queryOperacion);
-    mysqli_query($conec,$queryUbicacion);
+    mysqli_query($conec,$queryInsertar);
     mysqli_query($conec,$queryHistorial);
-    mysqli_commit();
-    mysqli_close();
+    mysqli_close($conec);
 	}
 	
-
-
 echo '<html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,10 +30,10 @@ echo '<html lang="en">
         <div class="navbar-menu">
             <div class="navbar-start">
                 <a href="index.php" class="navbar-item">Inicio</a>
-                <a href="insertar.html" class="navbar-item">Insertar</a>
-                <a href="asignar.html" class="navbar-item">Asignación</a>
-                <a href="historico.html" class="navbar-item">Historico</a>
-                <a href="prestamo.html" class="navbar-item">Prestamo</a>
+                <a href="insertar.php" class="navbar-item">Insertar</a>
+                <a href="transferencia.php" class="navbar-item">Transferir</a>
+                <a href="historico.php" class="navbar-item">Historico</a>
+                <a href="prestamos.php" class="navbar-item">Préstamos</a>
             </div>
         </div>
   </nav>
