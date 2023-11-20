@@ -1,20 +1,34 @@
 <?php
 
-/***************************
-  Sample using a PHP array
-****************************/
+date_default_timezone_set('America/Caracas');
+session_start();
+require('./fpdm/fpdm.php');
+if(empty($_SESSION['articulo'])){
+	session_destroy();
+	header('Location: index.php');
+}
+$articulo = $_SESSION['articulo'];
+$serial = $articulo["serial"];
+$destino = $_SESSION['destino'];
+$fregreso = $_SESSION['fregreso'];
+$operacion = $_SESSION['operacion'];
 
-require('fpdf/fpdm.php');
+$fields = [
+	'operacion18' => $operacion,
+    'articulo11'    => $articulo['articulo'],
+    'serial12' => $serial,
+    'fabricante14'    => $articulo['marca'],
+    'descripcionDel13'   => $articulo['descripcion'],
+    'destino16' => $destino,
+    'fechaDe15' => date("Y-m-d"),
+    'fechaDe17' => $fregreso
+];
 
-$fields = array(
-    'Contact Name'    => 'My name',
-    'Others' => 'My address',
-    'Beverage 2'    => 'My city',
-    'Beverage 1'   => 'My phone number'
-);
-
-$pdf = new FPDM('resources/comprobante1.pdf');
-$pdf->Load($fields, false); // second parameter: false if field values are in ISO-8859-1, true if UTF-8
+$pdf = new FPDM('resources/registro.pdf');
+$nombrePDF = "Registro ".$operacion."_(".date("H-i-s")."_".date("d-m-Y").")";
+$pdf->Load($fields, true);
 $pdf->Merge();
-$pdf->Output();
+session_destroy();
+$pdf->Output('I',$nombrePDF);
+
 ?>

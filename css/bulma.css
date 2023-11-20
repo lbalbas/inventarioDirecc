@@ -15,7 +15,10 @@
     transform: rotate(359deg);
   }
 }
-
+#logo{
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
 .delete, .modal-close, .button, .file, .breadcrumb, .pagination-previous,
 .pagination-next,
 .pagination-link,
