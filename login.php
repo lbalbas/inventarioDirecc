@@ -23,9 +23,9 @@
 		}
 	}else if($_SERVER['REQUEST_METHOD'] == 'POST'){
 		if($_POST['formEnviada'] == 'login'){
-			$usuario = $_POST['usuario'];
-			$clave = md5($_POST['clave']);
-			$queryLogin = "SELECT * FROM usuarios WHERE usuario = '".$usuario."'";
+			$nombre_usuario = mysqli_real_escape_string($conec, $_POST['nombre_usuario']);
+			$contrasena = md5($_POST['contrasena']);
+			$queryLogin = "SELECT * FROM usuarios WHERE nombre_usuario = '".$nombre_usuario."'";
 			$checkLogin = mysqli_query($conec,$queryLogin);
 			$usuarioLogin = mysqli_fetch_all($checkLogin, MYSQLI_ASSOC);
 			if($usuarioLogin == false OR $usuarioLogin == ""){
@@ -33,27 +33,27 @@
 				muestraLogin();
 			}else{
 				$usuarioLogin = $usuarioLogin[0];
-				if($usuarioLogin['clave'] == $clave){
+				if($usuarioLogin['contrasena'] == $contrasena){
 					setcookie('login', $usuarioLogin['rol'],time()+86400);
 					header('Location: index.php');
 				}else{
-					echo '<script language="javascript">alert("Clave incorrecta, intentelo nuevamente");</script>';
+					echo '<script language="javascript">alert("Contrasena incorrecta, intentelo nuevamente");</script>';
 					muestraLogin();
 				}
 			}
 		}else if($_POST['formEnviada'] == 'registro'){
 			if($_COOKIE['login'] == 'admin'){
-				$usuario = mysqli_real_escape_string($conec,$_POST['usuario']);
-				$clave = md5($_POST['clave']);
+				$nombre_usuario = mysqli_real_escape_string($conec,$_POST['nombre_usuario']);
+				$contrasena = md5($_POST['contrasena']);
 				$rol = $_POST['rol'];
-				$checkRegistro = "SELECT * FROM usuarios WHERE usuario = '".$usuario."'";
+				$checkRegistro = "SELECT * FROM usuarios WHERE nombre_usuario = '".$nombre_usuario."'";
 				$queryCheckRegistro = mysqli_query($conec, $checkRegistro);
 				$resultadoCheckRegistro = mysqli_fetch_all($queryCheckRegistro, MYSQLI_ASSOC);
 				if(count($resultadoCheckRegistro) > 0){
 					echo '<script language="javascript">alert("Nombre de usuario ingresado ya se encuentra en uso");</script>';
 					muestraRegistro();
 				}else{
-					$registrarUsuario = "INSERT INTO usuarios(usuario, clave, rol) VALUES('".$usuario."','".$clave."','".$rol."')";
+					$registrarUsuario = "INSERT INTO usuarios(nombre_usuario, contrasena, rol) VALUES('".$nombre_usuario."','".$contrasena."','".$rol."')";
 					mysqli_query($conec,$registrarUsuario);
 					echo '<script language="javascript">alert("Registro existoso");</script>';
 					muestraRegistro();
@@ -64,17 +64,16 @@
 			              document.location="/"</script>';
 			}
 		}else if($_POST['formEnviada'] == 'registroInicial'){
-			$usuario = mysqli_real_escape_string($conec,$_POST['usuario']);
-			$clave = md5($_POST['clave']);
+			$nombre_usuario = mysqli_real_escape_string($conec,$_POST['nombre_usuario']);
+			$contrasena = md5($_POST['contrasena']);
 			$rol = $_POST['rol'];
-			$registrarUsuario = "INSERT INTO usuarios(usuario, clave, rol) VALUES('".$usuario."','".$clave."','".$rol."')";
+			$registrarUsuario = "INSERT INTO usuarios(nombre_usuario, contrasena, rol) VALUES('".$nombre_usuario."','".$contrasena."','".$rol."')";
 			mysqli_query($conec,$registrarUsuario);
 			echo '<script language="javascript">alert("Registro existoso");</script>';
 			muestraLogin();
 		}
 
 	}
-	
 
 	function muestraLogin(){
 		echo'
@@ -104,13 +103,13 @@
 					 <div class="columns is-fullwidth is-centered">
 					      <form id="box" class="box" action="" method="POST">
 					      <div class="control">
-					        <label class="label "for="usuario">Nombre de Usuario</label>
-					        <input required class="input" name="usuario" type="text">
+					        <label class="label "for="nombre_usuario">Nombre de Usuario</label>
+					        <input required class="input" name="nombre_usuario" type="text">
 					      </div>
 					      <br>
 					      <div class="control">
-					        <label class="label" for="clave">Contraseña</label>
-					        <input required class="input" name="clave" type="password">
+					        <label class="label" for="contrasena">Contraseña</label>
+					        <input required class="input" name="contrasena" type="password">
 					      </div>
 					      <br>
 					        <input  value="login" name="formEnviada" type="hidden">
@@ -121,6 +120,8 @@
 				</html>
 		';
 	}
+
+
 	function muestraRegistro(){
 		echo'
 				<html lang="en">
@@ -158,21 +159,9 @@
 			                <a href="insertar.php" class="navbar-item">Registro</a>
 			                <a href="transferencia.php" class="navbar-item">Transferencias</a>
 			                <a href="historico.php" class="navbar-item">Histórico</a>
-			                <a href="prestamos.php" class="navbar-item">Préstamos</a>
-			                <div class="navbar-item has-dropdown is-hoverable">
-				                  <a class="navbar-link"></a>
-				                  <div class="navbar-dropdown">
-						            <a href="login.php?registro=true" class="navbar-item">
-						                Registrar Usuario
-						            </a>
-						            <a class="navbar-item" onclick="respaldoVentana()">
-						                Respaldar Base de Datos
-						            </a>
-						            <a href="login.php?cerrarsesion=true" class="navbar-item">
-						                Cerrar Sesión
-						            </a>
-						          </div>
-				         </div>
+			                <a href="traspasos_temporales.php" class="navbar-item">Traspasos Temporales</a>
+			                '.$opcionesUsuario.'
+
 			            </div>
 			        </div></nav>
 					  <div class="column">					  <h1 class="has-text-centered has-text-weight-bold">Registro de Usuario</h1></div>
@@ -180,13 +169,13 @@
 					 <div class="columns is-fullwidth is-centered">
 					      <form id="box" class="box" action="" method="POST">
 					      <div class="control">
-					        <label class="label "for="usuario">Nombre de Usuario</label>
-					        <input required class="input" name="usuario" type="text">
+					        <label class="label "for="nombre_usuario">Nombre de Usuario</label>
+					        <input required class="input" name="nombre_usuario" type="text">
 					      </div>
 					      <br>
 					      <div class="control">
 					        <label class="label" for="clave">Contraseña</label>
-					        <input required class="input" name="clave" type="password">
+					        <input required class="input" name="contrasena" type="password">
 					      </div>
 					      <br>
 							<div class="select">
@@ -240,13 +229,13 @@
 					 <div class="columns is-fullwidth is-centered">
 					      <form id="box" class="box" action="" method="POST">
 					      <div class="control">
-					        <label class="label "for="usuario">Nombre de Usuario</label>
-					        <input required class="input" name="usuario" type="text">
+					        <label class="label "for="nombre_usuario">Nombre de Usuario</label>
+					        <input required class="input" name="nombre_usuario" type="text">
 					      </div>
 					      <br>
 					      <div class="control">
-					        <label class="label" for="clave">Contraseña</label>
-					        <input required class="input" name="clave" type="password">
+					        <label class="label" for="contrasena">Contraseña</label>
+					        <input required class="input" name="contrasena" type="password">
 					      </div>
 					      <br>
 					      	<input  value="admin" name="rol" type="hidden">

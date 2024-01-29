@@ -42,27 +42,27 @@
 		          </div>
          </div>';
 	}
-	$queryPrestamos = "SELECT * from articulos_en_inventario INNER JOIN articulos_en_prestamo ON articulos_en_inventario.id = articulos_en_prestamo.id_articulo";
-	$resultado = mysqli_query($conec, $queryPrestamos);
-	$prestamos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
-	$alerta = alertaPrestamo($prestamos);
-	function alertaPrestamo($prestamos){
-	  	$prestamosCercanos = "";
-	  	for($x = 0; $x < count($prestamos); $x++){
+	$queryTraspasosTemporales = "SELECT * from articulos INNER JOIN traspasos_temporales ON articulos.id = traspasos_temporales.articulo_id";
+	$resultado = mysqli_query($conec, $queryTraspasosTemporales);
+	$traspasosTemporales = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+	$alerta = alertaTraspasoTemporal($traspasosTemporales);
+	function alertaTraspasoTemporal($traspasosTemporales){
+	  	$traspasosTemporalesCercanos = "";
+	  	for($x = 0; $x < count($traspasosTemporales); $x++){
 	  		date_default_timezone_set('America/Caracas');
 	  		$ahora = date_create();
-	  		$interval = date_diff($ahora,date_create($prestamos[$x]["fecha_de_retorno"]));
+	  		$interval = date_diff($ahora,date_create($traspasosTemporales[$x]["fecha_de_retorno"]));
 		    if($interval->format('%R%a') <= 5){
 		    	if($interval->format('%R%a') == 0){
-		    		$prestamosCercanos .= "<a class='navbar-item'>Hoy es la fecha límite del préstamo de ".$prestamos[$x]['articulo']." a ".$prestamos[$x]['destino']."</a>";
+		    		$traspasosTemporalesCercanos .= "<a class='navbar-item'>Hoy es la fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['destino']."</a>";
 				}else if($interval->format('%R%a') < 0){
-					$prestamosCercanos .= "<a class='navbar-item is-danger'>La fecha límite del préstamo de ".$prestamos[$x]['articulo']." a ".$prestamos[$x]['destino']." ha pasado</a>";
+					$traspasosTemporalesCercanos .= "<a class='navbar-item is-danger'>La fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['destino']." ha pasado</a>";
 				}else{
-					$prestamosCercanos .= "<a class='navbar-item'>La fecha límite del préstamo de ".$prestamos[$x]['articulo']." a ".$prestamos[$x]['destino']." es en ".$interval->format('%a')." día(s)</a>";
+					$traspasosTemporalesCercanos .= "<a class='navbar-item'>La fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['destino']." es en ".$interval->format('%a')." día(s)</a>";
 				}
 			}
 	  	}
-	  	if ($prestamosCercanos != ""){
+	  	if ($traspasosTemporalesCercanos != ""){
 	  		$temp = '
 	  			<div class="navbar-end">
 	            	<div class="navbar-item has-dropdown is-hoverable">
@@ -75,13 +75,13 @@
 	                	</div>
 							
 					    <div class="navbar-dropdown is-right">
-					 	'.$prestamosCercanos.'
+					 	'.$traspasosTemporalesCercanos.'
 					    </div>
 				    </div>
 				</div>
 	  		';
-	  		$prestamosCercanos = $temp;
+	  		$traspasosTemporalesCercanos = $temp;
 	  	}
-	  	return $prestamosCercanos;
-  	}	
- ?>
+	  	return $traspasosTemporalesCercanos;
+	}
+?>

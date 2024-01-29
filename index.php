@@ -5,7 +5,8 @@
 	if(! $conec) {
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
-	$query = "SELECT * from articulos_en_inventario";
+	$query = "SELECT * FROM `articulos` WHERE `esta_retirado` = 0;
+	";
 	$resultado = mysqli_query($conec, $query);
 	$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 	$filas = iterarArticulos($articulos);

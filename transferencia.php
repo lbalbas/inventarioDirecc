@@ -1,13 +1,13 @@
 <?php 
-  header('Content-Type: text/html; charset=UTF-8');
-  $conec = mysqli_connect('localhost', 'root', '','inventario');
+ header('Content-Type: text/html; charset=UTF-8');
+ $conec = mysqli_connect('localhost', 'root', '','inventario');
 	if(! $conec) {
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
 	include './alerta.php';
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
-		$serial = mysqli_real_escape_string($conec,$_POST["serial"]);
-		$query = 'SELECT * FROM articulos_en_inventario WHERE serial = "'.$serial.'"';
+		$codigo_articulo = mysqli_real_escape_string($conec,$_POST["codigo_articulo"]);
+		$query = 'SELECT * FROM articulos_en_inventario WHERE codigo_articulo = "'.$codigo_articulo.'"';
 		$resultado = mysqli_query($conec, $query);
 		$articulo = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 		if($articulo == false OR $articulo == ""){
@@ -121,8 +121,9 @@ echo '
 				</label>
 			</div>
 			<br>
-				<label class="label "for="serial">Serial</label>
-				<input id="serial" required maxlength="50" class="input" name="serial" type="text">
+<label class="label "for="codigo_articulo">Código de Artículo</label>
+<input id="codigo_articulo" required maxlength="50" class="input" name="codigo_articulo" type="text">
+
 			</div>
 			<br>
 			<div class="control">
@@ -178,7 +179,7 @@ echo '
 		       }
 		       return("");
 		}
-		var serialInput = document.getElementById("serial");
+		var codigoInput = document.getElementById("codigo_articulo");
 		var radioPrestamo = document.getElementById("prestamo");
 		var radioRetorno = document.getElementById("retorno");
 		var radioExtension = document.getElementById("extension");
