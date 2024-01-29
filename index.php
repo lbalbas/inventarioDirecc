@@ -90,7 +90,7 @@
 				</tbody>
 		</table>
 		</div>
-	<script>
+	<script language="javascript">
 		function filtrar() {
 		var input, filtro, tabla, tr, td, i, txtValor, filtroAtrib;
 		input = document.getElementById("filtroInventario");
@@ -111,38 +111,44 @@
 			}
 		}
 		}
+		var selectedArticles = []; // Array to hold the codes of the selected articles
 
+		function handleCheckboxChange(articleUnitCode) {
+			var checkbox = document.querySelector("input[type=\"checkbox\"][value=\""+ articleUnitCode + "\"]");
+			if (checkbox.checked) {
+				// The checkbox was just checked, add the article unit code to the array
+				selectedArticles.push(articleUnitCode);
+			} else {
+				// The checkbox was just unchecked, remove the article unit code from the array
+				var index = selectedArticles.indexOf(articleUnitCode);
+				if (index !== -1) {
+					selectedArticles.splice(index, 1);
+				}
+			}
+			console.log(selectedArticles)
+		}
 	</script>
 	'.$scriptRespaldo.'
 	</body>
 	</html>';
 
-	function iterarArticulos($articulos){
-		$temp = "";
+function iterarArticulos($articulos){
+	$temp = "";
 
-		for($x = 0; $x < count($articulos); $x++){
-			$a = '<tr>
-				  <td>
-				  	 <a title="Préstamo" class="icon is-small" href="transferencia.php?id='.$articulos[$x]["id"].'&operacion=p">
-				
-				  	<img src="resources/swap-vertical-outline.svg">
-				  	</a> 	
-				  	<a title="Asignación" class="icon is-small" href="transferencia.php?id='.$articulos[$x]["id"].'&operacion=a">
-				  	<img src="resources/arrow-up-circle-outline.svg">
-				  	</a>	
-				  	<a title="Préstamo" class="icon is-small" href="modificar.php?id='.$articulos[$x]["id"].'">
-				
-				  	<img src="resources/settings-outline.svg">
-				  	</a>  	
-				  	</td>
-				  <td>'.$articulos[$x]["codigo_unidad"].'
-				  </td><td>'.$articulos[$x]["descripcion"].'
-				  </td><td>'.$articulos[$x]["fabricante"].'
-				  </td><td>'.$articulos[$x]["monto_valor"].'
-				  </td><td>'.$articulos[$x]["ubicacion"].'
-				  </td></tr>';
-			$temp .= $a;
-		}
-		return $temp;
+	for($x = 0; $x < count($articulos); $x++){
+		$a = '<tr>
+			 <td>
+			  	 <input type="checkbox" value="'.$articulos[$x]["codigo_unidad"].'" onClick="handleCheckboxChange(\''.$articulos[$x]["codigo_unidad"].'\')"/>
+			 </td>
+			 <td>'.$articulos[$x]["codigo_unidad"].'
+			 </td><td>'.$articulos[$x]["descripcion"].'
+			 </td><td>'.$articulos[$x]["fabricante"].'
+			 </td><td>'.$articulos[$x]["monto_valor"].'
+			 </td><td>'.$articulos[$x]["ubicacion"].'
+			 </td></tr>';
+		$temp .= $a;
 	}
+	return $temp;
+}
+
 ?>
