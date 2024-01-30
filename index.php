@@ -36,24 +36,16 @@
 			</figure>
 		</div>
 	</div>
-	<nav class="navbar is-link">
-				<div class="navbar-brand">
-					<a role="button" class="navbar-burger burger" onclick="document.querySelector(`.navbar-menu`).classList.toggle(`is-active`);" aria-label="menu" aria-expanded="false">
-					<span aria-hidden="true"></span>
-					<span aria-hidden="true"></span>
-					<span aria-hidden="true"></span>
-					</a>
-				</div>
+	<nav id="navbar" class="is-hidden navbar is-link">
 			<div class="navbar-menu">
-				<div class="navbar-start">
-					<a href="index.php" class="navbar-item">Inicio</a>
-					<a href="insertar.php" class="navbar-item">Registro</a>
-					<a href="transferencia.php" class="navbar-item">Transferencias</a>
-					<a href="historico.php" class="navbar-item">Histórico</a>
-					<a href="prestamos.php" class="navbar-item">Préstamos</a>
-					'.$opcionesUsuario.'
+				<div class="navbar-end">
+					<a class="icon" title="Traspaso Temporal" id="trsp-t" href="#">
+				  		<img src="resources/swap-vertical-outline.svg">
+				  	</a>
+					<a id="trsp-p" class="icon" title="Traspaso Permanente" href="#">
+				  	<img src="resources/arrow-up-circle-outline.svg"/>
+				  	</a>
 				</div>
-				'.$alerta.'
 			</div>  </nav>
 	<div class="column is-fullwidth"></div>
 	<div id="columns"class="columns is-fullwidth is-mobile is-centered">
@@ -111,7 +103,7 @@
 			}
 		}
 		}
-		var selectedArticles = []; // Array to hold the codes of the selected articles
+		var selectedArticles = [];
 
 		function handleCheckboxChange(articleUnitCode) {
 			var checkbox = document.querySelector("input[type=\"checkbox\"][value=\""+ articleUnitCode + "\"]");
@@ -125,8 +117,34 @@
 					selectedArticles.splice(index, 1);
 				}
 			}
-			console.log(selectedArticles)
+			actualizarLinksDeTraspaso();
 		}
+
+		function actualizarLinksDeTraspaso(){
+			var linkTraspasoT = document.getElementById("trsp-t")
+			var linkTraspasoP = document.getElementById("trsp-p")
+
+			linkTraspasoP.href = "/transferencia.php?operacion=p&cod=" + selectedArticles.join(",")
+			linkTraspasoT.href = "/transferencia.php?operacion=t&cod=" + selectedArticles.join(",")
+		}
+
+		var checkboxes = document.querySelectorAll(\'input[type="checkbox"]\');
+		checkboxes.forEach(function(checkbox) {
+		    checkbox.addEventListener("change", function() {
+		        var isAnyChecked = Array.prototype.slice.call(checkboxes).some(function(cb) {
+		            return cb.checked;
+		        });
+
+		        var navbar = document.getElementById("navbar");
+
+		        if (isAnyChecked) {
+		            navbar.classList.remove(\'is-hidden\');
+		        } else {
+		            navbar.classList.add(\'is-hidden\');
+		        }
+		    });
+		});
+
 	</script>
 	'.$scriptRespaldo.'
 	</body>
