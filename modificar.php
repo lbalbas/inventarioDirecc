@@ -5,6 +5,7 @@
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
   include './alerta.php';
+  include "./helpers.php";
   $urlId = htmlspecialchars($_GET["id"]);
   if(isset($_GET['confirmar'])){
     $elimConfirm = htmlspecialchars($_GET['confirmar']);
@@ -109,27 +110,7 @@
       </figure>
     </div>
   </div>
-    <nav class="navbar is-link">
-    <div class="navbar-brand">
-                  <a role="button" class="navbar-burger burger" onclick="document.querySelector(`.navbar-menu`).classList.toggle(`is-active`);" aria-label="menu" aria-expanded="false">
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                  </a>
-          </div>
-          <div class="navbar-menu">
-              <div class="navbar-start">
-                  <a href="index.php" class="navbar-item">Inicio</a>
-                  <a href="insertar.php" class="navbar-item">Registro</a>
-                  <a href="transferencia.php" class="navbar-item">Transferencias</a>
-                  <a href="historico.php" class="navbar-item">Histórico</a>
-                  <a href="traspasos_temporales.php" class="navbar-item">Traspasos Temporales</a>
-                  '.$opcionesUsuario.'
-  
-              </div>
-              '.$alerta.'
-          </div>
-    </nav>
+    '.$header.'
     <div class="column"></div>
   
    <div class="columns is-centered">

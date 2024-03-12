@@ -5,21 +5,58 @@
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
   include './alerta.php';
+  include "./helpers.php";
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $articulo =  mysqli_real_escape_string($conec,$_POST['articulo']);
+    $codigo =  mysqli_real_escape_string($conec,$_POST['codigo']);
     $descripcion =  mysqli_real_escape_string($conec,$_POST['descripcion']);
-    $marca =  mysqli_real_escape_string($conec,$_POST['marca']);
-    $serial =  mysqli_real_escape_string($conec,$_POST['serial']);
+    $fabricante =  mysqli_real_escape_string($conec,$_POST['fabricante']);
+    $monto =  mysqli_real_escape_string($conec,$_POST['monto']);
     $ubicacion =  mysqli_real_escape_string($conec,$_POST['ubicacion']);
 
 
-		$queryInsertar = 'INSERT INTO articulos_en_inventario(articulo, descripcion, marca, serial, ubicacion) VALUES("'.$articulo.'","'.$descripcion.'","'.$marca.'","'.$serial.'","'.$ubicacion.'")';
-    $queryHistorial = "INSERT INTO historial_operaciones(tipo_operacion, serial, destino) VALUES('Adición','".$serial."','".$ubicacion."')"; 
-    mysqli_query($conec,$queryInsertar);
-    mysqli_query($conec,$queryHistorial);
+// Iniciar la transacción
+mysqli_begin_transaction($conec, MYSQLI_TRANS_START_READ_WRITE);
+
+try {
+    // Consulta para insertar en la tabla de artículos
+    $queryInsertar = 'INSERT INTO articulos(codigo_unidad, descripcion, fabricante, ubicacion, monto_valor) VALUES("'.$codigo.'","'.$descripcion.'","'.$fabricante.'","'.$ubicacion.'","'.$monto.'")';
+    mysqli_query($conec, $queryInsertar) or die(mysqli_error($conec));
+
+    // Obtener el ID del artículo insertado
+    $idArt = mysqli_insert_id($conec);
+
+    // Consulta para insertar en la tabla de historial de operaciones
+    $queryHistorial = "INSERT INTO historial_operaciones(razon_de_operacion, tipo_operacion, destino) VALUES('Registro','Registro','".$ubicacion."')";  
+    mysqli_query($conec, $queryHistorial) or die(mysqli_error($conec));
+
+    // Obtener el ID de la operación insertada
+    $idOperacion = mysqli_insert_id($conec);
+
+    // Consulta para insertar en la tabla de historial de operaciones de artículos
+    $queryHistorialOp = "INSERT INTO historial_operaciones_articulos(id_operacion, id_articulo, origen) VALUES('".$idOperacion."','".$idArt."',  0)";  
+    mysqli_query($conec, $queryHistorialOp) or die(mysqli_error($conec));
+
+    // Si todas las consultas se ejecutan con éxito, confirmar la transacción
+    mysqli_commit($conec);
+} catch (\Exception $e) {
+    // Si ocurre algún error, revertir la transacción
+    mysqli_rollback($conec);
+
+    // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+    echo 'Error: ' . $e->getMessage();
+} finally {
+    // Cerrar la conexión a la base de datos
     mysqli_close($conec);
+}
+
 	}
-	
+  $destinos = mysqli_fetch_all(mysqli_query($conec,"SELECT * FROM divisiones WHERE es_destino_retiro = 0"),MYSQLI_ASSOC);
+
+  $destinoOptions = "";
+
+  for($x = 0; $x < count($destinos); $x++){
+    $destinoOptions .= '<option value="'.$destinos[$x]["id"].'">'.$destinos[$x]["nombre_division"].'</option>';
+  };	
 echo '<html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -42,34 +79,14 @@ echo '<html lang="en">
       </figure>
     </div>
   </div>
-  <nav class="navbar is-link">
-            <div class="navbar-brand">
-          <a role="button" class="navbar-burger burger" onclick="document.querySelector(`.navbar-menu`).classList.toggle(`is-active`);" aria-label="menu" aria-expanded="false">
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-        </div>
-        <div class="navbar-menu">
-            <div class="navbar-start">
-                <a href="index.php" class="navbar-item">Inicio</a>
-                <a href="insertar.php" class="navbar-item">Registro</a>
-                <a href="transferencia.php" class="navbar-item">Transferencias</a>
-                <a href="historico.php" class="navbar-item">Histórico</a>
-                <a href="prestamos.php" class="navbar-item">Préstamos</a>
-                '.$opcionesUsuario.'
-
-            </div>
-            '.$alerta.'
-        </div>
-  </nav>
+  '.$header.'
   <div class="column"></div>
 
  <div class="columns is-fullwidth is-centered">
       <form id="box" class="box" action="" method="POST">
       <div class="control">
-        <label class="label "for="articulo">Artículo</label>
-        <input required class="input" name="articulo" type="text">
+        <label class="label "for="codigo">Código</label>
+        <input required class="input" name="codigo" type="text">
       </div>
       <br>
       <div class="control">
@@ -78,20 +95,21 @@ echo '<html lang="en">
       </div>
       <br>
       <div class="control">
-        <label class="label" for="marca">Marca</label>
-        <input required class="input" name="marca" type="text">
+        <label class="label" for="marca">Fabricante</label>
+        <input required class="input" name="fabricante" type="text">
       </div>
       <br>
-       <div class="control">
-        <label class="label" for="serial">Serial</label>
-        <input required class="input" name="serial" type="text">
-      </div>
+              <div class="control" id="ubicacionControl">
+            <label class="label" for="ubicacion">Ubicación</label>
+            <select required id="ubicacion" class="input" name="ubicacion">
+                ' . $destinoOptions . '
+            </select>
+        </div>
       <br>
-       <div class="control">
-        <label class="label" for="ubicacion">Ubicación</label>
-        <input required class="input" name="ubicacion" type="text">
+      <div class="control">
+        <label class="label" for="monto">Valor</label>
+        <input required class="input" name="monto" type="text">
       </div>
-      <br>
       <input class="button" type="submit">
     </form>
   </div>

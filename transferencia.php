@@ -4,56 +4,95 @@
 	if(! $conec) {
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
-	include './alerta.php';
+	include "./helpers.php";
+	include "./alerta.php";
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
-		$codigo_articulo = mysqli_real_escape_string($conec,$_POST["codigo_articulo"]);
-		$query = 'SELECT * FROM articulos_en_inventario WHERE codigo_articulo = "'.$codigo_articulo.'"';
+		$idArray = $_GET["ids"];
+		$query = "SELECT articulos.*, divisiones.nombre_division FROM articulos LEFT JOIN divisiones ON articulos.ubicacion = divisiones.id WHERE articulos.id IN ({$idArray})";
 		$resultado = mysqli_query($conec, $query);
-		$articulo = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
-		if($articulo == false OR $articulo == ""){
-				echo '<script language="javascript">alert("El artículo especificado no existe en inventario");</script>';
-		}else{
-			mysqli_close($conec);
-			$articulo = $articulo[0];
-			if(strpos($articulo['ubicacion'], "En préstamo a") !== false){
-				if($_POST['operacion'] !== "Retorno" AND $_POST['operacion'] !== "Extensión"){
-					echo '<script language="javascript">alert("El artículo especificado se encuentra en préstamo");</script>';
-				}else if($_POST['operacion'] == "Retorno"){
-					session_start();
-					$_SESSION['articulo'] = $articulo;
-					$_SESSION['destino'] = $_POST['destino'];
-					$_SESSION['fregreso'] = "Ninguna";
-					$_SESSION['operacion'] = $_POST['operacion'];
-					header('Location: confirmar.php');
-				}else if($_POST['operacion'] == "Extensión"){
-						session_start();
-						$_SESSION['articulo'] = $articulo;
-						$_SESSION['destino'] = "";
-						$_SESSION['fregreso'] = $_POST['fregreso'];
-						$_SESSION['operacion'] = $_POST['operacion'];
-						header('Location: confirmar.php');
-				}
-			}else{
-			    if($_POST['operacion'] == 'Préstamo'){
-						session_start();
-						$_SESSION['articulo'] = $articulo;
-						$_SESSION['destino'] = $_POST['destino'];
-						$_SESSION['fregreso'] = $_POST['fregreso'];
-						$_SESSION['operacion'] = $_POST['operacion'];
-						header('Location: confirmar.php');
-				}else if($_POST['operacion'] == 'Asignación'){
-						session_start();
-						$_SESSION['articulo'] = $articulo;
-						$_SESSION['destino'] = $_POST['destino'];
-						$_SESSION['fregreso'] = "Ninguna";
-						$_SESSION['operacion'] = $_POST['operacion'];
-						header('Location: confirmar.php');
-				}else{
-					echo '<script language="javascript">alert("El artículo especificado no se encuentra en préstamo");</script>';
-				}
-			}
+		$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+
+		switch ($_POST['operacion']) {
+			case "Retorno":
+				session_start();
+				$_SESSION['articulos'] = $articulos;
+				$_SESSION['destino'] = $_POST['destino'];
+				$_SESSION['observaciones'] = $_POST['observaciones'];
+				$_SESSION['fregreso'] = "Ninguna";
+				$_SESSION['operacion'] = $_POST['operacion'];
+				header('Location: confirmar.php');
+				break;
+			case "Extensión":
+				session_start();
+				$_SESSION['articulos'] = $articulos;
+				$_SESSION['destino'] = "";
+				$_SESSION['observaciones'] = $_POST['observaciones'];
+				$_SESSION['fregreso'] = $_POST['fregreso'];
+				$_SESSION['operacion'] = $_POST['operacion'];
+				header('Location: confirmar.php');
+				break;
+			case 'Traspaso Temporal':
+				session_start();
+				$_SESSION['articulos'] = $articulos;
+				$_SESSION['destino'] = $_POST['destino'];
+				$_SESSION['observaciones'] = $_POST['observaciones'];
+				$_SESSION['fregreso'] = $_POST['fregreso'];
+				$_SESSION['operacion'] = $_POST['operacion'];
+				header('Location: confirmar.php');
+				break;
+			case'Traspaso':
+				session_start();
+				$_SESSION['articulos'] = $articulos;
+				$_SESSION['destino'] = $_POST['destino'];
+				$_SESSION['observaciones'] = $_POST['observaciones'];
+				$_SESSION['fregreso'] = "Ninguna";
+				$_SESSION['operacion'] = $_POST['operacion'];
+				header('Location: confirmar.php');
+				break;
+			case 'Retiro':
+				session_start();
+				$_SESSION['articulos'] = $articulos;
+				$_SESSION['operacion'] = "Retiro";
+				$_SESSION['destino'] = $_POST["destino"];
+				$_SESSION['observaciones'] = $_POST['observaciones'];
+				$_SESSION['fregreso'] = "Ninguna";
+				header('Location: confirmar.php');
 		}
+		mysqli_close($conec);
+	}else if(isset($_GET['operacion']) AND $_GET['operacion'] === 'r'){
+		$idArray = $_GET["ids"];
+		$query = "SELECT articulos.*, historial_operaciones_articulos.origen, traspasos_temporales.*, divisiones.nombre_division   
+          FROM articulos   
+          INNER JOIN traspasos_temporales ON articulos.id = traspasos_temporales.articulo_id   
+          LEFT JOIN divisiones ON articulos.ubicacion = divisiones.id
+          LEFT JOIN historial_operaciones_articulos ON traspasos_temporales.id_operacion = historial_operaciones_articulos.id_operacion AND traspasos_temporales.articulo_id = historial_operaciones_articulos.id_articulo   
+          WHERE articulos.id IN ($idArray)";
+		$resultado = mysqli_query($conec, $query);
+		$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+		session_start();
+		$_SESSION['articulos'] = $articulos;
+		$_SESSION['operacion'] = "Retorno";
+		$_SESSION['destino'] = 1;
+		$_SESSION['fregreso'] = "Ninguna";
+		header('Location: confirmar.php');
 	}
+
+
+	$destinos = mysqli_fetch_all(mysqli_query($conec,"SELECT * FROM divisiones WHERE es_destino_retiro = 0"),MYSQLI_ASSOC);
+
+	$destinoOptions = "";
+
+	for($x = 0; $x < count($destinos); $x++){
+		$destinoOptions .= '<option value="'.$destinos[$x]["id"].'">'.$destinos[$x]["nombre_division"].'</option>';
+	};
+
+	$destinosRetiro = mysqli_fetch_all(mysqli_query($conec,"SELECT * FROM divisiones WHERE es_destino_retiro = 1"),MYSQLI_ASSOC);
+
+	$retiroOptions = "";
+
+	for($x = 0; $x < count($destinosRetiro); $x++){
+		$retiroOptions .= '<option value="'.$destinosRetiro[$x]["id"].'">'.$destinosRetiro[$x]["nombre_division"].'</option>';
+	};
 	
 echo '
 <html>
@@ -78,59 +117,45 @@ echo '
 		</figure>
 	</div>
 </div>
-	<nav class="navbar is-link">
-	<div class="navbar-brand">
-                <a role="button" class="navbar-burger burger" onclick="document.querySelector(`.navbar-menu`).classList.toggle(`is-active`);" aria-label="menu" aria-expanded="false">
-                  <span aria-hidden="true"></span>
-                  <span aria-hidden="true"></span>
-                  <span aria-hidden="true"></span>
-                </a>
-        </div>
-        <div class="navbar-menu">
-            <div class="navbar-start">
-                <a href="index.php" class="navbar-item">Inicio</a>
-                <a href="insertar.php" class="navbar-item">Registro</a>
-                <a href="transferencia.php" class="navbar-item">Transferencias</a>
-                <a href="historico.php" class="navbar-item">Histórico</a>
-                <a href="prestamos.php" class="navbar-item">Préstamos</a>
-                '.$opcionesUsuario.'
-            </div>
-            '.$alerta.'
-        </div>
-  	</nav>
+	'.$header.'
 	<br>
 	<div id="box" class="box">
 		<form action="" method="POST">
 			<div class="control">
 						<div class="control">
-				<label class="radio" for="prestamo">
-				<input required class="radio" id="prestamo" value="Préstamo" name="operacion" type="radio" onclick="mostrarInputFecha()">
-				Prestámo
-				</label>
 				<label class="radio" for="asignacion">
-				<input required class="radio" id="asignacion" value="Asignación" name="operacion" type="radio" onclick="mostrarInputFecha()">
-				Asignación
+				<input required class="radio" id="asignacion" value="Traspaso" name="operacion" type="radio" onclick="mostrarInputFecha()">
+				Traspaso
 				</label>
-				<label class="radio" for="extension">	
-				<input required disabled class="radio" id="extension" value="Extensión" name="operacion" type="radio" onclick="mostrarInputFecha()">
-				Extensión
+				<label class="radio" for="prestamo">
+				<input required class="radio" id="prestamo" value="Traspaso Temporal" name="operacion" type="radio" onclick="mostrarInputFecha()">
+				Traspaso Temporal
 				</label>
-				<label class="radio" for="retorno">	
-				<input required disabled class="radio" id="retorno" value="Retorno" name="operacion" type="radio" onclick="mostrarInputFecha()">
-				Retorno
+				<label class="radio" for="retiro">
+				<input required class="radio" id="retiro" value="Retiro" name="operacion" type="radio" onclick="mostrarInputFecha()">
+				Retiro
 				</label>
-			</div>
-			<br>
-<label class="label "for="codigo_articulo">Código de Artículo</label>
-<input id="codigo_articulo" required maxlength="50" class="input" name="codigo_articulo" type="text">
-
 			</div>
 			<br>
 			<div class="control">
-				<label class="label" for="destino">Solicitante</label>
-				<input required id="inputDestino" maxlength="255" class="input" name="destino" type="text">
-				<p class="help">En caso de retorno insertar la nueva ubicación del artículo</p>
+				<label class="label" for="observaciones">Observaciones</label>
+				<input required id="observaciones" class="input" name="observaciones" type="text">
 			</div>
+			<br>
+        <div class="control" id="destinoDestino">
+            <label class="label" for="destino">Destino</label>
+            <select required id="inputDestino" class="input" name="destino">
+                ' . $destinoOptions . '
+            </select>
+        </div>
+
+        <div class="control" id="retiroDestino" style="display: none;">
+            <label class="label" for="retiroDestino">Destino de Retiro</label>
+            <select required id="inputRetiroDestino" class="input" name="retiroDestino">
+                ' . $retiroOptions . '
+            </select>
+        </div>
+
 			<br>
 
 			<div class="control">
@@ -150,9 +175,8 @@ echo '
 			inputFecha = document.getElementById("inputFecha");
 			inputDestino = document.getElementById("inputDestino");
 			radioPrestamo = document.getElementById("prestamo");
-			radioExtension = document.getElementById("extension");
 			
-			if(radioPrestamo.checked == true || radioExtension.checked == true){
+			if(radioPrestamo.checked == true){
 				inputFecha.disabled = false;
 				inputFecha.required = true;
 			}
@@ -161,13 +185,7 @@ echo '
 				inputFecha.required = false;
 			}
 
-			if(radioExtension.checked == true){
-				inputDestino.disabled = true;
-				inputDestino.required = false;
-			}else{
-				inputDestino.disabled = false;
-				inputDestino.required = true;
-			}
+			mostrarRetiroDestino();
 		}
 		function obtenerVariableQuery(variable)
 		{
@@ -179,34 +197,61 @@ echo '
 		       }
 		       return("");
 		}
-		var codigoInput = document.getElementById("codigo_articulo");
 		var radioPrestamo = document.getElementById("prestamo");
 		var radioRetorno = document.getElementById("retorno");
 		var radioExtension = document.getElementById("extension");
 		var radioAsignacion = document.getElementById("asignacion");
-		serialInput.value = obtenerVariableQuery("serial");
-		
+		var radioRetiro = document.getElementById("retiro");
+
 		switch (obtenerVariableQuery("operacion")){
 			case "r" :
 				radioRetorno.disabled = false;
 				radioExtension.disabled = false;
 				radioRetorno.checked = true;
-				break;
-			case "a" :
-				radioAsignacion.checked = true;
+				mostrarRetiroDestino();
 				break;
 			case "p" :
+				radioAsignacion.checked = true;
+				break;
+			case "t" :
 				radioPrestamo.checked = true;
 				break;
 			case "e" :
 				radioExtension.disabled = false;
 				radioRetorno.disabled = false;	
 				radioExtension.checked = true;
-				break;	
+				break;
+			case "ret":
+				radioRetiro.checked = true;
+				break;
 		}
-		mostrarInputFecha();
+function mostrarRetiroDestino() {
+  const retiroRadio = document.querySelector("#retiro"); // Use querySelector
+  const retiroDestino = document.getElementById("retiroDestino");
+  const inputDestino = document.getElementById("destinoDestino");
+  if (retiroRadio) { // Check if retiroRadio exists before accessing checked
+    if (retiroRadio.checked) {
+      retiroDestino.style.display = "block";
+      inputDestino.style.display = "none";
+    } else {
+      retiroDestino.style.display = "none";
+      inputDestino.style.display = "block";
+    }
+  }
+}
+	window.onload = function() {
+	  mostrarInputFecha();
+	};
+        
 	</script>
 	'.$scriptRespaldo.'
 </body>
-</html>'
+</html>';
+
+function estaEnPrestamo($articulo, $conec) {
+	$query = "SELECT * FROM traspasos_temporales WHERE articulo_id = " .$articulo['id'];
+	$exec = mysqli_query($conec, $query);
+	$resultado = mysqli_fetch_all($exec, MYSQLI_ASSOC);
+	return !empty($resultado);
+};
 ?>

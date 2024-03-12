@@ -42,7 +42,10 @@
 		          </div>
          </div>';
 	}
-	$queryTraspasosTemporales = "SELECT * from articulos INNER JOIN traspasos_temporales ON articulos.id = traspasos_temporales.articulo_id";
+	$queryTraspasosTemporales = "SELECT articulos.*, traspasos_temporales.*, divisiones.nombre_division
+FROM articulos
+INNER JOIN traspasos_temporales ON articulos.id = traspasos_temporales.articulo_id
+INNER JOIN divisiones ON articulos.ubicacion = divisiones.id";
 	$resultado = mysqli_query($conec, $queryTraspasosTemporales);
 	$traspasosTemporales = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 	$alerta = alertaTraspasoTemporal($traspasosTemporales);
@@ -54,11 +57,11 @@
 	  		$interval = date_diff($ahora,date_create($traspasosTemporales[$x]["fecha_de_retorno"]));
 		    if($interval->format('%R%a') <= 5){
 		    	if($interval->format('%R%a') == 0){
-		    		$traspasosTemporalesCercanos .= "<a class='navbar-item'>Hoy es la fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['destino']."</a>";
+		    		$traspasosTemporalesCercanos .= "<a class='navbar-item'>Hoy es la fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['nombre_division']."</a>";
 				}else if($interval->format('%R%a') < 0){
-					$traspasosTemporalesCercanos .= "<a class='navbar-item is-danger'>La fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['destino']." ha pasado</a>";
+					$traspasosTemporalesCercanos .= "<a class='navbar-item is-danger'>La fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['nombre_division']." ha pasado</a>";
 				}else{
-					$traspasosTemporalesCercanos .= "<a class='navbar-item'>La fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['destino']." es en ".$interval->format('%a')." día(s)</a>";
+					$traspasosTemporalesCercanos .= "<a class='navbar-item'>La fecha límite del traspaso temporal de ".$traspasosTemporales[$x]['descripcion']." a ".$traspasosTemporales[$x]['nombre_division']." es en ".$interval->format('%a')." día(s)</a>";
 				}
 			}
 	  	}

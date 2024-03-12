@@ -5,7 +5,8 @@
     die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
   }
   include './alerta.php';
-  $query = "SELECT * from historial_operaciones";
+  include "./helpers.php";
+  $query = "SELECT * from historial_operaciones_articulos LEFT JOIN articulos ON articulos.id = historial_operaciones_articulos.id_articulo INNER JOIN historial_operaciones ON historial_operaciones_articulos.id_operacion = historial_operaciones.id LEFT JOIN divisiones ON divisiones.id = historial_operaciones.destino";
   $resultado = mysqli_query($conec, $query);
   $operaciones = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
   $filas = iterarOperaciones($operaciones);
@@ -33,26 +34,7 @@ echo '
       </figure>
     </div>
   </div>
-  <nav class="navbar is-link">
-            <div class="navbar-brand">
-          <a role="button" class="navbar-burger burger" onclick="document.querySelector(`.navbar-menu`).classList.toggle(`is-active`);" aria-label="menu" aria-expanded="false">
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-        </div>
-        <div class="navbar-menu">
-            <div class="navbar-start">
-                <a href="index.php" class="navbar-item">Inicio</a>
-                <a href="insertar.php" class="navbar-item">Registro</a>
-                <a href="transferencia.php" class="navbar-item">Transferencias</a>
-                <a href="historico.php" class="navbar-item">Histórico</a>
-                <a href="prestamos.php" class="navbar-item">Préstamos</a>
-                '.$opcionesUsuario.'
-            </div>
-            '.$alerta.'
-        </div>
-  </nav>
+  '.$header.'
   <div class="column is-fullwidth"></div>
   <div id="columns" class="columns is-mobile is-centered">
       <div class="column is-hidden-touch"></div>
@@ -63,9 +45,9 @@ echo '
         <div class="select">
           <select name="filtroCampos" id="selectFiltro">
         <option value="0">Operación</option>
-        <option value="1">Serial</option>
+        <option value="1">N° de Identificación</option>
         <option value="2">Fecha</option>
-        <option value="3">Ubicación</option>
+        <option value="3">Destino</option>
       </select>
     </div>
       </div>
@@ -75,9 +57,9 @@ echo '
             <thead>
                 <tr>
                     <th>Tipo de Operación</th>
-                    <th>Serial del Artículo</th>
+                    <th>N° de Identificación</th>
                     <th>Fecha de Operación</th>
-                    <th>Ubicación</th>
+                    <th>Destino</th>
                 </tr>
             </thead>
             <tbody>
@@ -115,9 +97,9 @@ function iterarOperaciones($operaciones){
   $operaciones = array_reverse($operaciones);
   for($x = 0; $x < count($operaciones); $x++){
     $a = '<tr><td>'.$operaciones[$x]["tipo_operacion"].'
-        </td><td>'.$operaciones[$x]["serial"].'
+        </td><td>'.$operaciones[$x]["codigo_unidad"].'
         </td><td>'.$operaciones[$x]["fecha_operacion"].'
-        </td><td>'.$operaciones[$x]["destino"].'
+        </td><td>'.$operaciones[$x]["nombre_division"].'
         </td></tr>';
     $temp .= $a;
   }
