@@ -4,13 +4,12 @@
   if(! $conec) {
     die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
   }
-  include './alerta.php';
   include "./helpers.php";
   $query = "SELECT * from historial_operaciones_articulos LEFT JOIN articulos ON articulos.id = historial_operaciones_articulos.id_articulo INNER JOIN historial_operaciones ON historial_operaciones_articulos.id_operacion = historial_operaciones.id LEFT JOIN divisiones ON divisiones.id = historial_operaciones.destino";
   $resultado = mysqli_query($conec, $query);
   $operaciones = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
   $filas = iterarOperaciones($operaciones);
-
+    include './alerta.php';
 
 echo '
 <html lang="es">
@@ -19,7 +18,7 @@ echo '
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Histórico de Operaciones</title>
     <link rel="stylesheet" href="css/bulma.css">
-    <link rel="stylesheet" href="css/estilo1.css"></head>
+    <link rel="stylesheet" href="css/estilo.css"></head>
 <body>
   <div id="logo" class="columns is-gapless">
     <div id="logo" class="column is-one-fifth">
