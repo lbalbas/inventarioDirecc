@@ -26,14 +26,14 @@ try {
     $idArt = mysqli_insert_id($conec);
 
     // Consulta para insertar en la tabla de historial de operaciones
-    $queryHistorial = "INSERT INTO historial_operaciones(razon_de_operacion, tipo_operacion, destino) VALUES('Registro','Registro','".$ubicacion."')";  
+    $queryHistorial = "INSERT INTO historial_operaciones(observaciones, tipo_operacion, destino) VALUES('Incorporación','Registro','".$ubicacion."')";  
     mysqli_query($conec, $queryHistorial) or die(mysqli_error($conec));
 
     // Obtener el ID de la operación insertada
     $idOperacion = mysqli_insert_id($conec);
 
     // Consulta para insertar en la tabla de historial de operaciones de artículos
-    $queryHistorialOp = "INSERT INTO historial_operaciones_articulos(id_operacion, id_articulo, origen) VALUES('".$idOperacion."','".$idArt."',  0)";  
+    $queryHistorialOp = "INSERT INTO historial_operaciones_articulos(id_operacion, id_articulo, origen) VALUES('".$idOperacion."','".$idArt."',  '".$ubicacion."')";  
     mysqli_query($conec, $queryHistorialOp) or die(mysqli_error($conec));
 
     // Si todas las consultas se ejecutan con éxito, confirmar la transacción
@@ -44,11 +44,7 @@ try {
 
     // Manejar el error, por ejemplo, mostrar un mensaje al usuario
     echo 'Error: ' . $e->getMessage();
-} finally {
-    // Cerrar la conexión a la base de datos
-    mysqli_close($conec);
-}
-
+} 
 	}
   $destinos = mysqli_fetch_all(mysqli_query($conec,"SELECT * FROM divisiones WHERE es_destino_retiro = 0"),MYSQLI_ASSOC);
 
@@ -57,6 +53,9 @@ try {
   for($x = 0; $x < count($destinos); $x++){
     $destinoOptions .= '<option value="'.$destinos[$x]["id"].'">'.$destinos[$x]["nombre_division"].'</option>';
   };	
+
+  mysqli_close($conec);
+
 echo '<html lang="en">
 <head>
     <meta charset="UTF-8">

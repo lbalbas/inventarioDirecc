@@ -1,9 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html,body{
 	width: 100vw;
 	max-width:100%;
 }
 #tablaInventario{
 	width: 100%;
+}
+.table-wrapper{
+  display: flex;
 }
 #tablaHistorial{
 	width: 80%;
@@ -15,6 +22,18 @@ html,body{
 	flex-direction: row;
 }
 
+.flex{
+  display:flex; 
+}
+.excel-icon{
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+tr:hover .excel-icon {
+    visibility: visible;
+    opacity: 1;
+}
 .navbar {
   display: -webkit-box;
   display: -ms-flexbox;

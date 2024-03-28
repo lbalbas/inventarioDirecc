@@ -59,6 +59,7 @@ echo '
                     <th>N° de Identificación</th>
                     <th>Fecha de Operación</th>
                     <th>Destino</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -99,7 +100,8 @@ function iterarOperaciones($operaciones){
         </td><td>'.$operaciones[$x]["codigo_unidad"].'
         </td><td>'.$operaciones[$x]["fecha_operacion"].'
         </td><td>'.$operaciones[$x]["nombre_division"].'
-        </td></tr>';
+        </td>
+        <td><a href="excel.php?operacion=' . $operaciones[$x]['id_operacion'] . '"><img title="Generar Excel de esta operación." class="excel-icon nav-icon" src="./resources/documents-outline.svg"></a></td></tr>';
     $temp .= $a;
   }
   return $temp;

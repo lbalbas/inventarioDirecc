@@ -10,7 +10,7 @@
 	if(isset($_SESSION['articulos'])){
         $articulos = $_SESSION['articulos'];
         $filas = iterarArticulos($articulos, $conec);
-        $observaciones = $_SESSION['observaciones'];
+        $observaciones = isset($_SESSION['observaciones']) ? $_SESSION['observaciones'] : "Ninguna";
         $destino = $_SESSION['destino'];
         $divisionDestino = mysqli_fetch_all(mysqli_query($conec,'SELECT nombre_division FROM divisiones WHERE id ='.$destino),MYSQLI_ASSOC)[0];
         $fregreso = $_SESSION['fregreso'];

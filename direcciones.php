@@ -14,6 +14,10 @@ mysqli_query($conec, $query);
 	}
   $destinos = mysqli_fetch_all(mysqli_query($conec,"SELECT * FROM divisiones"),MYSQLI_ASSOC);
 
+  $filas = iterarDestinos($destinos);
+
+
+
 echo '<html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -38,20 +42,9 @@ echo '<html lang="en">
   </div>
   '.$header.'
   <div class="column"></div>
-<div class="table-wrapper">
-    <table id="tablaInventario" class="table is-fullwidth is-striped">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>¿Es Destino de Retiro?</th>
-          </tr>
-        </thead>
-        <tbody>
-          '.$filas.'
-        </tbody>
-    </table>
-    </div>
- <div class="columns is-fullwidth is-centered">
+<div>
+    <h2 style="margin-bottom: 20px;" class="has-text-centered is-size-4 has-text-weight-bold">Registrar Nueva Dirección</h2>
+    <div class="columns is-half">
       <form id="box" class="box" action="" method="POST">
       <div class="control">
         <label class="label "for="nombre">Nombre</label>
@@ -66,8 +59,37 @@ echo '<html lang="en">
       <input class="button" type="submit">
     </form>
   </div>
+    <h2 class="has-text-centered is-size-4 has-text-weight-bold">Listado de Direcciones</h2>
+    <table style="margin:0 auto;" class="table is-striped">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>¿Es Destino de Retiro?</th>
+          </tr>
+        </thead>
+        <tbody>
+          '.$filas.'
+        </tbody>
+    </table>
+    </div>
+
 '.$scriptRespaldo.'
 </body>
-</html>'
+</html>';
+
+
+function iterarDestinos($destinos){
+    $temp = "";
+
+    for($x =  0; $x < count($destinos); $x++){
+        $esRetiro = $destinos[$x]["es_destino_retiro"] == 0 ? "No" : "Si";
+        $a = '<tr>
+            <td>'.$destinos[$x]["nombre_division"].'
+            </td><td>'.$esRetiro.'
+            </td></tr>';
+        $temp .= $a;
+    }
+    return $temp;
+};
 
 ?>

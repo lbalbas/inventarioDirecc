@@ -22,6 +22,7 @@ echo '
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Préstamos</title>
     <link rel="stylesheet" href="css/estilo2.css">
+    <link rel="stylesheet" href="css/estilo.css">
     <link rel="stylesheet" href="css/bulma.css">
 </head>
 <body>
@@ -39,6 +40,11 @@ echo '
 	</div>
 </div>
 	'.$header.'
+	<div id="selectOperation"box-shadow: 0px 3px 15px 5px rgba(0, 0, 0, 0.4); style="align-items: center !important; top: 100; left: 20; border-radius: 25px; position:fixed; padding: 5px 10px;" class="flex is-hidden has-background-link">
+					<a class="has-text-white icon is-medium" title="Retorno" id="r" href="#">
+				  		<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 262.62L256 342l80-79.38M256 330.97V170"/><path d="M256 64C150 64 64 150 64 256s86 192 192 192 192-86 192-192S362 64 256 64z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/></svg>
+				  	</a>
+	</div>
   	<div class="column is-fullwidth"></div>
   	<div id="columns"class="columns is-fullwidth is-mobile is-centered">
       <div class="column is-hidden-touch"></div>
@@ -126,12 +132,12 @@ echo '
 		            return cb.checked;
 		        });
 
-		        var navbar = document.getElementById("navbar");
+		        var selectOperation = document.getElementById("selectOperation");
 
 		        if (isAnyChecked) {
-		            navbar.classList.remove(\'is-hidden\');
+		            selectOperation.classList.remove(\'is-hidden\');
 		        } else {
-		            navbar.classList.add(\'is-hidden\');
+		            selectOperation.classList.add(\'is-hidden\');
 		        }
 		    });
 		});

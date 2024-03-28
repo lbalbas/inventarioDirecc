@@ -9,7 +9,7 @@ include 'helpers.php';
 $query = "SELECT historial_operaciones.*, historial_operaciones_articulos.*, divisiones.nombre_division
           FROM historial_operaciones
           LEFT JOIN historial_operaciones_articulos ON historial_operaciones.id = historial_operaciones_articulos.id_operacion LEFT JOIN divisiones ON historial_operaciones.destino = divisiones.id
-          WHERE historial_operaciones.fecha_operacion >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+          WHERE historial_operaciones.fecha_operacion >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
 $resultado = mysqli_query($conec, $query);
 
 // Verificar si la consulta fue exitosa
@@ -118,7 +118,7 @@ echo '
             theme: "light2",
             animationEnabled: true,
             title: {
-                text: "Operaciones por Tipo"
+                text: "Cantidad de Operaciones por Tipo"
             },
             data: [{
                 type: "column",
@@ -133,7 +133,7 @@ echo '
         theme: "light2",
         animationEnabled: true,
         title: {
-            text: "Días con Mayores Operaciones"
+            text: "Días con Mayor Cantidad de Operaciones"
         },
         data: [{
             type: "column",

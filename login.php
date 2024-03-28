@@ -83,6 +83,7 @@
 					    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 					    <title>Inicio de Sesión</title>
 					    <link rel="stylesheet" href="css/bulma.css">
+					    <link href="./css/output.css" rel="stylesheet">
 					</head>
 					<body>
 					<div id="logo" class="columns is-gapless">
@@ -100,7 +101,7 @@
 					</div>
 					  <div class="column">					  <h1 class="has-text-centered has-text-weight-bold">Iniciar Sesión</h1></div>
 
-					 <div class="columns is-fullwidth is-centered">
+					 <div class="bg-red-500">
 					      <form id="box" class="box" action="" method="POST">
 					      <div class="control">
 					        <label class="label "for="nombre_usuario">Nombre de Usuario</label>
