@@ -18,16 +18,21 @@
       mysqli_close($conec);
       header('Location: index.php');
   }
-  $getQuery = 'SELECT * FROM articulos WHERE id = "'.$urlId.'"';
+  $getQuery = 'SELECT * FROM `articulos` 
+LEFT JOIN `modelo_articulo` ON `modelo_articulo`.`id_articulo` = `articulos`.`id` 
+LEFT JOIN `nro_identificacion_articulo` ON `nro_identificacion_articulo`.`id_articulo` = `articulos`.`id` 
+WHERE `articulos`.`id` = '.$urlId;
   $resultado = mysqli_query($conec, $getQuery);
   $artiModificar = mysqli_fetch_all($resultado, MYSQLI_ASSOC)[0];
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
     if ($_POST['accion'] == 'Guardar') {
       checkVacio($_POST, $urlId);
-      if($_POST['codigo_unidad'] !== ""){
-        $codigo_unidad = mysqli_real_escape_string($conec,$_POST['codigo_unidad']);
-        if($codigo_unidad !== $artiModificar['codigo_unidad']){
-          $getQuery = 'SELECT * FROM articulos WHERE codigo_unidad = "'.$codigo_unidad.'"';
+      $nombre_modelo = mysqli_real_escape_string($conec,$_POST['nombre_modelo']);
+      $n_identificacion = mysqli_real_escape_string($conec,$_POST['n_identificacion']);
+      if($_POST['serial_fabrica'] !== ""){
+        $serial_fabrica = mysqli_real_escape_string($conec,$_POST['serial_fabrica']);
+        if($serial_fabrica !== $artiModificar['serial_fabrica']){
+          $getQuery = 'SELECT * FROM articulos WHERE serial_fabrica = "'.$serial_fabrica.'"';
           $resultado = mysqli_query($conec, $getQuery);
           $duplicadoCheck = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
           if($duplicadoCheck == true OR ! $duplicadoCheck == ""){
@@ -37,10 +42,10 @@
             </script>';
           }
         }else{
-          $codigo_unidad = $artiModificar['codigo_unidad'];
+          $serial_fabrica = $artiModificar['serial_fabrica'];
         }
       }else{
-        $codigo_unidad = $artiModificar['codigo_unidad'];
+        $serial_fabrica = $artiModificar['serial_fabrica'];
       }
       if($_POST['descripcion'] !== ""){
         $descripcion = mysqli_real_escape_string($conec,$_POST['descripcion']);
@@ -52,19 +57,41 @@
       }else{
         $fabricante = $artiModificar['fabricante'];
       }
+      if($_POST['monto_valor'] !== ""){
+        $monto_valor = mysqli_real_escape_string($conec,$_POST['monto_valor']);
+      }else{
+        $monto_valor = $artiModificar['monto_valor'];
+      }
+
       $queryActu = 'UPDATE articulos 
                         SET descripcion = "'.$descripcion.'",
-                            codigo_unidad = "'.$codigo_unidad.'",
-                            fabricante = "'.$fabricante.'"
-                        WHERE id = "'.$urlId.'"';
-      $queryHistorial = "INSERT INTO historial_transacciones(tipo_operacion, id_articulo, id_operacion) VALUES('Gestión','".$codigo_unidad."','Gestión de Artículo')"; 
-      mysqli_begin_transaction($conec,MYSQLI_TRANS_START_READ_WRITE);
+                            serial_fabrica = "'.$serial_fabrica.'",
+                            fabricante = "'.$fabricante.'",
+                            monto_valor = "'.$monto_valor.'"
+                        WHERE id = "'.$urlId.'"'; 
       mysqli_query($conec,$queryActu);
-      mysqli_query($conec,$queryHistorial);
-      mysqli_commit($conec);
+
+      if($_POST['nombre_modelo'] !== ""){
+    if($artiModificar['nombre_modelo']){
+       $queryModelo = "UPDATE modelo_articulo SET nombre_modelo = '".$nombre_modelo."' WHERE id_articulo = ".$urlId;
+    }else{
+        $queryModelo = "INSERT INTO modelo_articulo(id_articulo,nombre_modelo) VALUES('".$urlId."','".$nombre_modelo."')";
+    }
+    mysqli_query($conec, $queryModelo);
+}
+
+      if($_POST['n_identificacion'] !== ""){
+        if($artiModificar['n_identificacion']){
+          $queryIdentificacion = "UPDATE nro_identificacion_articulo SET n_identificacion = ".$n_identificacion." WHERE id_articulo = ".$urlId;
+        }else{
+          $queryIdentificacion = "INSERT INTO nro_identificacion_articulo(id_articulo,n_identificacion) VALUES(".$urlId.",".$n_identificacion.")";
+        }
+        mysqli_query($conec, $queryIdentificacion);
+      }
+
       mysqli_close($conec);
-      header("Location: index.php");
-    } else if ($_POST['accion'] == 'Eliminar') {
+      //header("Location: index.php");
+    }else if ($_POST['accion'] == 'Eliminar') {
       if($_COOKIE['login'] == 'admin'){
         echo '<script language="javascript">
               var res = window.confirm("¿Desea eliminar el artículo en cuestión?");
@@ -82,10 +109,10 @@
       }
 
     }
-
-
-
 	}
+
+  $nombre_modelo = $artiModificar['nombre_modelo'] ? $artiModificar['nombre_modelo'] : "Modelo no Especificado";
+  $n_identificacion = $artiModificar['n_identificacion'] ? $artiModificar['n_identificacion'] : "Sin código";
 	
   echo '<html>
   <head>
@@ -116,20 +143,36 @@
    <div class="columns is-centered">
         <form id="box" class="box" action="" method="POST">
           <div class="control">
-            <label class="label "for="articulo">Artículo - '.$artiModificar['descripcion'].'</label>
+            <label class="label "for="articulo">Descripción - '.$artiModificar['descripcion'].'</label>
             <input class="input" name="descripcion" type="text">
           </div>
           <br>
           <div class="control">
-            <label class="label" for="fabricante">Fabricante - '.$artiModificar['fabricante'].'</label>
+            <label class="label" for="fabricante">Marca - '.$artiModificar['fabricante'].'</label>
             <input class="input" name="fabricante" type="text">
           </div>
           <br>
           <div class="control">
-            <label class="label" for="codigo_unidad">Código de Artículo - '.$artiModificar['codigo_unidad'].'</label>
-            <input class="input" name="codigo_unidad" type="text">
+            <label class="label" for="serial_fabrica">Serial de Fábrica - '.$artiModificar['serial_fabrica'].'</label>
+            <input class="input" name="serial_fabrica" type="text">
           </div>
           <br>
+
+          <div class="control">
+            <label class="label" for="modelo">Modelo - '.$nombre_modelo.'</label>
+            <input class="input" name="nombre_modelo" type="text">
+          </div><br>
+
+          <div class="control">
+            <label class="label" for="nro_identificacion">Nro. de Identificación - '.$n_identificacion.'</label>
+            <input class="input" name="n_identificacion" type="text">
+          </div>
+          <br>
+          <div class="control">
+              <label class="label" for="monto_valor">Valor - '.$artiModificar['monto_valor'].'</label>
+                <input class="input" type="text" name="monto_valor" id="monto_valor" oninput="formatDecimalInput(this)">
+          </div>
+                              <br>
           <div class="buttonContainer">
             <input name="accion" class="button is-link" type="submit" value="Guardar">  
             <input name="accion" id="is-right" class="button  is-danger" type="submit" value="Eliminar">
@@ -137,6 +180,16 @@
       </form>
     </div>
     '.$scriptRespaldo.'
+    <script language="javascript">
+      function formatDecimalInput(input) {
+            let value = input.value.replace(/,/g, ""); // Elimina las comas
+            value = parseInt(value, 10); // Convierte el valor a un número entero
+            if (!isNaN(value)) {
+                value = value / 100; // Divide por 100 para mover la coma dos posiciones a la izquierda
+                input.value = value.toFixed(2).replace(".", ","); // Formatea el número con dos decimales y cambia el punto por una coma
+            }
+        }
+    </script>
   </body>
   </html>';
   

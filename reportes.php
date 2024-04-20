@@ -6,10 +6,11 @@ if (!$conec) {
 }
 include 'helpers.php';
 // Consulta SQL
+$lastNDays = isset($_GET['lastNDays']) ?  $_GET['lastNDays'] : 7;
 $query = "SELECT historial_operaciones.*, historial_operaciones_articulos.*, divisiones.nombre_division
           FROM historial_operaciones
           LEFT JOIN historial_operaciones_articulos ON historial_operaciones.id = historial_operaciones_articulos.id_operacion LEFT JOIN divisiones ON historial_operaciones.destino = divisiones.id
-          WHERE historial_operaciones.fecha_operacion >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+          WHERE historial_operaciones.fecha_operacion >= DATE_SUB(CURDATE(), INTERVAL ".$lastNDays." DAY)";
 $resultado = mysqli_query($conec, $query);
 
 // Verificar si la consulta fue exitosa
@@ -80,7 +81,6 @@ foreach ($diasMayoresOperaciones as $dia => $cantidad) {
     $dataPoint = array("label" => $dia, "y" => $cantidad);
     array_push($dataPointsDias, $dataPoint);
 }
-
 echo '
 	<html lang="es">
 	<head>
@@ -107,11 +107,25 @@ echo '
 	</div>
 	'.$header.'
 	<h1 class="is-size-2 has-text-weight-bold">Reporte de Operaciones</h1>
-    <p>Total de operaciones en los últimos 7 días: '.$totalOperaciones.'</p>
+        <form id="redirectForm" method="get">
+        <select id="timeFrame" name="lastNDays">
+            <option value="7">7 dias</option>
+            <option value="15">15 dias</option>
+            <option value="30">30 dias</option>
+            <option value="90">3 meses</option>
+        </select>
+        <input type="submit" value="Submit">
+    </form>
+    <p>Total de operaciones en los últimos '.$lastNDays.' días: '.$totalOperaciones.'</p>
 	<div id="operacionesMasFrecuentes" style="height: 370px; width: 80%; margin: 0 auto;"></div>
     <div id="chartContainerDias" style="height: 370px; width: 80%; margin: 0 auto;"></div>
     <div id="chartContainerDestinos" style="height: 370px; width: 80%; margin: 0 auto;"></div>
     <script>
+                document.getElementById("redirectForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            var selectedValue = document.getElementById("timeFrame").value;
+            window.location.href = window.location.href.split("?")[0] + "?lastNDays=" + selectedValue;
+        });
         var dataPointsTipoOperacion = '.json_encode($dataPointsTipoOperacion, JSON_NUMERIC_CHECK).'
 
         var chart = new CanvasJS.Chart("operacionesMasFrecuentes", {

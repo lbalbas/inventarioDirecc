@@ -3,7 +3,14 @@
       content: ["./*.{html,php}"],
     
       theme: {
-        extend: {},
+        extend: {
+          fontFamily: {
+        'karla': ['Karla', 'sans-serif'],
+        'rubik': ['Rubik', 'sans-serif'],
+        'montserrat': ['Montserrat', 'sans-serif'],
+        // Add more variations as needed
+      }
+        },
       },
       plugins: [],
     }

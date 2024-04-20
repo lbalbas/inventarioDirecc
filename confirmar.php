@@ -158,7 +158,7 @@
 
     for($x =  0; $x < count($articulos); $x++){
         $a = '<tr>
-            <td>'.$articulos[$x]["codigo_unidad"].'
+            <td>'.$articulos[$x]["serial_fabrica"].'
             </td><td>'.$articulos[$x]["descripcion"].'
             </td><td>'.$articulos[$x]["fabricante"].'
             </td><td>'.$articulos[$x]["monto_valor"].'

@@ -7,11 +7,11 @@
   include './alerta.php';
   include "./helpers.php";
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $codigo =  mysqli_real_escape_string($conec,$_POST['codigo']);
+    $serial =  mysqli_real_escape_string($conec,$_POST['serial']);
     $descripcion =  mysqli_real_escape_string($conec,$_POST['descripcion']);
     $fabricante =  mysqli_real_escape_string($conec,$_POST['fabricante']);
     $monto =  mysqli_real_escape_string($conec,$_POST['monto']);
-    $ubicacion =  mysqli_real_escape_string($conec,$_POST['ubicacion']);
+    $ubicacion =  2;
 
 
 // Iniciar la transacción
@@ -19,7 +19,7 @@ mysqli_begin_transaction($conec, MYSQLI_TRANS_START_READ_WRITE);
 
 try {
     // Consulta para insertar en la tabla de artículos
-    $queryInsertar = 'INSERT INTO articulos(codigo_unidad, descripcion, fabricante, ubicacion, monto_valor) VALUES("'.$codigo.'","'.$descripcion.'","'.$fabricante.'","'.$ubicacion.'","'.$monto.'")';
+    $queryInsertar = 'INSERT INTO articulos(serial_fabrica, descripcion, fabricante, ubicacion, monto_valor) VALUES("'.$serial.'","'.$descripcion.'","'.$fabricante.'","'.$ubicacion.'","'.$monto.'")';
     mysqli_query($conec, $queryInsertar) or die(mysqli_error($conec));
 
     // Obtener el ID del artículo insertado
@@ -36,6 +36,12 @@ try {
     $queryHistorialOp = "INSERT INTO historial_operaciones_articulos(id_operacion, id_articulo, origen) VALUES('".$idOperacion."','".$idArt."',  '".$ubicacion."')";  
     mysqli_query($conec, $queryHistorialOp) or die(mysqli_error($conec));
 
+    if(isset($_POST['nro_id'])){
+      mysqli_query($conec, "INSERT INTO nro_identificacion_articulo(id_articulo, n_identificacion) VALUES('".$idArt."','".$_POST['nro_id']."')") or die(mysqli_error($conec))
+    }
+     if(isset($_POST['modelo'])){
+      mysqli_query($conec, "INSERT INTO modelo_articulo(id_articulo, nombre_modelo) VALUES('".$idArt."','".$_POST['modelo']."')") or die(mysqli_error($conec))
+    }
     // Si todas las consultas se ejecutan con éxito, confirmar la transacción
     mysqli_commit($conec);
 } catch (\Exception $e) {
@@ -81,37 +87,56 @@ echo '<html lang="en">
   '.$header.'
   <div class="column"></div>
 
- <div class="columns is-fullwidth is-centered">
-      <form id="box" class="box" action="" method="POST">
-      <div class="control">
-        <label class="label "for="codigo">Código</label>
-        <input required class="input" name="codigo" type="text">
-      </div>
-      <br>
-      <div class="control">
-        <label class="label" for="descripcion">Descripción</label>
-        <input required class="input" name="descripcion" type="text">
-      </div>
-      <br>
-      <div class="control">
-        <label class="label" for="marca">Fabricante</label>
-        <input required class="input" name="fabricante" type="text">
-      </div>
-      <br>
-              <div class="control" id="ubicacionControl">
-            <label class="label" for="ubicacion">Ubicación</label>
-            <select required id="ubicacion" class="input" name="ubicacion">
-                ' . $destinoOptions . '
-            </select>
-        </div>
-      <br>
-      <div class="control">
-        <label class="label" for="monto">Valor</label>
-        <input required class="input" name="monto" type="text">
-      </div>
-      <input class="button" type="submit">
-    </form>
-  </div>
+<div class="columns is-fullwidth is-centered">
+ <form id="box" class="box" action="" method="POST">
+    <div class="control">
+      <label class="label" for="nro_id">Nro. de Identificación</label>
+      <input required class="input" name="nro_id" type="text" id="nro_id">
+      <input type="checkbox" id="sinNumeroAsignado" onclick="toggleInput(\'nro_id\', this)">
+      <label for="sinNumeroAsignado">Sin Número Asignado</label>
+    </div>
+    <br>
+    <div class="control">
+      <label class="label" for="serial">Serial de Fabrica</label>
+      <input required class="input" name="serial" type="text">
+    </div>
+    <div class="control">
+      <label class="label" for="descripcion">Descripción</label>
+      <input required class="input" name="descripcion" type="text">
+    </div>
+    <br>
+    <div class="control">
+      <label class="label" for="marca">Fabricante</label>
+      <input required class="input" name="fabricante" type="text">
+    </div>
+    <br>
+    <div class="control">
+      <label class="label" for="modelo">Modelo</label>
+      <input required class="input" name="modelo" type="text" id="modelo">
+      <input type="checkbox" id="modeloNoEspecificado" onclick="toggleInput(\'modelo\', this)">
+      <label for="modeloNoEspecificado">Modelo no especificado</label>
+    </div>
+    <br>
+    <div class="control">
+      <label class="label" for="monto">Valor</label>
+      <input required class="input" name="monto" type="text">
+    </div>
+    <input class="button" type="submit">
+ </form>
+</div>
+
+<script>
+ function toggleInput(inputId, checkbox) {
+    var input = document.getElementById(inputId);
+    if (checkbox.checked) {
+      input.removeAttribute("required");
+      input.disabled = true;
+    } else {
+      input.setAttribute("required", "");
+      input.disabled = false;
+    }
+ }
+</script>
 '.$scriptRespaldo.'
 </body>
 </html>'

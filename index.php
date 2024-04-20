@@ -30,24 +30,11 @@ WHERE `articulos`.`esta_retirado` = 0";
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Inventario General</title>
 		<link rel="stylesheet" href="css/estilo.css">
-		<link rel="stylesheet" href="css/bulma.css">
+		<link href="./css/output.css" rel="stylesheet">
 	</head>
 	<body>
-	<div id="logo" class="columns is-gapless">
-		<div id="logo" class="column is-one-fifth">
-			<figure class="column image is-3by1">
-				<img src="./resources/goblogo.jpg">
-			</figure>
-		</div>
-		<div class="column is-three-fifths"></div>
-		<div id="logo" class="column is-one-fifth">
-			<figure class="column image is-3by1">
-				<img src="./resources/dirlogo.jpg">
-			</figure>
-		</div>
-	</div>
 	'.$header.'
-	<div id="selectOperation"box-shadow: 0px 3px 15px 5px rgba(0, 0, 0, 0.4); style="align-items: center !important; top: 100; left: 20; border-radius: 25px; position:fixed; padding: 5px 10px;" class="flex is-hidden has-background-link">
+		<div id="selectOperation"box-shadow: 0px 3px 15px 5px rgba(0, 0, 0, 0.4); style="align-items: center !important; top: 100; left: 20; border-radius: 25px; position:fixed; padding: 5px 10px;" class="flex is-hidden has-background-link">
 					<a class="has-text-white icon is-medium" title="Traspaso Temporal" id="trsp-t" href="#">
 				  		<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M464 208L352 96 240 208M352 113.13V416M48 304l112 112 112-112M160 398V96"/></svg>
 				  	</a>
@@ -58,62 +45,53 @@ WHERE `articulos`.`esta_retirado` = 0";
 						  	<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
 						  	</a>
 	</div>
-	<div class="column is-fullwidth"></div>
-	<div id="columns"class="columns is-fullwidth is-mobile is-centered">
-		<div class="column is-hidden-touch"></div>
-		<div class="column is-three-quarters-mobile is-5 control">
-			<input placeholder="Filtrar Inventario" id="filtroInventario" type="text" class="input" onkeyup="filtrar()">
-		</div>
-		<div class="column is-one-quarters-mobile is-3 control">
-			<div class="select">
-				<select name="filtroCampos" id="selectFiltro">
-				<option value="1">Codificación</option>
-				<option value="2">Descripción</option>
-				<option value="3">Fabricante</option>
-				<option value="5">Ubicación</option>
-				</select>
-			</div>
-		</div>
+
+	<h1 class="ml-12 mt-28 text-6xl font-rubik text-sky-900 font-bold">Inventario General</h1>
+
+	<div class="w-full flex justify-center py-10">
+			<input placeholder="Filtrar Inventario" id="filtroInventario" type="text" class="bg-gray-100 shadow-md border-gray-300 border-solid border-2 border-r-0 px-6 py-3" onkeyup="filtrar()">
+			<select class="bg-gray-100 shadow-md border-gray-300 border-2 py-3" name="filtroCampos" id="selectFiltro">
+				<option value="2">Serial</option>
+				<option value="3">Descripción</option>
+				<option value="4">Marca</option>
+				<option value="6">Ubicación</option>
+			</select>
 		<div class="column is-hidden-touch"></div>
 	</div>
-	<div class="table-wrapper">
-		<table id="tablaInventario" class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Codificación</th>
-						<th>Descripción</th>
-						<th>Fabricante</th>
-						<th>Valor</th>
-						<th>Ubicación</th>
-					</tr>
-				</thead>
-				<tbody>
-					'.$filas.'
-				</tbody>
-		</table>
-		</div>
+
+<div class="grid grid-cols-1 text-sm bg-blue-100 font-rubik rounded-xl m-4 px-4">
+ <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
+    <div class="col-span-1 text-lg"></div>
+    <div class=" col-start-2 col-end-3 text-lg">Serial</div>
+    <div class="col-start-4 col-end-7 text-lg">Descripción</div>
+    <div class="col-start-7 col-end-9 text-lg">Marca</div>
+    <div class="col-start-9 col-end-10 text-lg">Valor</div>
+    <div class="col-start-10 col-end-12 text-lg">Ubicación</div>
+ </div>
+ '.$filas.'
+</div>
 	<script language="javascript">
-		function filtrar() {
-		var input, filtro, tabla, tr, td, i, txtValor, filtroAtrib;
-		input = document.getElementById("filtroInventario");
-		filtro = input.value.toUpperCase();
-		tabla = document.getElementById("tablaInventario");
-		tr = tabla.getElementsByTagName("tr");
-		filtroAtrib = document.getElementById("selectFiltro");
-		
-		for (i = 0; i < tr.length; i++) {
-			td = tr[i].getElementsByTagName("td")[filtroAtrib.value];
-			if (td) {
-			txtValue = td.textContent || td.innerText;
-			if (txtValue.toUpperCase().indexOf(filtro) > -1) {
-				tr[i].style.display = "";
-			} else {
-				tr[i].style.display = "none";
-			}
-			}
-		}
-		}
+function filtrar() {
+    var input, filtro, gridContainer, gridItems, i, txtValue, filtroAtrib;
+    input = document.getElementById("filtroInventario");
+    filtro = input.value.toUpperCase();
+    gridContainer = document.querySelector(\'.grid.grid-cols-1\'); // Adjust the selector as needed
+    gridItems = gridContainer.querySelectorAll(\'.grid-cols-12\'); // Adjust the selector to target grid items
+    filtroAtrib = document.getElementById("selectFiltro");
+    
+    for (i = 1; i < gridItems.length; i++) {
+        var targetColumn = gridItems[i].querySelectorAll(\'.col-span-1, .col-start-2, .col-end-3, .col-start-4, .col-end-7, .col-start-7, .col-end-9, .col-start-9, .col-end-10, .col-start-10, .col-end-12\')[filtroAtrib.value - 1]; // Adjust the index based on your column selection
+        if (targetColumn) {
+            txtValue = targetColumn.textContent || targetColumn.innerText;
+            if (txtValue.toUpperCase().indexOf(filtro) > -1) {
+                gridItems[i].style.display = "";
+            } else {
+                gridItems[i].style.display = "none";
+            }
+        }
+    }
+}
+
 		var selectedArticles = [];
 
 		function handleCheckboxChange(articleUnitCode) {
@@ -172,17 +150,18 @@ function iterarArticulos($articulos,$conec){
         // Si el artículo está en préstamo o traspaso, deshabilita la casilla de verificación y agrega un asterisco
         $deshabilitado = ($enPrestamo) ? 'disabled' : '';
         $asterisco = ($enPrestamo) ? '**' : '';
-        $a = '<tr>
-            <td>
-                <input type="checkbox" value="'.$articulos[$x]["id"].'" '.$deshabilitado.' onClick="handleCheckboxChange(\''.$articulos[$x]["id"].'\')"/>
-                '.$asterisco.'
-            </td>
-            <td>'.$articulos[$x]["codigo_unidad"].'
-            </td><td>'.$articulos[$x]["descripcion"].'
-            </td><td>'.$articulos[$x]["fabricante"].'
-            </td><td>'.$articulos[$x]["monto_valor"].'
-            </td><td>'.$articulos[$x]["nombre_division"].'
-            </td></tr>';
+        $a = '
+        	 <div class="grid grid-cols-12 border-blue-200 border-solid border-b-2 py-2">
+			    <div class="col-span-1 items-center justify-center flex">
+			          <input type="checkbox" value="'.$articulos[$x]["id"].'" '.$deshabilitado.' onClick="handleCheckboxChange(\''.$articulos[$x]["id"].'\')" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+			          '.$asterisco.'
+			    </div>
+			    <div class="col-start-2 col-end-3">'.$articulos[$x]["serial_fabrica"].'</div>
+			    <div class="col-start-4 col-end-7">'.$articulos[$x]["descripcion"].'</div>
+			    <div class="col-start-7 col-end-9">'.$articulos[$x]["fabricante"].'</div>
+			    <div class="col-start-9 col-end-10">'.$articulos[$x]["monto_valor"].'</div>
+			    <div class="col-start-10 col-end-12">'.$articulos[$x]["nombre_division"].'</div>
+			 </div>';
         $temp .= $a;
     }
     return $temp;

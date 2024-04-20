@@ -97,7 +97,7 @@ function iterarOperaciones($operaciones){
   $operaciones = array_reverse($operaciones);
   for($x = 0; $x < count($operaciones); $x++){
     $a = '<tr><td>'.$operaciones[$x]["tipo_operacion"].'
-        </td><td>'.$operaciones[$x]["codigo_unidad"].'
+        </td><td>'.$operaciones[$x]["serial_fabrica"].'
         </td><td>'.$operaciones[$x]["fecha_operacion"].'
         </td><td>'.$operaciones[$x]["nombre_division"].'
         </td>

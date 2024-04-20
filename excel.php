@@ -5,7 +5,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 // Cargar el archivo .ods
-$spreadsheet = IOFactory::load('./resources/incorporacion-desincorporacion.xlsx');
+$spreadsheet = IOFactory::load('./resources/bm-2.xls');
 
 // Obtener la hoja activa para trabajar con ella
 $sheet = $spreadsheet->getActiveSheet();
@@ -31,42 +31,66 @@ if(isset($_GET['operacion'])){
     $destino = $_SESSION["destino"];
 }
 
-
-
-
-// Modificar las celdas según los requerimientos
-$sheet->setCellValue('G2', "Concepto: " . strtoupper($operacion));
-$sheet->setCellValue('G2', "Concepto: " . strtoupper($operacion));
-$sheet->setCellValue('G3', "Fecha: " . date('d/m/Y'));
-$sheet->setCellValue('F5', "Destino: " . $destino);
-$sheet->setCellValue('E12', $observaciones);
-
-if($operacion !== 'Retiro'){
-   $sheet->setCellValue('C11', 'x'); 
-}else{
-    $sheet->setCellValue('C12', 'x');
-    $sheet->setCellValue('F5', "Dirección: ZONA INDUSTRIAL LA SABANITA");
+// Crear un archivo ZIP temporal
+$zip = new ZipArchive();
+$zipName = "operaciones.zip";
+if ($zip->open($zipName, ZipArchive::CREATE) !== TRUE) {
+    exit("No se puede abrir el archivo ZIP <$zipName>\n");
 }
 
+$maxArticulosPorArchivo = 5;
+$articulosPorPagina = 5;
+$totalArticulos = count($articulos);
+$numeroDeArchivos = ceil($totalArticulos / $articulosPorPagina);
 
-// Iterar sobre la array $articulos para colocar los datos en las celdas correspondientes
-$startRow =  17; // Comenzar desde la fila  17
-foreach ($articulos as $index => $articulo) {
-    $row = $startRow + $index;
-    $sheet->setCellValue('D' . $row, $articulo['codigo_unidad']);
-    $sheet->setCellValue('E' . $row, $articulo['descripcion']);
-    $sheet->setCellValue('G' . $row, $articulo['monto_valor']);
-    $sheet->setCellValue('H' . $row,  "0.00");
+// Crear y llenar archivos de Excel
+for ($i = 0; $i < $numeroDeArchivos; $i++) {
+    $spreadsheet = IOFactory::load('./resources/bm-2.xls');
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Configurar datos generales
+    $sheet->setCellValue('G1', "Codigo: " . "42");
+    $sheet->setCellValue('G2', "Concepto: " . strtoupper($operacion));
+    $sheet->setCellValue('G4', "Fecha: " . date('d/m/Y'));
+    $sheet->setCellValue('F8', "Destino: " . $destino);
+    $sheet->setCellValue('E14', $observaciones);
+
+    // Configurar número de página
+    $paginaActual = $i + 1;
+    $sheet->setCellValue('G5', "Página Nº {$paginaActual}/{$numeroDeArchivos}");
+
+    // Llenar artículos
+    $startRow = 18;
+    $articulosParaEsteArchivo = array_slice($articulos, $i * $articulosPorPagina, $articulosPorPagina);
+    foreach ($articulosParaEsteArchivo as $index => $articulo) {
+        $row = $startRow + $index;
+        $sheet->setCellValue('D' . $row, $articulo['serial_fabrica']);
+        $sheet->setCellValue('E' . $row, $articulo['descripcion']);
+        $sheet->setCellValue('G' . $row, $articulo['monto_valor']);
+        $sheet->setCellValue('H' . $row, "00.00");
+    }
+
+    $tempFile = tempnam(sys_get_temp_dir(), 'xlsx');
+    $writer = new Xlsx($spreadsheet);
+    $writer->save($tempFile);
+
+    // Agregar el archivo de Excel al archivo ZIP
+    $n = $i + 1;
+    $zip->addFile($tempFile, "operacion_{$n}.xlsx");
 }
 
-// Crear un escritor para guardar el archivo .ods
-$writer = new Xlsx($spreadsheet);
-// Después de la descarga del archivo, establece una cookie para indicar que se debe redirigir
+// Cerrar el archivo ZIP
+$zip->close();
 
-// Opcionalmente, puedes enviar el archivo al navegador para que el usuario lo descargue:
-header('Content-Type: application/vnd.oasis.opendocument.spreadsheet');
-header('Content-Disposition: attachment; filename="operacion.xlsx"');
-$writer->save('php://output');
+// Enviar el archivo ZIP al usuario para descarga
+header('Content-Type: application/zip');
+header('Content-Disposition: attachment; filename="' . basename($zipName) . '"');
+header('Content-Length: ' . filesize($zipName));
+readfile($zipName);
+
+// Eliminar el archivo ZIP temporal
+unlink($zipName);
+
 session_destroy();
 exit;
 ?>
