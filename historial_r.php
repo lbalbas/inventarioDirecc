@@ -26,7 +26,7 @@ echo '
   <h1 class="mt-28 text-6xl font-rubik text-sky-900 font-bold">Historial de Respaldos</h1>
   <div class="grid grid-cols-1 text-sm bg-blue-100 bg-opacity-60 rounded-xl my-4 px-4">
    <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
-      <div class=" col-start-2 col-end-7 text-lg">Fecha del Respaldo</div>
+      <div class="col-start-2 col-end-7 text-lg">Fecha del Respaldo</div>
       <div class="col-start-7 col-end-12 text-lg">Realizado por</div>
    </div>
    '.$filas.'
@@ -40,7 +40,7 @@ function iterarRespaldos($respaldos){
   $respaldos = array_reverse($respaldos);
   for($x = 0; $x < count($respaldos); $x++){
     $a = '
-    <div class="grid grid-cols-12 border-blue-200 font-karla border-solid border-b-2 py-2">
+    <div class="grid grid-cols-12 text-blue-950 last:border-0 border-blue-200 font-karla border-solid border-b-2 py-2">
        <div class="col-start-2 col-end-7">'.$respaldos[$x]["fecha_realizado"].'</div>
         <div class="col-start-7 col-end-12">'.$respaldos[$x]["nombre_usuario"].'</div>
     </div>';
