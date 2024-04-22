@@ -119,76 +119,69 @@ WHERE `articulos`.`id` = '.$urlId;
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Gestión de Artículo</title>
-      <link rel="stylesheet" href="css/estilo.css">
-      <link rel="stylesheet" href="css/bulma.css">
+      <link rel="stylesheet" href="css/output.css">
   </head>
-  <body>
-  
-    <div id="logo" class="columns is-gapless">
-    <div id="logo" class="column is-one-fifth">
-      <figure class="column image is-3by1">
-        <img src="./resources/goblogo.jpg">
-      </figure>
-    </div>
-    <div class="column is-three-fifths"></div>
-    <div id="logo" class="column is-one-fifth">
-      <figure class="column image is-3by1">
-        <img src="./resources/dirlogo.jpg">
-      </figure>
-    </div>
-  </div>
+  <body class="w-11/12 mx-auto">
     '.$header.'
-    <div class="column"></div>
-  
-   <div class="columns is-centered">
-        <form id="box" class="box" action="" method="POST">
-          <div class="control">
-            <label class="label "for="articulo">Descripción - '.$artiModificar['descripcion'].'</label>
-            <input class="input" name="descripcion" type="text">
+     <h1 class="mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Modificar un Artículo</h1>
+
+        <form id="box" class="justify-between mx-auto rounded-xl bg-gray-100 shadow-4xl bg-opacity-70 flex flex-wrap p-10 font-karla text-gray-400" action="" method="POST">
+          <div class="flex flex-col w-72">
+            <label class="font-bold" for="articulo">Descripción - '.$artiModificar['descripcion'].'</label>
+            <input oninput="validateInput(this)" class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="descripcion" type="text">
           </div>
           <br>
-          <div class="control">
-            <label class="label" for="fabricante">Marca - '.$artiModificar['fabricante'].'</label>
-            <input class="input" name="fabricante" type="text">
+          <div class="flex flex-col w-72">
+            <label class="font-bold" for="fabricante">Marca - '.$artiModificar['fabricante'].'</label>
+            <input class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="fabricante" type="text">
           </div>
           <br>
-          <div class="control">
-            <label class="label" for="serial_fabrica">Serial de Fábrica - '.$artiModificar['serial_fabrica'].'</label>
-            <input class="input" name="serial_fabrica" type="text">
+          <div class="flex flex-col w-72">
+            <label class="font-bold" for="serial_fabrica">Serial de Fábrica - '.$artiModificar['serial_fabrica'].'</label>
+            <input oninput="validateInput(this)" class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="serial_fabrica" type="text">
           </div>
           <br>
 
-          <div class="control">
-            <label class="label" for="modelo">Modelo - '.$nombre_modelo.'</label>
-            <input class="input" name="nombre_modelo" type="text">
+          <div class="flex flex-col w-72">
+            <label class="font-bold" for="modelo">Modelo - '.$nombre_modelo.'</label>
+            <input class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="nombre_modelo" type="text">
           </div><br>
 
-          <div class="control">
-            <label class="label" for="nro_identificacion">Nro. de Identificación - '.$n_identificacion.'</label>
-            <input class="input" name="n_identificacion" type="text">
+          <div class="flex flex-col w-72">
+            <label class="font-bold" for="nro_identificacion">Nro. de Identificación - '.$n_identificacion.'</label>
+            <input class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="n_identificacion" type="text">
           </div>
           <br>
-          <div class="control">
-              <label class="label" for="monto_valor">Valor - '.$artiModificar['monto_valor'].'</label>
-                <input class="input" type="text" name="monto_valor" id="monto_valor" oninput="formatDecimalInput(this)">
+          <div class="flex flex-col w-72">
+              <label class="font-bold" for="monto_valor">Valor - '.$artiModificar['monto_valor'].'</label>
+                <input class="w-full bg-blue-50 shadow-inner px-4 py-2"  type="text" name="monto_valor" id="monto_valor" value="'.$artiModificar['monto_valor'].'" oninput="formatDecimalInput(this)">
           </div>
                               <br>
-          <div class="buttonContainer">
-            <input name="accion" class="button is-link" type="submit" value="Guardar">  
-            <input name="accion" id="is-right" class="button  is-danger" type="submit" value="Eliminar">
+          <div class="w-full my-4 flex justify-end">
+            <input name="accion"  class="justify-self-end place-self-end self-end bg-blue-500 cursor-pointer text-white hover:text-blue-950 rounded-xl hover:bg-white px-4 py-2" type="submit" value="Guardar">  
           </div>
       </form>
     </div>
     '.$scriptRespaldo.'
     <script language="javascript">
-      function formatDecimalInput(input) {
-            let value = input.value.replace(/,/g, ""); // Elimina las comas
-            value = parseInt(value, 10); // Convierte el valor a un número entero
-            if (!isNaN(value)) {
-                value = value / 100; // Divide por 100 para mover la coma dos posiciones a la izquierda
-                input.value = value.toFixed(2).replace(".", ","); // Formatea el número con dos decimales y cambia el punto por una coma
-            }
-        }
+     function formatDecimalInput(input) {
+    // Use a regular expression to replace any non-numeric characters with an empty string
+    let value = input.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter que no sea un número
+    value = parseInt(value, 10); // Convierte el valor a un número entero
+    if (!isNaN(value)) {
+        value = value / 100; // Divide por 100 para mover la coma dos posiciones a la izquierda
+        input.value = value.toFixed(2).replace(".", ","); // Formatea el número con dos decimales y cambia el punto por una coma
+    }
+}
+        function validateInput(input) {
+    // Regular expression that allows only numbers and hyphens
+    var regex = /^[0-9-]+$/;
+    // Check if the input matches the regular expression
+    if (!regex.test(input.value)) {
+        // If not, clear the input field
+        input.value = input.value.replace(/[^0-9-]/g, "");
+    }
+}
     </script>
   </body>
   </html>';

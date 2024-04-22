@@ -67,49 +67,43 @@ echo '<html lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Artículos</title>
-    <link rel="stylesheet" href="css/estilo.css">
-    <link rel="stylesheet" href="css/bulma.css">
+    <link rel="stylesheet" href="css/output.css">
 </head>
-<body>
+<body class="w-11/12 mx-auto">
   '.$header.'
-
-<div class="columns is-fullwidth is-centered">
- <form id="box" class="box" action="" method="POST">
-    <div class="control">
-      <label class="label" for="nro_id">Nro. de Identificación</label>
-      <input required class="input" name="nro_id" type="text" id="nro_id">
-      <input type="checkbox" id="sinNumeroAsignado" onclick="toggleInput(\'nro_id\', this)">
-      <label for="sinNumeroAsignado">Sin Número Asignado</label>
+ <h1 class="mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Registrar Artículo</h1>
+ <form class="justify-between mx-auto rounded-xl bg-gray-100 shadow-4xl bg-opacity-70 flex flex-wrap p-10 font-karla text-gray-400" action="" method="POST">
+    <div class="flex flex-col w-72">
+      <label class="font-bold" for="nro_id">Nro. de Identificación</label>
+      <input required oninput="validateInput(this)" class="w-full bg-blue-50 shadow-inner px-4 py-2" name="nro_id" type="text" id="nro_id">
+      
+      <label class="flex items-center gap-2" for="sinNumeroAsignado"><input type="checkbox" id="sinNumeroAsignado" onclick="toggleInput(\'nro_id\', this)">Sin Número Asignado</label>
     </div>
-    <br>
-    <div class="control">
-      <label class="label" for="serial">Serial de Fabrica</label>
-      <input required class="input" name="serial" type="text">
+    <div class="flex flex-col w-72">
+      <label class="font-bold" for="serial">Serial de Fabrica</label>
+      <input required oninput="validateInput(this)" class="w-full bg-blue-50 shadow-inner px-4 py-2" name="serial" type="text">
     </div>
-    <div class="control">
-      <label class="label" for="descripcion">Descripción</label>
-      <input required class="input" name="descripcion" type="text">
+    <div class="flex flex-col w-72">
+      <label class="font-bold" for="descripcion">Descripción</label>
+      <input required class="w-full bg-blue-50 shadow-inner px-4 py-2" name="descripcion" type="text">
     </div>
-    <br>
-    <div class="control">
-      <label class="label" for="marca">Fabricante</label>
-      <input required class="input" name="fabricante" type="text">
+    <div class="flex flex-col w-72">
+      <label class="font-bold" for="marca">Marca</label>
+      <input required class="w-full bg-blue-50 shadow-inner px-4 py-2" name="fabricante" type="text">
     </div>
-    <br>
-    <div class="control">
-      <label class="label" for="modelo">Modelo</label>
-      <input required class="input" name="modelo" type="text" id="modelo">
-      <input type="checkbox" id="modeloNoEspecificado" onclick="toggleInput(\'modelo\', this)">
-      <label for="modeloNoEspecificado">Modelo no especificado</label>
+    <div class="flex flex-col w-72">
+      <label class="font-bold" for="modelo">Modelo</label>
+      <input required class="w-full bg-blue-50 shadow-inner px-4 py-2" name="modelo" type="text" id="modelo">
+      <label class="flex items-center gap-2" for="modeloNoEspecificado"><input type="checkbox" id="modeloNoEspecificado" onclick="toggleInput(\'modelo\', this)">Modelo no especificado</label>
     </div>
-    <br>
-    <div class="control">
-      <label class="label" for="monto">Valor</label>
-      <input required class="input" name="monto" type="text">
+    <div class="flex flex-col w-72">
+      <label class="font-bold" for="monto">Valor</label>
+      <input type oninput="formatDecimalInput(this)" required class="w-full bg-blue-50 shadow-inner px-4 py-2" name="monto" type="text">
     </div>
-    <input class="button" type="submit">
+    <div class="w-full my-4 flex justify-end">
+    <input class="justify-self-end place-self-end self-end bg-blue-500 cursor-pointer text-white hover:text-blue-950 rounded-xl hover:bg-white px-4 py-2" value="Registrar" type="submit">
+    </div>
  </form>
-</div>
 
 <script>
  function toggleInput(inputId, checkbox) {
@@ -117,11 +111,29 @@ echo '<html lang="en">
     if (checkbox.checked) {
       input.removeAttribute("required");
       input.disabled = true;
+      input.value = ""
     } else {
       input.setAttribute("required", "");
       input.disabled = false;
     }
  }
+  function formatDecimalInput(input) {
+            let value = input.value.replace(/,/g, ""); // Elimina las comas
+            value = parseInt(value, 10); // Convierte el valor a un número entero
+            if (!isNaN(value)) {
+                value = value / 100; // Divide por 100 para mover la coma dos posiciones a la izquierda
+                input.value = value.toFixed(2).replace(".", ","); // Formatea el número con dos decimales y cambia el punto por una coma
+            }
+        }
+  function validateInput(input) {
+    // Regular expression that allows only numbers and hyphens
+    var regex = /^[0-9-]+$/;
+    // Check if the input matches the regular expression
+    if (!regex.test(input.value)) {
+        // If not, clear the input field
+        input.value = input.value.replace(/[^0-9-]/g, "");
+    }
+}
 </script>
 '.$scriptRespaldo.'
 </body>

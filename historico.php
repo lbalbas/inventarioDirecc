@@ -17,63 +17,49 @@ echo '
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Histórico de Operaciones</title>
-    <link rel="stylesheet" href="css/bulma.css">
-    <link rel="stylesheet" href="css/estilo.css"></head>
+    <link rel="stylesheet" href="css/output.css"></head>
 <body>
   '.$header.'
-  <div class="column is-fullwidth"></div>
-  <div id="columns" class="columns is-mobile is-centered">
-      <div class="column is-hidden-touch"></div>
-      <div class="column is-three-quarters-mobile is-5 control">
-        <input placeholder="Filtrar Histórico" id="filtroInventario" type="text" class="input" onkeyup="filtrar()">
-      </div>
-      <div class="column is-one-quarters-mobile is-3 control">
-        <div class="select">
-          <select name="filtroCampos" id="selectFiltro">
-        <option value="0">Operación</option>
-        <option value="1">N° de Identificación</option>
+  <h1 class="ml-12 mt-28 text-6xl font-rubik text-sky-900 font-bold">Historial de Operaciones</h1>
+
+  <div class="w-full flex justify-center py-10">
+    <input placeholder="Filtrar Histórico" id="filtroInventario" type="text" class="bg-white shadow-md w-72 border-gray-300 border-solid rounded-l-xl border-2 border-r-0 px-6 py-3" onkeyup="filtrar()">
+    <select class="bg-white shadow-md rounded-r-xl border-gray-300 border-2 px-3 py-3" name="filtroCampos" id="selectFiltro">
+        <option value="1">Operación</option>
         <option value="2">Fecha</option>
         <option value="3">Destino</option>
       </select>
-    </div>
-      </div>
-      <div class="column is-hidden-touch"></div>
  </div>
- <table id="tablaHistorial" class="table is-fullwidth">
-            <thead>
-                <tr>
-                    <th>Tipo de Operación</th>
-                    <th>N° de Identificación</th>
-                    <th>Fecha de Operación</th>
-                    <th>Destino</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                '.$filas.'
-            </tbody>
-  </table>
+ <div class="grid grid-cols-1 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
+ <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
+    <div class="col-start-2 col-end-4 text-lg">Operación</div>
+    <div class="col-start-4 col-end-7 text-lg">Fecha Realizada</div>
+    <div class="col-start-8 col-end-11 text-lg">Destino</div>
+    <div class="col-start-11 col-start-12 text-lg"></div>
+ </div>
+ '.$filas.'
+</div>
   <script>
-  function filtrar() {
-    var input, filtro, tabla, tr, td, i, txtValor, filtroAtrib;
+ function filtrar() {
+    var input, filtro, gridContainer, gridItems, i, txtValue, filtroAtrib;
     input = document.getElementById("filtroInventario");
     filtro = input.value.toUpperCase();
-    tabla = document.getElementById("tablaHistorial");
-    tr = tabla.getElementsByTagName("tr");
+    gridContainer = document.querySelector(\'.grid.grid-cols-1\'); // Adjust the selector as needed
+    gridItems = gridContainer.querySelectorAll(\'.grid-cols-12\'); // Adjust the selector to target grid items
     filtroAtrib = document.getElementById("selectFiltro");
     
-    for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[filtroAtrib.value];
-      if (td) {
-        txtValue = td.textContent || td.innerText;
-        if (txtValue.toUpperCase().indexOf(filtro) > -1) {
-          tr[i].style.display = "";
-        } else {
-          tr[i].style.display = "none";
+    for (i = 1; i < gridItems.length; i++) {
+        var targetColumn = gridItems[i].querySelectorAll(\'.col-span-1, .col-start-2, .col-end-3, .col-start-4, .col-end-7, .col-start-7, .col-end-9, .col-start-9, .col-end-10, .col-start-10, .col-end-12\')[filtroAtrib.value - 1]; // Adjust the index based on your column selection
+        if (targetColumn) {
+            txtValue = targetColumn.textContent || targetColumn.innerText;
+            if (txtValue.toUpperCase().indexOf(filtro) > -1) {
+                gridItems[i].style.display = "";
+            } else {
+                gridItems[i].style.display = "none";
+            }
         }
-      }
     }
-  }
+}
   </script>
   '.$scriptRespaldo.'
 </body>
@@ -83,12 +69,17 @@ function iterarOperaciones($operaciones){
   $temp = "";
   $operaciones = array_reverse($operaciones);
   for($x = 0; $x < count($operaciones); $x++){
-    $a = '<tr><td>'.$operaciones[$x]["tipo_operacion"].'
-        </td><td>'.$operaciones[$x]["serial_fabrica"].'
-        </td><td>'.$operaciones[$x]["fecha_operacion"].'
-        </td><td>'.$operaciones[$x]["nombre_division"].'
-        </td>
-        <td><a href="bmu_2.php?operacion=' . $operaciones[$x]['id_operacion'] . '"><img title="Generar Excel de esta operación." class="excel-icon nav-icon" src="./resources/documents-outline.svg"></a></td></tr>';
+    $a = '
+           <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0 group">
+    <div class="flex items-center justify-center col-start-1 col-end-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <a href="bmu_2.php?operacion=' . $operaciones[$x]['id_operacion'] . '">
+            <img title="Generar Excel de esta operación." class="w-6" src="./resources/documents-outline.svg">
+        </a>
+    </div>
+    <div class="flex items-center col-start-2 col-end-4">'.$operaciones[$x]["tipo_operacion"].'</div>
+    <div class="flex items-center col-start-4 col-end-7">'.$operaciones[$x]["fecha_operacion"].'</div>
+    <div class="flex items-center col-start-8 col-end-12">'.$operaciones[$x]["nombre_division"].'</div>
+</div>';
     $temp .= $a;
   }
   return $temp;

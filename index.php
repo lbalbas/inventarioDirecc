@@ -60,8 +60,8 @@ WHERE `articulos`.`esta_retirado` = 0";
 	<h1 class="ml-12 mt-28 text-6xl font-rubik text-sky-900 font-bold">Inventario General</h1>
 
 	<div class="w-full flex justify-center py-10">
-			<input placeholder="Filtrar Inventario" id="filtroInventario" type="text" class="bg-gray-100 shadow-md border-gray-300 border-solid border-2 border-r-0 px-6 py-3" onkeyup="filtrar()">
-			<select class="bg-gray-100 shadow-md border-gray-300 border-2 py-3" name="filtroCampos" id="selectFiltro">
+			<input placeholder="Filtrar Inventario" id="filtroInventario" type="text" class="bg-white shadow-md w-72 border-gray-300 border-solid rounded-l-xl border-2 border-r-0 px-6 py-3" onkeyup="filtrar()">
+			<select class="bg-white shadow-md rounded-r-xl border-gray-300 border-2 pl-3 py-3" name="filtroCampos" id="selectFiltro">
 				<option value="2">Serial</option>
 				<option value="3">Descripción</option>
 				<option value="4">Marca</option>
@@ -166,16 +166,16 @@ function iterarArticulos($articulos,$conec){
         $deshabilitado = ($enPrestamo) ? 'disabled' : '';
         $asterisco = ($enPrestamo) ? '**' : '';
         $a = '
-        	 <div class="grid grid-cols-12 border-blue-200 font-karla border-solid border-b-2 py-2">
+        	 <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0">
 			    <div class="col-span-1 items-center justify-center flex">
 			          <input type="checkbox" value="'.$articulos[$x]["id"].'" '.$deshabilitado.' onClick="handleCheckboxChange(\''.$articulos[$x]["id"].'\')" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 			          '.$asterisco.'
 			    </div>
-			    <div class="col-start-2 col-end-3">'.$articulos[$x]["serial_fabrica"].'</div>
-			    <div class="col-start-4 col-end-7">'.$articulos[$x]["descripcion"].'</div>
-			    <div class="col-start-7 col-end-9">'.$articulos[$x]["fabricante"].'</div>
-			    <div class="col-start-9 col-end-10">'.$articulos[$x]["monto_valor"].'</div>
-			    <div class="col-start-10 col-end-12">'.$articulos[$x]["nombre_division"].'</div>
+			    <div class="flex items-center col-start-2 col-end-3">'.$articulos[$x]["serial_fabrica"].'</div>
+			    <div class="flex items-center col-start-4 col-end-7">'.$articulos[$x]["descripcion"].'</div>
+			    <div class="flex items-center col-start-7 col-end-9">'.$articulos[$x]["fabricante"].'</div>
+			    <div class="flex items-center col-start-9 col-end-10">'.$articulos[$x]["monto_valor"].'</div>
+			    <div class="flex items-center col-start-10 col-end-12">'.$articulos[$x]["nombre_division"].'</div>
 			 </div>';
         $temp .= $a;
     }

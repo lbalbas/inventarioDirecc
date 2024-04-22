@@ -82,42 +82,35 @@
 	 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	 	<title>Confirmar Operación</title>
         <link rel="stylesheet" href="css/estilo.css">
-        <link rel="stylesheet" href="css/bulma.css">
+        <link rel="stylesheet" href="css/output.css">
 	 </head>
 	 <body>
     '.$header.'
-     <br>
-     <div id="box" class="box is-centered has-text-justified">
-        <div>
-    	    Está a punto de realizar la siguiente operación: <br>
-    	 	<strong>Tipo de Operación:</strong> '.$operacion.' <br>
-    	 	'.confirmarDestino($operacion, $divisionDestino["nombre_division"], $articulos[0]).'
-    	 	<strong>Fecha de Regreso:</strong> '.
-            confirmarFechaRegreso($operacion, $fregreso).' <br>
-         <div class="table-wrapper">
-        <table id="tablaInventario" class="table is-fullwidth is-striped">
-                <thead>
-                    <tr>
-                        <th>Codificación</th>
-                        <th>Descripción</th>
-                        <th>Fabricante</th>
-                        <th>Valor</th>
-                        <th>Ubicación</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    '.$filas.'
-                </tbody>
-        </table>
+     <div class="flex items-start justify-between">
+        <div class="grid grid-cols-1 w-8/12 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
+         <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
+            <div class="col-span-1 text-lg"></div>
+            <div class=" col-start-2 col-end-3 text-lg">Serial</div>
+            <div class="col-start-4 col-end-7 text-lg">Descripción</div>
+            <div class="col-start-7 col-end-9 text-lg">Marca</div>
+            <div class="col-start-9 col-end-10 text-lg">Valor</div>
+         </div>
+         '.$filas.'
         </div>
-        	<form class="has-text-centered" method="post"> 
+        <div class="font-karla text-gray-400 h-screen w-3/12 p-10 bg-gray-100 bg-opacity-80 flex flex-col gap-4 justify-end">
+    	    <p>Está a punto de realizar la siguiente operación con los artículos indicados:</p>
+    	 	<p><strong>Tipo de Operación:</strong> '.$operacion.' </p>
+    	 	'.confirmarDestino($operacion, $divisionDestino["nombre_division"], $articulos[0]).'
+    	 	<p><strong>Fecha de Regreso:</strong> '.
+            confirmarFechaRegreso($operacion, $fregreso).'</p>
+        	<form class="flex flex-col" method="post"> 
                             <label class="checkbox" for="excel"><input type="checkbox" name="excel" value="true"> Descargar BMU-2</label> 
                             <label class="checkbox" for="nota"><input type="checkbox" name="nota" value="true"> Generar Nota de Salida</label> 
-                        <p class="has-text-centered">¿Proceder con la operación?</p> 
-                <input type="submit" name="button1"
+                        <p class="mt-16 text-center font-bold">¿Proceder con la operación?</p> 
+                <input type="submit" class="cursor-pointer my-2 bg-blue-500 hover:bg-white hover:text-blue-950 text-white rounded-xl px-5 py-3" name="button1"
                         value="Sí"/> 
                   
-                <input type="submit" name="button2"
+                <input type="submit" class="hover:bg-rose-400 my-2 cursor-pointer hover:text-white rounded-xl px-5 py-3" name="button2"
                         value="No"/>
                         <br>
 
@@ -138,20 +131,20 @@
     };
     function confirmarDestino($operacion, $destino, $articulo){
         if($operacion !== "Retorno"){
-            return "<strong>Destino:</strong> ".$destino."<br>";
+            return "<p><strong>Destino:</strong> ".$destino."</p>";
         }
     }
     function iterarArticulos($articulos,$conec){
     $temp = "";
 
     for($x =  0; $x < count($articulos); $x++){
-        $a = '<tr>
-            <td>'.$articulos[$x]["serial_fabrica"].'
-            </td><td>'.$articulos[$x]["descripcion"].'
-            </td><td>'.$articulos[$x]["fabricante"].'
-            </td><td>'.$articulos[$x]["monto_valor"].'
-            </td><td>'.$articulos[$x]["nombre_division"].'
-            </td></tr>';
+ $a = '
+             <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0">
+                <div class="flex items-center col-start-2 col-end-3">'.$articulos[$x]["serial_fabrica"].'</div>
+                <div class="flex items-center col-start-4 col-end-7">'.$articulos[$x]["descripcion"].'</div>
+                <div class="flex items-center col-start-7 col-end-9">'.$articulos[$x]["fabricante"].'</div>
+                <div class="flex items-center col-start-9 col-end-10">'.$articulos[$x]["monto_valor"].'</div>
+             </div>';
         $temp .= $a;
     }
     return $temp;

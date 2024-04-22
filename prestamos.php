@@ -21,24 +21,9 @@ echo '
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Préstamos</title>
-    <link rel="stylesheet" href="css/estilo2.css">
-    <link rel="stylesheet" href="css/estilo.css">
-    <link rel="stylesheet" href="css/bulma.css">
+    <link rel="stylesheet" href="css/output.css">
 </head>
-<body>
-<div id="logo" class="columns is-gapless">
-	<div id="logo" class="column is-one-fifth">
-		<figure class="column image is-3by1">
-			<img src="./resources/goblogo.jpg">
-		</figure>
-	</div>
-	<div class="column is-three-fifths"></div>
-	<div id="logo" class="column is-one-fifth">
-		<figure class="column image is-3by1">
-			<img src="./resources/dirlogo.jpg">
-		</figure>
-	</div>
-</div>
+<body class="w-11/12 mx-auto">
 	'.$header.'
 	<div id="selectOperation"box-shadow: 0px 3px 15px 5px rgba(0, 0, 0, 0.4); style="align-items: center !important; top: 100; left: 20; border-radius: 25px; position:fixed; padding: 5px 10px;" class="flex is-hidden has-background-link">
 					<a class="has-text-white icon is-medium" title="Retorno" id="r" href="#">
