@@ -104,19 +104,6 @@ echo '
 	<link rel="stylesheet" href="css/bulma.css">
 </head>
 <body>
-	<div id="logo" class="columns is-gapless">
-	<div id="logo" class="column is-one-fifth">
-		<figure class="column image is-3by1">
-			<img src="./resources/goblogo.jpg">
-		</figure>
-	</div>
-	<div class="column is-three-fifths"></div>
-	<div id="logo" class="column is-one-fifth">
-		<figure class="column image is-3by1">
-			<img src="./resources/dirlogo.jpg">
-		</figure>
-	</div>
-</div>
 	'.$header.'
 	<br>
 	<div id="box" class="box">

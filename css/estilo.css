@@ -2,9 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @font-face {
+    font-family: 'Karla';
+    src: url('./fonts/Karla/Karla-VariableFont_wght.ttf');
+    font-weight: 100 900; /* Define the range of weights available in the font */
+    font-display: swap;
+  } 
+    @font-face {
+    font-family: 'Rubik';
+    src: url('./fonts/Rubik/Rubik-VariableFont_wght.ttf');
+    font-weight: 100 900; /* Define the range of weights available in the font */
+    font-display: swap;
+  } 
+    @font-face {
+    font-family: 'Montserrat';
+    src: url('./fonts/Montserrat/Montserrat-VariableFont_wght.ttf');
+    font-weight: 100 900; /* Define the range of weights available in the font */
+    font-display: swap;
+  }
+}
+
 html,body{
 	width: 100vw;
 	max-width:100%;
+}
+html{
+    background-color: #E7ECFF;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 100 60'%3E%3Cg fill-opacity='0.50'%3E%3Crect fill='%23FFFFFF' width='11' height='11'/%3E%3Crect fill='%23fdfdff' x='10' width='11' height='11'/%3E%3Crect fill='%23fbfbff' y='10' width='11' height='11'/%3E%3Crect fill='%23fafafe' x='20' width='11' height='11'/%3E%3Crect fill='%23f8f8fe' x='10' y='10' width='11' height='11'/%3E%3Crect fill='%23f6f6fe' y='20' width='11' height='11'/%3E%3Crect fill='%23f4f4fe' x='30' width='11' height='11'/%3E%3Crect fill='%23f2f2fd' x='20' y='10' width='11' height='11'/%3E%3Crect fill='%23f0f1fd' x='10' y='20' width='11' height='11'/%3E%3Crect fill='%23eeeffd' y='30' width='11' height='11'/%3E%3Crect fill='%23ededfd' x='40' width='11' height='11'/%3E%3Crect fill='%23ebebfc' x='30' y='10' width='11' height='11'/%3E%3Crect fill='%23e9e9fc' x='20' y='20' width='11' height='11'/%3E%3Crect fill='%23e7e8fc' x='10' y='30' width='11' height='11'/%3E%3Crect fill='%23e5e6fb' y='40' width='11' height='11'/%3E%3Crect fill='%23e3e4fb' x='50' width='11' height='11'/%3E%3Crect fill='%23e1e2fb' x='40' y='10' width='11' height='11'/%3E%3Crect fill='%23e0e1fb' x='30' y='20' width='11' height='11'/%3E%3Crect fill='%23dedffa' x='20' y='30' width='11' height='11'/%3E%3Crect fill='%23dcddfa' x='10' y='40' width='11' height='11'/%3E%3Crect fill='%23dadbfa' y='50' width='11' height='11'/%3E%3Crect fill='%23d8d9fa' x='60' width='11' height='11'/%3E%3Crect fill='%23d6d8f9' x='50' y='10' width='11' height='11'/%3E%3Crect fill='%23d4d6f9' x='40' y='20' width='11' height='11'/%3E%3Crect fill='%23d2d4f9' x='30' y='30' width='11' height='11'/%3E%3Crect fill='%23d0d2f8' x='20' y='40' width='11' height='11'/%3E%3Crect fill='%23cfd1f8' x='10' y='50' width='11' height='11'/%3E%3Crect fill='%23cdcff8' x='70' width='11' height='11'/%3E%3Crect fill='%23cbcdf8' x='60' y='10' width='11' height='11'/%3E%3Crect fill='%23c9cbf7' x='50' y='20' width='11' height='11'/%3E%3Crect fill='%23c7caf7' x='40' y='30' width='11' height='11'/%3E%3Crect fill='%23c5c8f7' x='30' y='40' width='11' height='11'/%3E%3Crect fill='%23c3c6f6' x='20' y='50' width='11' height='11'/%3E%3Crect fill='%23c1c5f6' x='80' width='11' height='11'/%3E%3Crect fill='%23bfc3f6' x='70' y='10' width='11' height='11'/%3E%3Crect fill='%23bdc1f6' x='60' y='20' width='11' height='11'/%3E%3Crect fill='%23bbbff5' x='50' y='30' width='11' height='11'/%3E%3Crect fill='%23b9bef5' x='40' y='40' width='11' height='11'/%3E%3Crect fill='%23b7bcf5' x='30' y='50' width='11' height='11'/%3E%3Crect fill='%23b5baf4' x='90' width='11' height='11'/%3E%3Crect fill='%23b3b9f4' x='80' y='10' width='11' height='11'/%3E%3Crect fill='%23b1b7f4' x='70' y='20' width='11' height='11'/%3E%3Crect fill='%23afb5f3' x='60' y='30' width='11' height='11'/%3E%3Crect fill='%23adb4f3' x='50' y='40' width='11' height='11'/%3E%3Crect fill='%23abb2f3' x='40' y='50' width='11' height='11'/%3E%3Crect fill='%23a9b0f3' x='90' y='10' width='11' height='11'/%3E%3Crect fill='%23a7aef2' x='80' y='20' width='11' height='11'/%3E%3Crect fill='%23a5adf2' x='70' y='30' width='11' height='11'/%3E%3Crect fill='%23a3abf2' x='60' y='40' width='11' height='11'/%3E%3Crect fill='%23a1a9f1' x='50' y='50' width='11' height='11'/%3E%3Crect fill='%239fa8f1' x='90' y='20' width='11' height='11'/%3E%3Crect fill='%239da6f1' x='80' y='30' width='11' height='11'/%3E%3Crect fill='%239aa4f0' x='70' y='40' width='11' height='11'/%3E%3Crect fill='%2398a3f0' x='60' y='50' width='11' height='11'/%3E%3Crect fill='%2396a1f0' x='90' y='30' width='11' height='11'/%3E%3Crect fill='%2394a0ef' x='80' y='40' width='11' height='11'/%3E%3Crect fill='%23929eef' x='70' y='50' width='11' height='11'/%3E%3Crect fill='%238f9cef' x='90' y='40' width='11' height='11'/%3E%3Crect fill='%238d9bee' x='80' y='50' width='11' height='11'/%3E%3Crect fill='%238B99EE' x='90' y='50' width='11' height='11'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+  background-size: cover;
 }
 #tablaInventario{
 	width: 100%;

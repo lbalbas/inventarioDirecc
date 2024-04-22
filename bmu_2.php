@@ -30,16 +30,16 @@ if(isset($_GET['operacion'])){
     $observaciones = $_SESSION['observaciones'];
     $destino = $_SESSION["destino"];
 }
-
+$fecha = date('d-m-Y');
 // Crear un archivo ZIP temporal
 $zip = new ZipArchive();
-$zipName = "operaciones.zip";
+$zipName = "BMU-2 ({$fecha}).zip";
 if ($zip->open($zipName, ZipArchive::CREATE) !== TRUE) {
     exit("No se puede abrir el archivo ZIP <$zipName>\n");
 }
 
-$maxArticulosPorArchivo = 5;
-$articulosPorPagina = 5;
+$maxArticulosPorArchivo = 16;
+$articulosPorPagina = 16;
 $totalArticulos = count($articulos);
 $numeroDeArchivos = ceil($totalArticulos / $articulosPorPagina);
 
@@ -54,7 +54,11 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
     $sheet->setCellValue('G4', "Fecha: " . date('d/m/Y'));
     $sheet->setCellValue('F8', "Destino: " . $destino);
     $sheet->setCellValue('E14', $observaciones);
-
+    if($operacion == "Retiro"){
+        $sheet->setCellValue('C14', "x");
+    }else{
+        $sheet->setCellValue('C13', "x");
+    }
     // Configurar número de página
     $paginaActual = $i + 1;
     $sheet->setCellValue('G5', "Página Nº {$paginaActual}/{$numeroDeArchivos}");
@@ -76,7 +80,7 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
 
     // Agregar el archivo de Excel al archivo ZIP
     $n = $i + 1;
-    $zip->addFile($tempFile, "operacion_{$n}.xlsx");
+    $zip->addFile($tempFile, "BMU-2_({$n} de {$numeroDeArchivos})_{$fecha}.xlsx");
 }
 
 // Cerrar el archivo ZIP

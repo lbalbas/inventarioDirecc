@@ -61,13 +61,13 @@
             echo 'Error: ' . $e->getMessage();
         }
         if($_POST['excel'] == "true"){
-            $_SESSION['destino'] = $divisionDestino["nombre_division"];
-            setcookie('excel', 'true', time() +  5, '/'); // La cookie expira en  5 segundos
-            header('Location: index.php');
-        }else{
-            session_destroy();
-            header('Location: index.php');
+            setcookie('excel', $idOperacion, time() +  5, '/'); // La cookie expira en  5 segundos
         }
+        if($_POST['nota'] == "true"){
+            setcookie('nota', $idOperacion, time() +  5, '/'); // La cookie expira en  5 segundos
+        }
+        session_destroy();
+        header('Location: index.php');
     } 
     if(isset($_POST['button2'])) { 
         session_destroy();
@@ -85,19 +85,6 @@
         <link rel="stylesheet" href="css/bulma.css">
 	 </head>
 	 <body>
-     <div id="logo" class="columns is-gapless">
-        <div id="logo" class="column is-one-fifth">
-            <figure class="column image is-3by1">
-                <img src="./resources/goblogo.jpg">
-            </figure>
-        </div>
-        <div class="column is-three-fifths"></div>
-        <div id="logo" class="column is-one-fifth">
-            <figure class="column image is-3by1">
-                <img src="./resources/dirlogo.jpg">
-            </figure>
-        </div>
-    </div>
     '.$header.'
      <br>
      <div id="box" class="box is-centered has-text-justified">
@@ -124,7 +111,8 @@
         </table>
         </div>
         	<form class="has-text-centered" method="post"> 
-                            <label class="checkbox" for="excel"><input type="checkbox" name="excel" value="true"> Generar registro Excel</label> 
+                            <label class="checkbox" for="excel"><input type="checkbox" name="excel" value="true"> Descargar BMU-2</label> 
+                            <label class="checkbox" for="nota"><input type="checkbox" name="nota" value="true"> Generar Nota de Salida</label> 
                         <p class="has-text-centered">¿Proceder con la operación?</p> 
                 <input type="submit" name="button1"
                         value="Sí"/> 

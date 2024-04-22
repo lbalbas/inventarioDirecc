@@ -37,10 +37,10 @@ try {
     mysqli_query($conec, $queryHistorialOp) or die(mysqli_error($conec));
 
     if(isset($_POST['nro_id'])){
-      mysqli_query($conec, "INSERT INTO nro_identificacion_articulo(id_articulo, n_identificacion) VALUES('".$idArt."','".$_POST['nro_id']."')") or die(mysqli_error($conec))
+      mysqli_query($conec, "INSERT INTO nro_identificacion_articulo(id_articulo, n_identificacion) VALUES('".$idArt."','".$_POST['nro_id']."')") or die(mysqli_error($conec));
     }
      if(isset($_POST['modelo'])){
-      mysqli_query($conec, "INSERT INTO modelo_articulo(id_articulo, nombre_modelo) VALUES('".$idArt."','".$_POST['modelo']."')") or die(mysqli_error($conec))
+      mysqli_query($conec, "INSERT INTO modelo_articulo(id_articulo, nombre_modelo) VALUES('".$idArt."','".$_POST['modelo']."')") or die(mysqli_error($conec));
     }
     // Si todas las consultas se ejecutan con éxito, confirmar la transacción
     mysqli_commit($conec);
@@ -71,21 +71,7 @@ echo '<html lang="en">
     <link rel="stylesheet" href="css/bulma.css">
 </head>
 <body>
-  <div id="logo" class="columns is-gapless">
-    <div id="logo" class="column is-one-fifth">
-      <figure class="column image is-3by1">
-        <img src="./resources/goblogo.jpg">
-      </figure>
-    </div>
-    <div class="column is-three-fifths"></div>
-    <div id="logo" class="column is-one-fifth">
-      <figure class="column image is-3by1">
-        <img src="./resources/dirlogo.jpg">
-      </figure>
-    </div>
-  </div>
   '.$header.'
-  <div class="column"></div>
 
 <div class="columns is-fullwidth is-centered">
  <form id="box" class="box" action="" method="POST">

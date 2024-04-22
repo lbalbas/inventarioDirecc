@@ -20,19 +20,6 @@ echo '
     <link rel="stylesheet" href="css/bulma.css">
     <link rel="stylesheet" href="css/estilo.css"></head>
 <body>
-  <div id="logo" class="columns is-gapless">
-    <div id="logo" class="column is-one-fifth">
-      <figure class="column image is-3by1">
-        <img src="./resources/goblogo.jpg">
-      </figure>
-    </div>
-    <div class="column is-three-fifths"></div>
-    <div id="logo" class="column is-one-fifth">
-      <figure class="column image is-3by1">
-        <img src="./resources/dirlogo.jpg">
-      </figure>
-    </div>
-  </div>
   '.$header.'
   <div class="column is-fullwidth"></div>
   <div id="columns" class="columns is-mobile is-centered">
@@ -101,7 +88,7 @@ function iterarOperaciones($operaciones){
         </td><td>'.$operaciones[$x]["fecha_operacion"].'
         </td><td>'.$operaciones[$x]["nombre_division"].'
         </td>
-        <td><a href="excel.php?operacion=' . $operaciones[$x]['id_operacion'] . '"><img title="Generar Excel de esta operación." class="excel-icon nav-icon" src="./resources/documents-outline.svg"></a></td></tr>';
+        <td><a href="bmu_2.php?operacion=' . $operaciones[$x]['id_operacion'] . '"><img title="Generar Excel de esta operación." class="excel-icon nav-icon" src="./resources/documents-outline.svg"></a></td></tr>';
     $temp .= $a;
   }
   return $temp;

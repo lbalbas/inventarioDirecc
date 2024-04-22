@@ -5,10 +5,18 @@
 	if (isset($_COOKIE['excel'])) {
     // Si la cookie está presente, usa JavaScript para redirigir al usuario
     echo '<script language="javascript">
-            window.open("/excel.php");
+            window.open("/bmu_2.php/?operacion='.$_COOKIE['excel'].'");
         </script>';
     // Asegúrate de limpiar la cookie después de usarla
     setcookie('excel', '', time() -  3600, '/');
+}
+		if (isset($_COOKIE['nota'])) {
+    // Si la cookie está presente, usa JavaScript para redirigir al usuario
+    echo '<script language="javascript">
+            window.open("/nota.php/?operacion='.$_COOKIE['nota'].'");
+        </script>';
+    // Asegúrate de limpiar la cookie después de usarla
+    setcookie('nota', '', time() -  3600, '/');
 }
     $conec = mysqli_connect('localhost', 'root', '','inventario');
 	if(! $conec) {
@@ -34,15 +42,18 @@ WHERE `articulos`.`esta_retirado` = 0";
 	</head>
 	<body>
 	'.$header.'
-		<div id="selectOperation"box-shadow: 0px 3px 15px 5px rgba(0, 0, 0, 0.4); style="align-items: center !important; top: 100; left: 20; border-radius: 25px; position:fixed; padding: 5px 10px;" class="flex is-hidden has-background-link">
-					<a class="has-text-white icon is-medium" title="Traspaso Temporal" id="trsp-t" href="#">
+		<div id="selectOperation"box-shadow: 0px 3px 15px 5px rgba(0, 0, 0, 0.4); style="align-items: center !important; top: 100; left: 20; border-radius: 25px; position:fixed; padding: 5px 10px;" class="bg-blue-600 hidden">
+					<a class="text-white h-10 w-10" title="Traspaso Temporal" id="trsp-t" href="#">
 				  		<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M464 208L352 96 240 208M352 113.13V416M48 304l112 112 112-112M160 398V96"/></svg>
 				  	</a>
-					<a id="trsp-p" class="has-text-white icon is-medium" title="Traspaso Permanente" href="#">
+					<a id="trsp-p" class="text-white h-10 w-10" title="Traspaso Permanente" href="#">
 		<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 249.38L256 170l80 79.38M256 181.03V342"/><path d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/></svg>
 						  	</a>
-						  	<a class="has-text-white icon is-medium" title="Retiro" id="retiro" href="#">
+						  	<a class="text-white h-10 w-10" title="Retiro" id="retiro" href="#">
 						  	<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
+						  	</a>
+				<a id="bmu-1" class="text-white h-10 w-10" title="Generar BMU-1" href="#">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M336,264.13V436c0,24.3-19.05,44-42.95,44H107C83.05,480,64,460.3,64,436V172a44.26,44.26,0,0,1,44-44h94.12a24.55,24.55,0,0,1,17.49,7.36l109.15,111A25.4,25.4,0,0,1,336,264.13Z" style="fill:none;stroke:#ffff;stroke-linejoin:round;stroke-width:32px"/><path d="M200,128V236a28.34,28.34,0,0,0,28,28H336" style="fill:none;stroke:#ffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><path d="M176,128V76a44.26,44.26,0,0,1,44-44h94a24.83,24.83,0,0,1,17.61,7.36l109.15,111A25.09,25.09,0,0,1,448,168V340c0,24.3-19.05,44-42.95,44H344" style="fill:none;stroke:#ffff;stroke-linejoin:round;stroke-width:32px"/><path d="M312,32V140a28.34,28.34,0,0,0,28,28H448" style="fill:none;stroke:#ffff;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
 						  	</a>
 	</div>
 
@@ -59,7 +70,7 @@ WHERE `articulos`.`esta_retirado` = 0";
 		<div class="column is-hidden-touch"></div>
 	</div>
 
-<div class="grid grid-cols-1 text-sm bg-blue-100 font-rubik rounded-xl m-4 px-4">
+<div class="grid grid-cols-1 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
  <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
     <div class="col-span-1 text-lg"></div>
     <div class=" col-start-2 col-end-3 text-lg">Serial</div>
@@ -112,10 +123,12 @@ function filtrar() {
 		function actualizarLinksDeTraspaso(){
 			var linkTraspasoT = document.getElementById("trsp-t")
 			var linkTraspasoP = document.getElementById("trsp-p")
+			var linkBMU = document.getElementById("bmu-1")
 			var linkRetiro = document.getElementById("retiro")
 			linkTraspasoP.href = "/transferencia.php?operacion=p&ids=" + selectedArticles.join(",")
 			linkTraspasoT.href = "/transferencia.php?operacion=t&ids=" + selectedArticles.join(",")
 			linkRetiro.href = "/transferencia.php?operacion=ret&ids=" + selectedArticles.join(",")
+			linkBMU.href = "/bmu_1.php?ids=" + selectedArticles.join(",");
 		}
 
 		var checkboxes = document.querySelectorAll(\'input[type="checkbox"]\');
@@ -128,9 +141,11 @@ function filtrar() {
 		        var selectOperation = document.getElementById("selectOperation");
 
 		        if (isAnyChecked) {
-		            selectOperation.classList.remove(\'is-hidden\');
+		            selectOperation.classList.remove(\'hidden\');
+		            selectOperation.classList.add(\'flex\');
 		        } else {
-		            selectOperation.classList.add(\'is-hidden\');
+		        	selectOperation.classList.remove(\'flex\');
+		            selectOperation.classList.add(\'hidden\');
 		        }
 		    });
 		});
@@ -151,7 +166,7 @@ function iterarArticulos($articulos,$conec){
         $deshabilitado = ($enPrestamo) ? 'disabled' : '';
         $asterisco = ($enPrestamo) ? '**' : '';
         $a = '
-        	 <div class="grid grid-cols-12 border-blue-200 border-solid border-b-2 py-2">
+        	 <div class="grid grid-cols-12 border-blue-200 font-karla border-solid border-b-2 py-2">
 			    <div class="col-span-1 items-center justify-center flex">
 			          <input type="checkbox" value="'.$articulos[$x]["id"].'" '.$deshabilitado.' onClick="handleCheckboxChange(\''.$articulos[$x]["id"].'\')" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 			          '.$asterisco.'
