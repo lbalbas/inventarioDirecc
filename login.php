@@ -36,7 +36,7 @@
 				$usuarioLogin = $usuarioLogin[0];
 				if($usuarioLogin['contrasena'] == $contrasena){
 					setcookie('login', $usuarioLogin['rol'],time()+86400);
-					setcookie('userid', $usuarioLogin['id'],time()+86400)
+					setcookie('userid', $usuarioLogin['id'],time()+86400);
 					header('Location: index.php');
 				}else{
 					echo '<script language="javascript">alert("Contrasena incorrecta, intentelo nuevamente");</script>';

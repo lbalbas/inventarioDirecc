@@ -52,7 +52,7 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
     $sheet->setCellValue('G4', "Fecha: " . date('d/m/Y'));
     $sheet->setCellValue('F8', "Destino: " . $destino);
     $sheet->setCellValue('F9', "Dirección: " . $direccion);
-    $sheet->setCellValue('F8', "Municipio: " . $municipio);
+    $sheet->setCellValue('F10', "Municipio: " . $municipio);
     $sheet->setCellValue('E14', $observaciones);
     if($operacion == "Retiro"){
         $sheet->setCellValue('C14', "x");

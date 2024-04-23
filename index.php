@@ -22,8 +22,8 @@
 	if(! $conec) {
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
-	$query = "SELECT articulos.*, divisiones.nombre_division FROM `articulos`
-LEFT JOIN `divisiones` ON `articulos`.`ubicacion` = `divisiones`.`id`
+	$query = "SELECT articulos.*, divisiones.nombre_division, modelo_articulo.* FROM `articulos`
+LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id LEFT JOIN `divisiones` ON `articulos`.`ubicacion` = `divisiones`.`id`
 WHERE `articulos`.`esta_retirado` = 0";
 
 	$resultado = mysqli_query($conec, $query);
@@ -78,8 +78,8 @@ WHERE `articulos`.`esta_retirado` = 0";
     <div class="col-span-1 text-lg"></div>
     <div class=" col-start-2 col-end-3 text-lg">Serial</div>
     <div class="col-start-4 col-end-7 text-lg">Descripción</div>
-    <div class="col-start-7 col-end-9 text-lg">Marca</div>
-    <div class="col-start-9 col-end-10 text-lg">Valor</div>
+    <div class="col-start-7 col-end-8 text-lg">Marca</div>
+    <div class="col-start-8 col-end-10 text-lg">Modelo</div>
     <div class="col-start-10 col-end-12 text-lg">Ubicación</div>
  </div>
  '.$filas.'
@@ -165,29 +165,31 @@ function filtrar() {
 	</body>
 	</html>';
 
-function iterarArticulos($articulos,$conec){
+function iterarArticulos($articulos, $conec) {
     $temp = "";
 
-    for($x =  0; $x < count($articulos); $x++){
+    for($x = 0; $x < count($articulos); $x++) {
         // Verifica si el artículo está en préstamo o traspaso
         $enPrestamo = estaEnPrestamo($articulos[$x], $conec);
         $claseFueraOficina = ($articulos[$x]["ubicacion"] != 2) ? 'fuera articulo-fuera-oficina' : '';
 
         // Si el artículo está en préstamo o traspaso, deshabilita la casilla de verificación y agrega un asterisco
-		$deshabilitado = ($enPrestamo || $articulos[$x]["ubicacion"] != 2) ? 'disabled' : '';
+        $deshabilitado = ($enPrestamo || $articulos[$x]["ubicacion"] != 2) ? 'disabled' : '';
+        // Corrección aquí: Cambiado $articulo[$x]['nombre_modelo'] a $articulos[$x]['nombre_modelo']
+        $modelo = !empty($articulos[$x]['nombre_modelo']) ? $articulos[$x]['nombre_modelo'] : "Modelo no especificado";
         $asterisco = ($enPrestamo) ? '**' : '';
         $a = '
-        	 <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0 group '.$claseFueraOficina.'">
-			    <div class="col-span-1 gap-2 items-center justify-center flex">
-			    	  <a class="w-4 group-hover:opacity-100 opacity-0 text-blue-950" href="/modificar.php?id='.$articulos[$x]["id"].'"><svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><title>Modificar articulo</title><path d="M262.29 192.31a64 64 0 1057.4 57.4 64.13 64.13 0 00-57.4-57.4zM416.39 256a154.34 154.34 0 01-1.53 20.79l45.21 35.46a10.81 10.81 0 012.45 13.75l-42.77 74a10.81 10.81 0 01-13.14 4.59l-44.9-18.08a16.11 16.11 0 00-15.17 1.75A164.48 164.48 0 01325 400.8a15.94 15.94 0 00-8.82 12.14l-6.73 47.89a11.08 11.08 0 01-10.68 9.17h-85.54a11.11 11.11 0 01-10.69-8.87l-6.72-47.82a16.07 16.07 0 00-9-12.22 155.3 155.3 0 01-21.46-12.57 16 16 0 00-15.11-1.71l-44.89 18.07a10.81 10.81 0 01-13.14-4.58l-42.77-74a10.8 10.8 0 012.45-13.75l38.21-30a16.05 16.05 0 006-14.08c-.36-4.17-.58-8.33-.58-12.5s.21-8.27.58-12.35a16 16 0 00-6.07-13.94l-38.19-30A10.81 10.81 0 0149.48 186l42.77-74a10.81 10.81 0 0113.14-4.59l44.9 18.08a16.11 16.11 0 0015.17-1.75A164.48 164.48 0 01187 111.2a15.94 15.94 0 008.82-12.14l6.73-47.89A11.08 11.08 0 01213.23 42h85.54a11.11 11.11 0 0110.69 8.87l6.72 47.82a16.07 16.07 0 009 12.22 155.3 155.3 0 0121.46 12.57 16 16 0 0015.11 1.71l44.89-18.07a10.81 10.81 0 0113.14 4.58l42.77 74a10.8 10.8 0 01-2.45 13.75l-38.21 30a16.05 16.05 0 00-6.05 14.08c.33 4.14.55 8.3.55 12.47z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg></a>	
-			          <input type="checkbox" value="'.$articulos[$x]["id"].'" '.$deshabilitado.' onClick="handleCheckboxChange(\''.$articulos[$x]["id"].'\')" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-			    </div>
-			    <div class="flex items-center col-start-2 col-end-3">'.$articulos[$x]["serial_fabrica"].'</div>
-			    <div class="flex items-center col-start-4 col-end-7">'.$articulos[$x]["descripcion"].'</div>
-			    <div class="flex items-center col-start-7 col-end-9">'.$articulos[$x]["fabricante"].'</div>
-			    <div class="flex items-center col-start-9 col-end-10">'.$articulos[$x]["monto_valor"].'</div>
-			    <div class="flex items-center col-start-10 col-end-12">'.$articulos[$x]["nombre_division"].'</div>
-			 </div>';
+            <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0 group '.$claseFueraOficina.'">
+                <div class="col-span-1 gap-2 items-center justify-center flex">
+                    <a class="w-4 group-hover:opacity-100 opacity-0 text-blue-950" href="/modificar.php?id='.$articulos[$x]["id"].'"><svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><title>Modificar articulo</title><path d="M262.29 192.31a64 64 0 1057.4 57.4 64.13 64.13 0 00-57.4-57.4zM416.39 256a154.34 154.34 0 01-1.53 20.79l45.21 35.46a10.81 10.81 0 012.45 13.75l-42.77 74a10.81 10.81 0 01-13.14 4.59l-44.9-18.08a16.11 16.11 0 00-15.17 1.75A164.48 164.48 0 01325 400.8a15.94 15.94 0 00-8.82 12.14l-6.73 47.89a11.08 11.08 0 01-10.68 9.17h-85.54a11.11 11.11 0 01-10.69-8.87l-6.72-47.82a16.07 16.07 0 00-9-12.22 155.3 155.3 0 01-21.46-12.57 16 16 0 00-15.11-1.71l-44.89 18.07a10.81 10.81 0 01-13.14-4.58l-42.77-74a10.8 10.8 0 012.45-13.75l38.21-30a16.05 16.05 0 006-14.08c-.36-4.17-.58-8.33-.58-12.5s.21-8.27.58-12.35a16 16 0 00-6.07-13.94l-38.19-30A10.81 10.81 0 0149.48 186l42.77-74a10.81 10.81 0 0113.14-4.59l44.9 18.08a16.11 16.11 0 0015.17-1.75A164.48 164.48 0 01187 111.2a15.94 15.94 0 008.82-12.14l6.73-47.89A11.08 11.08 0 01213.23 42h85.54a11.11 11.11 0 0110.69 8.87l6.72 47.82a16.07 16.07 0 009 12.22 155.3 155.3 0 0121.46 12.57 16 16 0 0015.11 1.71l44.89-18.07a10.81 10.81 0 0113.14 4.58l42.77 74a10.8 10.8 0 01-2.45 13.75l-38.21 30a16.05 16.05 0 00-6.05 14.08c.33 4.14.55 8.3.55 12.47z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg></a>    
+                    <input type="checkbox" value="'.$articulos[$x]["id"].'" '.$deshabilitado.' onClick="handleCheckboxChange(\''.$articulos[$x]["id"].'\')" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                </div>
+                <div class="flex items-center col-start-2 col-end-3">'.$articulos[$x]["serial_fabrica"].'</div>
+                <div class="flex items-center col-start-4 col-end-7">'.$articulos[$x]["descripcion"].'</div>
+                <div class="flex items-center col-start-7 col-end-8">'.$articulos[$x]["fabricante"].'</div>
+                <div class="flex items-center col-start-8 col-end-10">'.$modelo.'</div>
+                <div class="flex items-center col-start-10 col-end-12">'.$articulos[$x]["nombre_division"].'</div>
+            </div>';
         $temp .= $a;
     }
     return $temp;

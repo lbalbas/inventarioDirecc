@@ -618,6 +618,10 @@ video {
   grid-column-start: 4;
 }
 
+.col-start-5 {
+  grid-column-start: 5;
+}
+
 .col-start-7 {
   grid-column-start: 7;
 }
@@ -628,6 +632,10 @@ video {
 
 .col-start-9 {
   grid-column-start: 9;
+}
+
+.col-start-6 {
+  grid-column-start: 6;
 }
 
 .col-end-10 {
@@ -652,6 +660,10 @@ video {
 
 .col-end-4 {
   grid-column-end: 4;
+}
+
+.col-end-5 {
+  grid-column-end: 5;
 }
 
 .col-end-7 {
@@ -711,6 +723,10 @@ video {
   margin-left: 3rem;
 }
 
+.ml-6 {
+  margin-left: 1.5rem;
+}
+
 .mt-12 {
   margin-top: 3rem;
 }
@@ -721,10 +737,6 @@ video {
 
 .mt-28 {
   margin-top: 7rem;
-}
-
-.ml-6 {
-  margin-left: 1.5rem;
 }
 
 .block {

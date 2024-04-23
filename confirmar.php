@@ -71,7 +71,7 @@
     } 
     if(isset($_POST['button2'])) { 
         session_destroy();
-        header('Location: transferencia.php');
+        header('Location: index.php');
     } 
 
  	echo '
@@ -81,7 +81,6 @@
 	 	<meta charset="UTF-8">
 	 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	 	<title>Confirmar Operación</title>
-        <link rel="stylesheet" href="css/estilo.css">
         <link rel="stylesheet" href="css/output.css">
 	 </head>
 	 <body>
@@ -90,10 +89,10 @@
         <div class="grid grid-cols-1 w-8/12 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
          <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
             <div class="col-span-1 text-lg"></div>
-            <div class=" col-start-2 col-end-3 text-lg">Serial</div>
-            <div class="col-start-4 col-end-7 text-lg">Descripción</div>
-            <div class="col-start-7 col-end-9 text-lg">Marca</div>
-            <div class="col-start-9 col-end-10 text-lg">Valor</div>
+            <div class="col-start-2 col-end-3 text-lg">N° Id.</div>
+            <div class="col-start-4 col-end-5 text-lg">Serial</div>
+            <div class="col-start-6 col-end-9 text-lg">Descripción</div>
+            <div class="col-start-10 col-end-12 text-lg">Valor</div>
          </div>
          '.$filas.'
         </div>
@@ -158,14 +157,14 @@
     }
     function iterarArticulos($articulos,$conec){
     $temp = "";
-
+    $n_id = !empty($articulo['n_identificacion']) ? $articulo['n_identificacion'] : "S.C";
     for($x =  0; $x < count($articulos); $x++){
  $a = '
              <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0">
-                <div class="flex items-center col-start-2 col-end-3">'.$articulos[$x]["serial_fabrica"].'</div>
-                <div class="flex items-center col-start-4 col-end-7">'.$articulos[$x]["descripcion"].'</div>
-                <div class="flex items-center col-start-7 col-end-9">'.$articulos[$x]["fabricante"].'</div>
-                <div class="flex items-center col-start-9 col-end-10">'.$articulos[$x]["monto_valor"].'</div>
+             <div class="flex items-center col-start-2 col-end-3">'.$n_id.'</div>
+                <div class="flex items-center col-start-4 col-end-5">'.$articulos[$x]["serial_fabrica"].'</div>
+                <div class="flex items-center col-start-6 col-end-9">'.$articulos[$x]["descripcion"].'</div>
+                <div class="flex items-center col-start-10 col-end-12">'.$articulos[$x]["monto_valor"].'</div>
              </div>';
         $temp .= $a;
     }
