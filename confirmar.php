@@ -35,7 +35,7 @@
                     $queryTraspasoTemp = "INSERT INTO traspasos_temporales(articulo_id, fecha_de_retorno, id_operacion) VALUES('".$articulo['id']."','".$fregreso."','".$idOperacion."')";
                     mysqli_query($conec, $queryTraspasoTemp);
                 } else if ($operacion === "Retorno") {
-                    $queryUbicacion = "UPDATE articulos SET ubicacion = '".$articulo['origen']."' WHERE id = '".$articulo['articulo_id']."'";
+                    $queryUbicacion = "UPDATE articulos SET ubicacion = '2' WHERE id = '".$articulo['articulo_id']."'";
                     $queryOperacion = "DELETE FROM traspasos_temporales WHERE articulo_id = '".$articulo['articulo_id']."'";
                 } else if ($operacion === "Extensión") {
                     $fregreso = $fregreso."  23:59:59";
@@ -104,8 +104,8 @@
     	 	<p><strong>Fecha de Regreso:</strong> '.
             confirmarFechaRegreso($operacion, $fregreso).'</p>
         	<form class="flex flex-col" method="post"> 
-                            <label class="checkbox" for="excel"><input type="checkbox" name="excel" value="true"> Descargar BMU-2</label> 
-                            <label class="checkbox" for="nota"><input type="checkbox" name="nota" value="true"> Generar Nota de Salida</label> 
+                            <label style="display: none;" class="checkbox" for="excel"><input type="checkbox" name="excel" value="true"> Descargar BMU-2</label> 
+                            <label style="display: none;" class="checkbox" for="nota"><input type="checkbox" name="nota" value="true"> Generar Nota de Salida</label> 
                         <p class="mt-16 text-center font-bold">¿Proceder con la operación?</p> 
                 <input type="submit" class="cursor-pointer my-2 bg-blue-500 hover:bg-white hover:text-blue-950 text-white rounded-xl px-5 py-3" name="button1"
                         value="Sí"/> 
@@ -118,6 +118,28 @@
         </div>
     </div>
     '.$scriptRespaldo.'
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var operacion = "'.$operacion.'";
+        var excelCheckbox = document.querySelector(\'label[for="excel"]\');
+        var notaCheckbox = document.querySelector(\'label[for="nota"]\');
+
+        if (operacion === "Traspaso" || operacion === "Traspaso Temporal") {
+            // Mostrar ambas checkboxes
+            excelCheckbox.style.display = "block";
+            notaCheckbox.style.display = "block";
+        } else if (operacion === "Retiro") {
+            // Mostrar solo la checkbox de BMU-2
+            excelCheckbox.style.display = "block";
+            notaCheckbox.style.display = "none";
+        } else {
+            // Ocultar ambas checkboxes
+            excelCheckbox.style.display = "none";
+            notaCheckbox.style.display = "none";
+        }
+    });
+</script>
+
 	 </body>
 	 </html>
  	';

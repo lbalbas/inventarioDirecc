@@ -23,7 +23,7 @@ echo '
 </head>
 <body class="w-11/12 mx-auto">
   '.$header.'
-  <h1 class="mt-28 text-6xl font-rubik text-sky-900 font-bold">Historial de Respaldos</h1>
+  <h1 class="ml-6 mt-28 text-6xl font-rubik text-sky-900 font-bold">Historial de Respaldos</h1>
   <div class="grid grid-cols-1 text-sm bg-blue-100 bg-opacity-60 rounded-xl my-4 px-4">
    <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
       <div class="col-start-2 col-end-7 text-lg">Fecha del Respaldo</div>

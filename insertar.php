@@ -75,30 +75,30 @@ echo '<html lang="en">
  <form class="justify-between mx-auto rounded-xl bg-gray-100 shadow-4xl bg-opacity-70 flex flex-wrap p-10 font-karla text-gray-400" action="" method="POST">
     <div class="flex flex-col w-72">
       <label class="font-bold" for="nro_id">Nro. de Identificación</label>
-      <input required oninput="validateInput(this)" class="w-full bg-blue-50 shadow-inner px-4 py-2" name="nro_id" type="text" id="nro_id">
+      <input required oninput="validateInput(this)" class="w-full bg-gray-50 shadow-inner px-4 py-2" name="nro_id" type="text" id="nro_id">
       
       <label class="flex items-center gap-2" for="sinNumeroAsignado"><input type="checkbox" id="sinNumeroAsignado" onclick="toggleInput(\'nro_id\', this)">Sin Número Asignado</label>
     </div>
     <div class="flex flex-col w-72">
       <label class="font-bold" for="serial">Serial de Fabrica</label>
-      <input required oninput="validateInput(this)" class="w-full bg-blue-50 shadow-inner px-4 py-2" name="serial" type="text">
+      <input required oninput="validateInput(this)" class="w-full bg-gray-50 shadow-inner px-4 py-2" name="serial" type="text">
     </div>
     <div class="flex flex-col w-72">
       <label class="font-bold" for="descripcion">Descripción</label>
-      <input required class="w-full bg-blue-50 shadow-inner px-4 py-2" name="descripcion" type="text">
+      <input required class="w-full bg-gray-50 shadow-inner px-4 py-2" name="descripcion" type="text">
     </div>
     <div class="flex flex-col w-72">
       <label class="font-bold" for="marca">Marca</label>
-      <input required class="w-full bg-blue-50 shadow-inner px-4 py-2" name="fabricante" type="text">
+      <input required class="w-full bg-gray-50 shadow-inner px-4 py-2" name="fabricante" type="text">
     </div>
     <div class="flex flex-col w-72">
       <label class="font-bold" for="modelo">Modelo</label>
-      <input required class="w-full bg-blue-50 shadow-inner px-4 py-2" name="modelo" type="text" id="modelo">
+      <input required class="w-full bg-gray-50 shadow-inner px-4 py-2" name="modelo" type="text" id="modelo">
       <label class="flex items-center gap-2" for="modeloNoEspecificado"><input type="checkbox" id="modeloNoEspecificado" onclick="toggleInput(\'modelo\', this)">Modelo no especificado</label>
     </div>
     <div class="flex flex-col w-72">
       <label class="font-bold" for="monto">Valor</label>
-      <input type oninput="formatDecimalInput(this)" required class="w-full bg-blue-50 shadow-inner px-4 py-2" name="monto" type="text">
+      <input type oninput="formatDecimalInput(this)" required class="w-full bg-gray-50 shadow-inner px-4 py-2" name="monto" value="0,00" type="text">
     </div>
     <div class="w-full my-4 flex justify-end">
     <input class="justify-self-end place-self-end self-end bg-blue-500 cursor-pointer text-white hover:text-blue-950 rounded-xl hover:bg-white px-4 py-2" value="Registrar" type="submit">
@@ -117,14 +117,15 @@ echo '<html lang="en">
       input.disabled = false;
     }
  }
-  function formatDecimalInput(input) {
-            let value = input.value.replace(/,/g, ""); // Elimina las comas
-            value = parseInt(value, 10); // Convierte el valor a un número entero
-            if (!isNaN(value)) {
-                value = value / 100; // Divide por 100 para mover la coma dos posiciones a la izquierda
-                input.value = value.toFixed(2).replace(".", ","); // Formatea el número con dos decimales y cambia el punto por una coma
-            }
-        }
+     function formatDecimalInput(input) {
+    // Use a regular expression to replace any non-numeric characters with an empty string
+    let value = input.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter que no sea un número
+    value = parseInt(value, 10); // Convierte el valor a un número entero
+    if (!isNaN(value)) {
+        value = value / 100; // Divide por 100 para mover la coma dos posiciones a la izquierda
+        input.value = value.toFixed(2).replace(".", ","); // Formatea el número con dos decimales y cambia el punto por una coma
+    }
+}
   function validateInput(input) {
     // Regular expression that allows only numbers and hyphens
     var regex = /^[0-9-]+$/;

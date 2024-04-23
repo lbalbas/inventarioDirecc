@@ -22,7 +22,7 @@ function EXPORT_DATABASE($host,$user,$pass,$name,       $tables=false, $backup_n
 	$backup_name = $backup_name ? $backup_name : 'Respaldo BD___('.date('H-i-s').'_'.date('d-m-Y').').sql';
 	ob_get_clean(); header('Content-Type: application/octet-stream');  header("Content-Transfer-Encoding: Binary");  header('Content-Length: '. (function_exists('mb_strlen') ? mb_strlen($content, '8bit'): strlen($content)) );    header("Content-disposition: attachment; filename=\"".$backup_name."\""); 
 
-	$mysqli->query("INSERT INTO historial_respaldos(realizado_por) VALUES('".$_COOKIE['login']."')");
+	$mysqli->query("INSERT INTO historial_respaldos(realizado_por) VALUES('".$_COOKIE['userid']."')");
 	echo $content;exit;
 }
 

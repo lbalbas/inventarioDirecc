@@ -4,6 +4,7 @@
 	if(! $conec) {
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
+	include "./helpers.php";
 	$getUsuarios = "SELECT * FROM usuarios";
 	$resultado = mysqli_query($conec,$getUsuarios);
 	$usuariosEnRegistro = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
@@ -15,7 +16,7 @@
 		}else if(count($usuariosEnRegistro) == 0){
 			registroInicial();
 		}else if(isset($_GET['registro']) AND isset($_COOKIE['login']) AND $_COOKIE['login'] == "admin"){
-			muestraRegistro();
+			muestraRegistro($header);
 		}else if(isset($_COOKIE['login'])){
 			header('Location: index.php');
 		}else{
@@ -35,6 +36,7 @@
 				$usuarioLogin = $usuarioLogin[0];
 				if($usuarioLogin['contrasena'] == $contrasena){
 					setcookie('login', $usuarioLogin['rol'],time()+86400);
+					setcookie('userid', $usuarioLogin['id'],time()+86400)
 					header('Location: index.php');
 				}else{
 					echo '<script language="javascript">alert("Contrasena incorrecta, intentelo nuevamente");</script>';
@@ -51,12 +53,12 @@
 				$resultadoCheckRegistro = mysqli_fetch_all($queryCheckRegistro, MYSQLI_ASSOC);
 				if(count($resultadoCheckRegistro) > 0){
 					echo '<script language="javascript">alert("Nombre de usuario ingresado ya se encuentra en uso");</script>';
-					muestraRegistro();
+					muestraRegistro($header);
 				}else{
 					$registrarUsuario = "INSERT INTO usuarios(nombre_usuario, contrasena, rol) VALUES('".$nombre_usuario."','".$contrasena."','".$rol."')";
 					mysqli_query($conec,$registrarUsuario);
 					echo '<script language="javascript">alert("Registro existoso");</script>';
-					muestraRegistro();
+					muestraRegistro($header);
 				}
 			}else{
 			      echo '<script language="javascript">
@@ -118,7 +120,7 @@
 						        <input  value="login" name="formEnviada" type="hidden">
 						      <input class="w-full px-6 py-3 cursor-pointer hover:bg-blue-300 hover:text-blue-600 bg-blue-600 text-white" value="Iniciar Sesión" type="submit">
 						    </form>
-						    <a class="text-blue-500 hover:text-blue-300" href="/recuperar.php">¿Olvidó su contraseña?</a>
+						    <a class="text-blue-500 hover:text-blue-300" href="/recuperar.php"></a>
 						</div>
 					  </div>
 					</body>
@@ -127,72 +129,41 @@
 	}
 
 
-	function muestraRegistro(){
+	function muestraRegistro($header){
 		echo'
 				<html lang="en">
 					<head>
 					    <meta charset="UTF-8">
 					    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 					    <title>Registro de Usuario</title>
-					    <link rel="stylesheet" href="css/bulma.css">
+					    <link rel="stylesheet" href="css/output.css">
 					</head>
-					<body>
-					<div id="logo" class="columns is-gapless">
-						<div id="logo" class="column is-one-fifth">
-							<figure class="column image is-3by1">
-								<img src="./resources/goblogo.jpg">
-							</figure>
-						</div>
-						<div class="column is-three-fifths"></div>
-						<div id="logo" class="column is-one-fifth">
-							<figure class="column image is-3by1">
-								<img src="./resources/dirlogo.jpg">
-							</figure>
-						</div>
-					</div>
-					<nav class="navbar is-link">
-				        <div class="navbar-brand">
-					    	<a role="button" class="navbar-burger burger" onclick="document.querySelector(`.navbar-menu`).classList.toggle(`is-active`);" aria-label="menu" aria-expanded="false">
-							  <span aria-hidden="true"></span>
-							  <span aria-hidden="true"></span>
-							  <span aria-hidden="true"></span>
-							</a>
-					  	</div>
-			        <div class="navbar-menu">
-			            <div class="navbar-start">
-			                <a href="index.php" class="navbar-item">Inicio</a>
-			                <a href="insertar.php" class="navbar-item">Registro</a>
-			                <a href="transferencia.php" class="navbar-item">Transferencias</a>
-			                <a href="historico.php" class="navbar-item">Histórico</a>
-			                <a href="traspasos_temporales.php" class="navbar-item">Traspasos Temporales</a>
-			                '.$opcionesUsuario.'
-
-			            </div>
-			        </div></nav>
-					  <div class="column">					  <h1 class="has-text-centered has-text-weight-bold">Registro de Usuario</h1></div>
-
-					 <div class="columns is-fullwidth is-centered">
-					      <form id="box" class="box" action="" method="POST">
-					      <div class="control">
+					<body class="w-11/12 mx-auto font-karla">
+					 '.$header.'
+					 <h1 class="mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Registro de Usuario</h1>
+					      <form id="box" class="flex flex-col gap-6 mt-12 mx-auto w-6/12 bg-gray-100 bg-opacity-80 rounded-xl p-10 font-karla text-gray-400" action="" method="POST">
+					      <div class="flex flex-col gap-1">
 					        <label class="label "for="nombre_usuario">Nombre de Usuario</label>
-					        <input required class="input" name="nombre_usuario" type="text">
+					        <input required class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="nombre_usuario" type="text">
 					      </div>
-					      <br>
-					      <div class="control">
+					      
+					      <div class="flex flex-col gap-1">
 					        <label class="label" for="clave">Contraseña</label>
-					        <input required class="input" name="contrasena" type="password">
+					        <input required class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="contrasena" type="password">
 					      </div>
-					      <br>
-							<div class="select">
+					      
+							<div class="bg-gray-50 py-2 w-36">
 							  <select name="rol">
 							    <option value="admin">Administrador</option>
 							    <option value="usuario">Usuario</option>
 							  </select>
 							</div>
-					      <br>
+					      
 					        <input  value="registro" name="formEnviada" type="hidden">
-					       <br>
-					      <input class="button" type="submit">
+					       
+			<div class="flex justify-end">
+				<input class="bg-blue-500 cursor-pointer text-white hover:text-blue-950 rounded-xl hover:bg-white px-4 py-2" value="Registrar" type="submit">
+			</div>
 					    </form>
 					  </div>
 					  	<script language="javascript">
@@ -233,12 +204,12 @@
 
 					 <div class="columns is-fullwidth is-centered">
 					      <form id="box" class="box" action="" method="POST">
-					      <div class="control">
+					      <div class="flex justify-between w-96 items-center">
 					        <label class="label "for="nombre_usuario">Nombre de Usuario</label>
 					        <input required class="input" name="nombre_usuario" type="text">
 					      </div>
-					      <br>
-					      <div class="control">
+					      
+					      <div class="flex justify-between w-96 items-center">
 					        <label class="label" for="contrasena">Contraseña</label>
 					        <input required class="input" name="contrasena" type="password">
 					      </div>

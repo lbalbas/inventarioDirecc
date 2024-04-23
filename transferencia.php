@@ -12,29 +12,36 @@
 		$resultado = mysqli_query($conec, $query);
 		$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 
+	if (isset($_POST['destinoNoRegistrado']) && $_POST['destinoNoRegistrado'] == 'on') {
+        $nombre_division = $_POST['nombre_division'];
+        $direccion = $_POST['direccion'];
+        $municipio = $_POST['municipio'];
+        $es_destino_retiro = ($_POST['operacion'] == 'Retiro') ? 1 : 0;
+
+        mysqli_query($conec,"INSERT INTO divisiones (nombre_division, direccion, municipio, es_destino_retiro) VALUES ('".$nombre_division."', '".$direccion."', '".$municipio."', '".$es_destino_retiro."')");
+        // Obtener el ID del nuevo destino
+        $id_nuevo_destino = mysqli_insert_id($conec);
+
+        // Inicializar la sesión con el nuevo destino
+        session_start();
+        $_SESSION['destino'] = $id_nuevo_destino;
+    } else {
+        // Inicializar la sesión con el destino existente
+        session_start();
+        $_SESSION['destino'] = $_POST['destino'];
+    }
 		switch ($_POST['operacion']) {
 			case "Retorno":
 				session_start();
 				$_SESSION['articulos'] = $articulos;
-				$_SESSION['destino'] = $_POST['destino'];
 				$_SESSION['observaciones'] = $_POST['observaciones'];
 				$_SESSION['fregreso'] = "Ninguna";
-				$_SESSION['operacion'] = $_POST['operacion'];
-				header('Location: confirmar.php');
-				break;
-			case "Extensión":
-				session_start();
-				$_SESSION['articulos'] = $articulos;
-				$_SESSION['destino'] = "";
-				$_SESSION['observaciones'] = $_POST['observaciones'];
-				$_SESSION['fregreso'] = $_POST['fregreso'];
 				$_SESSION['operacion'] = $_POST['operacion'];
 				header('Location: confirmar.php');
 				break;
 			case 'Traspaso Temporal':
 				session_start();
 				$_SESSION['articulos'] = $articulos;
-				$_SESSION['destino'] = $_POST['destino'];
 				$_SESSION['observaciones'] = $_POST['observaciones'];
 				$_SESSION['fregreso'] = $_POST['fregreso'];
 				$_SESSION['operacion'] = $_POST['operacion'];
@@ -43,7 +50,6 @@
 			case'Traspaso':
 				session_start();
 				$_SESSION['articulos'] = $articulos;
-				$_SESSION['destino'] = $_POST['destino'];
 				$_SESSION['observaciones'] = $_POST['observaciones'];
 				$_SESSION['fregreso'] = "Ninguna";
 				$_SESSION['operacion'] = $_POST['operacion'];
@@ -53,7 +59,7 @@
 				session_start();
 				$_SESSION['articulos'] = $articulos;
 				$_SESSION['operacion'] = "Retiro";
-				$_SESSION['destino'] = $_POST["destino"];
+				$_SESSION['destino'] = "2";
 				$_SESSION['observaciones'] = $_POST['observaciones'];
 				$_SESSION['fregreso'] = "Ninguna";
 				header('Location: confirmar.php');
@@ -72,13 +78,13 @@
 		session_start();
 		$_SESSION['articulos'] = $articulos;
 		$_SESSION['operacion'] = "Retorno";
-		$_SESSION['destino'] = 1;
+		$_SESSION['destino'] = 2;
 		$_SESSION['fregreso'] = "Ninguna";
 		header('Location: confirmar.php');
 	}
 
 
-	$destinos = mysqli_fetch_all(mysqli_query($conec,"SELECT * FROM divisiones WHERE es_destino_retiro = 0"),MYSQLI_ASSOC);
+	$destinos = mysqli_fetch_all(mysqli_query($conec,"SELECT * FROM divisiones WHERE es_destino_retiro = 0 AND id != 2"),MYSQLI_ASSOC);
 
 	$destinoOptions = "";
 
@@ -100,16 +106,13 @@ echo '
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Transferencia de Artículos</title>
-	<link rel="stylesheet" href="css/estilo.css">
-	<link rel="stylesheet" href="css/bulma.css">
+	<link rel="stylesheet" href="css/output.css">
 </head>
-<body>
+<body class="w-11/12 mx-auto">
 	'.$header.'
-	<br>
-	<div id="box" class="box">
-		<form action="" method="POST">
-			<div class="control">
-						<div class="control">
+	<h1 class="mt-28 text-6xl font-rubik text-sky-900 font-bold">Realizar una Operación</h1>
+		<form class="flex flex-col gap-6 mt-12 mx-auto w-6/12 bg-gray-100 bg-opacity-80 rounded-xl p-10 font-karla text-gray-400" action="" method="POST">
+			<div class="flex justify-between w-96 items-center">
 				<label class="radio" for="asignacion">
 				<input required class="radio" id="asignacion" value="Traspaso" name="operacion" type="radio" onclick="mostrarInputFecha()">
 				Traspaso
@@ -123,39 +126,55 @@ echo '
 				Retiro
 				</label>
 			</div>
-			<br>
-			<div class="control">
-				<label class="label" for="observaciones">Observaciones</label>
-				<input required id="observaciones" class="input" name="observaciones" type="text">
+			<div class="flex flex-col gap-1">
+				<label class="font-bold" for="observaciones">Observaciones</label>
+				<input required id="observaciones" class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="observaciones" type="text">
 			</div>
-			<br>
-        <div class="control" id="destinoDestino">
-            <label class="label" for="destino">Destino</label>
-            <select required id="inputDestino" class="input" name="destino">
+        <div class="flex flex-col gap-1" id="destinoDestino">
+            <label class="font-bold" for="destino">Destino</label>
+            <select required id="inputDestino" class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="destino">
                 ' . $destinoOptions . '
             </select>
         </div>
 
-        <div class="control" id="retiroDestino" style="display: none;">
-            <label class="label" for="retiroDestino">Destino de Retiro</label>
-            <select required id="inputRetiroDestino" class="input" name="retiroDestino">
+        <div class="flex flex-col gap-1" id="retiroDestino" style="display: none;">
+            <label class="font-bold w-full" for="retiroDestino">Destino de Retiro</label>
+            <select required id="inputRetiroDestino" class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="retiroDestino">
                 ' . $retiroOptions . '
             </select>
         </div>
 
-			<br>
+		<div class="-mt-2 flex items-center gap-1">
+		<input type="checkbox" id="destinoNoRegistrado" name="destinoNoRegistrado" onclick="toggleDestinoNoRegistrado()">
+    <label for="destinoNoRegistrado">Destino no registrado</label>
+    
+</div>
 
-			<div class="control">
-				<label class="label" for="fregreso">Fecha de Regreso</label>
-				<input required min="'.date("Y-m-d").'" disabled="true" id="inputFecha" class="input" name="fregreso" type="date">
+<div id="nuevoDestino" style="display: none;">
+    <div class="flex flex-col gap-1">
+        <label class="font-bold" for="nombre_division">Nombre de la División</label>
+        <input  id="nombre_division" class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="nombre_division" type="text">
+    </div>
+    <div class="flex flex-col gap-1">
+        <label class="font-bold" for="direccion">Dirección</label>
+        <input  id="direccion" class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="direccion" type="text">
+    </div>
+    <div class="flex flex-col gap-1">
+        <label class="font-bold" for="municipio">Municipio</label>
+        <input  id="municipio" class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="municipio" type="text">
+    </div>
+</div>
+
+			<div class="flex flex-col gap-1">
+				<label class="font-bold" for="fregreso">Fecha de Regreso</label>
+				<input required min="'.date("Y-m-d").'" disabled="true" id="inputFecha" class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="fregreso" type="date">
 			</div>
 
-			<br>
-			<div class="control has-text-right">
-				<input class="button" type="submit">
+		
+			<div class="flex justify-end">
+				<input class="bg-blue-500 cursor-pointer text-white hover:text-blue-950 rounded-xl hover:bg-white px-4 py-2" value="Siguiente" type="submit">
 			</div>
 		</form>
-	</div>
 	<script language="javascript">
 		function mostrarInputFecha(){
 			var radioPrestamo, inputFecha, inputDestino;
@@ -174,6 +193,36 @@ echo '
 
 			mostrarRetiroDestino();
 		}
+
+		function toggleDestinoNoRegistrado() {
+    const checkbox = document.getElementById("destinoNoRegistrado");
+    const nuevoDestinoDiv = document.getElementById("nuevoDestino");
+    const inputDestino = document.getElementById("inputDestino");
+    const inputRetiroDestino = document.getElementById("inputRetiroDestino");
+    // Selecciona los tres inputs dentro de #nuevoDestino
+    const inputsNuevoDestino = nuevoDestinoDiv.querySelectorAll("input");
+
+    if (checkbox.checked) {
+        // Mostrar inputs y ocultar dropdowns
+        nuevoDestinoDiv.style.display = "block";
+        inputDestino.required = false;
+        inputRetiroDestino.required = false;
+        inputDestino.disabled = true;
+        inputRetiroDestino.disabled = true;
+        // Añade el atributo required a los inputs dentro de #nuevoDestino
+        inputsNuevoDestino.forEach(input => input.required = true);
+    } else {
+        // Ocultar inputs y mostrar dropdowns
+        nuevoDestinoDiv.style.display = "none";
+        inputDestino.required = true;
+        inputRetiroDestino.required = true;
+        inputDestino.disabled = false;
+        inputRetiroDestino.disabled = false;
+        // Quita el atributo required de los inputs dentro de #nuevoDestino
+        inputsNuevoDestino.forEach(input => input.required = false);
+    }
+}
+
 		function obtenerVariableQuery(variable)
 		{
 		       var query = window.location.search.substring(1);
@@ -218,11 +267,11 @@ function mostrarRetiroDestino() {
   const inputDestino = document.getElementById("destinoDestino");
   if (retiroRadio) { // Check if retiroRadio exists before accessing checked
     if (retiroRadio.checked) {
-      retiroDestino.style.display = "block";
+      retiroDestino.style.display = "flex";
       inputDestino.style.display = "none";
     } else {
       retiroDestino.style.display = "none";
-      inputDestino.style.display = "block";
+      inputDestino.style.display = "flex";
     }
   }
 }

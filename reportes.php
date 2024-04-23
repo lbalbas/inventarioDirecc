@@ -87,39 +87,26 @@ echo '
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Reportes</title>
-		<link rel="stylesheet" href="css/estilo.css">
-		<link rel="stylesheet" href="css/bulma.css">
+		<link rel="stylesheet" href="css/output.css">
 		<script src="./canvasjs-chart-3.7.43/canvasjs.min.js"></script>
 	</head>
-	<body>
-	<div id="logo" class="columns is-gapless">
-		<div id="logo" class="column is-one-fifth">
-			<figure class="column image is-3by1">
-				<img src="./resources/goblogo.jpg">
-			</figure>
-		</div>
-		<div class="column is-three-fifths"></div>
-		<div id="logo" class="column is-one-fifth">
-			<figure class="column image is-3by1">
-				<img src="./resources/dirlogo.jpg">
-			</figure>
-		</div>
-	</div>
+	<body class="w-11/12 mx-auto">
 	'.$header.'
-	<h1 class="is-size-2 has-text-weight-bold">Reporte de Operaciones</h1>
-        <form id="redirectForm" method="get">
-        <select id="timeFrame" name="lastNDays">
+    <h1 class="mt-28 text-6xl font-rubik text-sky-900 font-bold">Reporte de Operaciones</h1>
+
+        <form class="font-karla w-full flex flex-col gap-2 items-center justify-center my-6" id="redirectForm" method="get">
+        <select class="rounded-xl py-2 px-3" id="timeFrame" name="lastNDays">
             <option value="7">7 dias</option>
             <option value="15">15 dias</option>
             <option value="30">30 dias</option>
             <option value="90">3 meses</option>
         </select>
-        <input type="submit" value="Submit">
+        <input class="bg-blue-500 cursor-pointer text-white hover:text-blue-950 rounded-xl hover:bg-white px-4 py-2" type="submit" value="Generar">
     </form>
-    <p>Total de operaciones en los últimos '.$lastNDays.' días: '.$totalOperaciones.'</p>
-	<div id="operacionesMasFrecuentes" style="height: 370px; width: 80%; margin: 0 auto;"></div>
-    <div id="chartContainerDias" style="height: 370px; width: 80%; margin: 0 auto;"></div>
-    <div id="chartContainerDestinos" style="height: 370px; width: 80%; margin: 0 auto;"></div>
+    <p class="text-center font-karla font-bold text-xl text-blue-950">Total de operaciones en los últimos '.$lastNDays.' días: '.$totalOperaciones.'</p>
+	<div class="mx-auto my-4" id="operacionesMasFrecuentes" style="height: 370px; width: 80%;"></div>
+    <div class="mx-auto my-4" id="chartContainerDias" style="height: 370px; width: 80%;"></div>
+    <div class="mx-auto my-4" id="chartContainerDestinos" style="height: 370px; width: 80%;"></div>
     <script>
                 document.getElementById("redirectForm").addEventListener("submit", function(event) {
             event.preventDefault(); // Prevent the default form submission

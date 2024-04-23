@@ -118,7 +118,7 @@ WHERE `articulos`.`id` = '.$urlId;
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Gestión de Artículo</title>
+      <title>Modificar Artículo</title>
       <link rel="stylesheet" href="css/output.css">
   </head>
   <body class="w-11/12 mx-auto">
@@ -128,33 +128,33 @@ WHERE `articulos`.`id` = '.$urlId;
         <form id="box" class="justify-between mx-auto rounded-xl bg-gray-100 shadow-4xl bg-opacity-70 flex flex-wrap p-10 font-karla text-gray-400" action="" method="POST">
           <div class="flex flex-col w-72">
             <label class="font-bold" for="articulo">Descripción - '.$artiModificar['descripcion'].'</label>
-            <input oninput="validateInput(this)" class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="descripcion" type="text">
+            <input oninput="validateInput(this)" class="w-full bg-gray-50 shadow-inner px-4 py-2"  name="descripcion" type="text">
           </div>
           <br>
           <div class="flex flex-col w-72">
             <label class="font-bold" for="fabricante">Marca - '.$artiModificar['fabricante'].'</label>
-            <input class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="fabricante" type="text">
+            <input class="w-full bg-gray-50 shadow-inner px-4 py-2"  name="fabricante" type="text">
           </div>
           <br>
           <div class="flex flex-col w-72">
             <label class="font-bold" for="serial_fabrica">Serial de Fábrica - '.$artiModificar['serial_fabrica'].'</label>
-            <input oninput="validateInput(this)" class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="serial_fabrica" type="text">
+            <input oninput="validateInput(this)" class="w-full bg-gray-50 shadow-inner px-4 py-2"  name="serial_fabrica" type="text">
           </div>
           <br>
 
           <div class="flex flex-col w-72">
             <label class="font-bold" for="modelo">Modelo - '.$nombre_modelo.'</label>
-            <input class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="nombre_modelo" type="text">
+            <input class="w-full bg-gray-50 shadow-inner px-4 py-2"  name="nombre_modelo" type="text">
           </div><br>
 
           <div class="flex flex-col w-72">
             <label class="font-bold" for="nro_identificacion">Nro. de Identificación - '.$n_identificacion.'</label>
-            <input class="w-full bg-blue-50 shadow-inner px-4 py-2"  name="n_identificacion" type="text">
+            <input class="w-full bg-gray-50 shadow-inner px-4 py-2"  name="n_identificacion" type="text">
           </div>
           <br>
           <div class="flex flex-col w-72">
               <label class="font-bold" for="monto_valor">Valor - '.$artiModificar['monto_valor'].'</label>
-                <input class="w-full bg-blue-50 shadow-inner px-4 py-2"  type="text" name="monto_valor" id="monto_valor" value="'.$artiModificar['monto_valor'].'" oninput="formatDecimalInput(this)">
+                <input class="w-full bg-gray-50 shadow-inner px-4 py-2"  type="text" name="monto_valor" id="monto_valor" value="'.$artiModificar['monto_valor'].'" oninput="formatDecimalInput(this)">
           </div>
                               <br>
           <div class="w-full my-4 flex justify-end">

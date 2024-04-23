@@ -25,47 +25,25 @@ echo '
 </head>
 <body class="w-11/12 mx-auto">
 	'.$header.'
-	<div id="selectOperation"box-shadow: 0px 3px 15px 5px rgba(0, 0, 0, 0.4); style="align-items: center !important; top: 100; left: 20; border-radius: 25px; position:fixed; padding: 5px 10px;" class="flex is-hidden has-background-link">
-					<a class="has-text-white icon is-medium" title="Retorno" id="r" href="#">
+	<h1 class="ml-12 mt-28 text-6xl font-rubik text-sky-900 font-bold">Traspasos Temporales</h1>
+
+	<div id="selectOperation" style="align-items: center !important; border-radius: 25px; position:fixed; padding: 5px 10px;" class="bg-blue-600 shadow-xl hidden">
+					<a class="text-white h-10 w-10" title="Retorno" id="r" href="#">
 				  		<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 262.62L256 342l80-79.38M256 330.97V170"/><path d="M256 64C150 64 64 150 64 256s86 192 192 192 192-86 192-192S362 64 256 64z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/></svg>
 				  	</a>
 	</div>
-  	<div class="column is-fullwidth"></div>
-  	<div id="columns"class="columns is-fullwidth is-mobile is-centered">
-      <div class="column is-hidden-touch"></div>
-      <div class="column is-three-quarters-mobile is-5 control">
-        <input placeholder="Filtrar Préstamos"id="filtroInventario" type="text" class="input" onkeyup="filtrar()">
-      </div>
-      <div class="column is-one-quarters-mobile is-3 control">
-      	<div class="select">
-	        <select name="filtroCampos" id="selectFiltro">
-			  <option value="1">Articulo</option>
-			  <option value="2">Descripción</option>
-			  <option value="3">Marca</option>
-			  <option value="4">Serial</option>
-			  <option value="5">Propiedad</option>
-			  <option value="6">Fecha de Regreso</option>
-			</select>
-		</div>
-      </div>
-      <div class="column is-hidden-touch"></div>
+
+<div class="grid grid-cols-1 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
+ <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
+    <div class="col-span-1 text-lg"></div>
+    <div class=" col-start-2 col-end-3 text-lg">Serial</div>
+    <div class="col-start-4 col-end-7 text-lg">Descripción</div>
+    <div class="col-start-7 col-end-8 text-lg">Marca</div>
+    <div class="col-start-8 col-end-10 text-lg">Fecha de R.</div>
+    <div class="col-start-10 col-end-12 text-lg">Ubicación</div>
  </div>
-    <table id="tablaInventario" class="table">
-            <thead>
-                <tr>
-					<th></th>
-					<th>Codificación</th>
-					<th>Descripción</th>
-					<th>Fabricante</th>
-					<th>Valor</th>
-					<th>Ubicación</th>
-                    <th>Fecha de Regreso</th>
-                </tr>
-            </thead>
-            <tbody>
-                '.$filas.'
-            </tbody>
-    </table>
+ '.$filas.'
+</div>
   <script>
 	function filtrar() {
 	  var input, filtro, tabla, tr, td, i, txtValor, filtroAtrib;
@@ -120,9 +98,11 @@ echo '
 		        var selectOperation = document.getElementById("selectOperation");
 
 		        if (isAnyChecked) {
-		            selectOperation.classList.remove(\'is-hidden\');
+		            selectOperation.classList.remove(\'hidden\');
+		            selectOperation.classList.add(\'flex\');
 		        } else {
-		            selectOperation.classList.add(\'is-hidden\');
+		        	selectOperation.classList.remove(\'flex\');
+		            selectOperation.classList.add(\'hidden\');
 		        }
 		    });
 		});
@@ -134,17 +114,17 @@ echo '
 function iterarPrestamos($prestamos){
 	$temp = "";
 	for($x = 0; $x < count($prestamos); $x++){
-		$a = '<tr>
-            <td>
-                <input type="checkbox" value="'.$prestamos[$x]["articulo_id"].'" onClick="handleCheckboxChange(\''.$prestamos[$x]["articulo_id"].'\')"/>
-            </td>
-			  <td>'.$prestamos[$x]["codigo_unidad"].'
-			  </td><td>'.$prestamos[$x]["descripcion"].'
-			  </td><td>'.$prestamos[$x]["fabricante"].'
-			  </td><td>'.$prestamos[$x]["monto_valor"].'
-			  </td><td>'.$prestamos[$x]["nombre_division"].'
-			  </td><td>'.date("d-m-Y",strtotime($prestamos[$x]["fecha_de_retorno"])).'
-			  </td></tr>';
+		$a = '
+        	 <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0">
+			    <div class="col-span-1 items-center justify-center flex">
+			          <input type="checkbox" value="'.$prestamos[$x]["articulo_id"].'"  onClick="handleCheckboxChange(\''.$prestamos[$x]["articulo_id"].'\')"  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+			    </div>
+			    <div class="flex items-center col-start-2 col-end-3">'.$prestamos[$x]["serial_fabrica"].'</div>
+			    <div class="flex items-center col-start-4 col-end-7">'.$prestamos[$x]["descripcion"].'</div>
+			    <div class="flex items-center col-start-7 col-end-8">'.$prestamos[$x]["fabricante"].'</div>
+			    <div class="flex items-center col-start-8 col-end-10">'.date("d-m-Y",strtotime($prestamos[$x]["fecha_de_retorno"])).'</div>
+			    <div class="flex items-center col-start-10 col-end-12">'.$prestamos[$x]["nombre_division"].'</div>
+			 </div>';
 		$temp .= $a;
 	}
 	return $temp;

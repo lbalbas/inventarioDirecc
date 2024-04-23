@@ -48,7 +48,7 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
     $articulosParaEsteArchivo = array_slice($articulos, $i * $articulosPorPagina, $articulosPorPagina);
     foreach ($articulosParaEsteArchivo as $index => $articulo) {
         $row = $startRow + $index;
-        $sheet->setCellValue('D' . $row, $articulo['serial_fabrica']);
+        $sheet->setCellValue('D' . $row, !empty($articulo['n_identificacion']) ? $articulo['n_identificacion'] : $articulo['serial_fabrica']);
         $sheet->setCellValue('G' . $row, $articulo['descripcion']);
         $sheet->setCellValue('F' . $row, "1");
         $sheet->setCellValue('L' . $row, $articulo['monto_valor']);

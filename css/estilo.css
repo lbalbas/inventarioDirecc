@@ -23,6 +23,14 @@
   }
 }
 
+.articulo-fuera-oficina {
+    display: none;
+}
+#selectOperation {
+  position: fixed;
+  top: 25;
+  right: 100;
+}
 html,body{
 	width: 100vw;
 	max-width:100%;

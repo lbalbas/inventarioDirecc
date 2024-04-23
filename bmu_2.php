@@ -16,19 +16,17 @@ $sheet = $spreadsheet->getActiveSheet();
 
 if(isset($_GET['operacion'])){
   $conec = mysqli_connect('localhost', 'root', '','inventario');
-  $resultadoOperacion = mysqli_query($conec, "SELECT historial_operaciones.*, divisiones.nombre_division from historial_operaciones LEFT JOIN divisiones ON divisiones.id = historial_operaciones.destino WHERE historial_operaciones.id = '".$_GET['operacion']."'");
-  $resultadoArticulos = mysqli_query($conec, "SELECT * from historial_operaciones_articulos LEFT JOIN articulos ON articulos.id = historial_operaciones_articulos.id_articulo WHERE historial_operaciones_articulos.id_operacion = '".$_GET['operacion']."'");
+  $resultadoOperacion = mysqli_query($conec, "SELECT historial_operaciones.*, divisiones.nombre_division, divisiones.direccion, divisiones.municipio from historial_operaciones LEFT JOIN divisiones ON divisiones.id = historial_operaciones.destino WHERE historial_operaciones.id = '".$_GET['operacion']."'");
+  $resultadoArticulos = mysqli_query($conec, "SELECT * from historial_operaciones_articulos LEFT JOIN articulos ON articulos.id = historial_operaciones_articulos.id_articulo LEFT JOIN nro_identificacion_articulo ON nro_identificacion_articulo.id_articulo = articulos.id WHERE historial_operaciones_articulos.id_operacion = '".$_GET['operacion']."'");
   $operacionAssoc = mysqli_fetch_all($resultadoOperacion, MYSQLI_ASSOC)[0];
   $articulos = mysqli_fetch_all($resultadoArticulos, MYSQLI_ASSOC);
   $destino = $operacionAssoc["nombre_division"];
+  $direccion = $operacionAssoc["direccion"];
+  $municipio = $operacionAssoc["municipio"];
   $operacion = $operacionAssoc["tipo_operacion"];
   $observaciones = $operacionAssoc["observaciones"];
 }else{
-    session_start();
-    $articulos = $_SESSION['articulos'];
-    $operacion = $_SESSION['operacion'];
-    $observaciones = $_SESSION['observaciones'];
-    $destino = $_SESSION["destino"];
+    exit;
 }
 $fecha = date('d-m-Y');
 // Crear un archivo ZIP temporal
@@ -53,6 +51,8 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
     $sheet->setCellValue('G2', "Concepto: " . strtoupper($operacion));
     $sheet->setCellValue('G4', "Fecha: " . date('d/m/Y'));
     $sheet->setCellValue('F8', "Destino: " . $destino);
+    $sheet->setCellValue('F9', "Dirección: " . $direccion);
+    $sheet->setCellValue('F8', "Municipio: " . $municipio);
     $sheet->setCellValue('E14', $observaciones);
     if($operacion == "Retiro"){
         $sheet->setCellValue('C14', "x");
@@ -68,7 +68,7 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
     $articulosParaEsteArchivo = array_slice($articulos, $i * $articulosPorPagina, $articulosPorPagina);
     foreach ($articulosParaEsteArchivo as $index => $articulo) {
         $row = $startRow + $index;
-        $sheet->setCellValue('D' . $row, $articulo['serial_fabrica']);
+        $sheet->setCellValue('D' . $row, !empty($articulo['n_identificacion']) ? $articulo['n_identificacion'] : $articulo['serial_fabrica']);
         $sheet->setCellValue('E' . $row, $articulo['descripcion']);
         $sheet->setCellValue('G' . $row, $articulo['monto_valor']);
         $sheet->setCellValue('H' . $row, "00.00");
