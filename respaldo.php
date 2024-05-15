@@ -21,6 +21,8 @@ function EXPORT_DATABASE($host,$user,$pass,$name,       $tables=false, $backup_n
 	$content .= "\r\n\r\n/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;\r\n/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;\r\n/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;";
 	$backup_name = $backup_name ? $backup_name : 'Respaldo BD___('.date('H-i-s').'_'.date('d-m-Y').').sql';
 	ob_get_clean(); header('Content-Type: application/octet-stream');  header("Content-Transfer-Encoding: Binary");  header('Content-Length: '. (function_exists('mb_strlen') ? mb_strlen($content, '8bit'): strlen($content)) );    header("Content-disposition: attachment; filename=\"".$backup_name."\""); 
+
+	$mysqli->query("INSERT INTO historial_respaldos(realizado_por) VALUES('".$_COOKIE['userid']."')");
 	echo $content;exit;
 }
 

@@ -5,11 +5,14 @@
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
     include './alerta.php';
+    include "./helpers.php";
 	session_start();
-	if(isset($_SESSION['articulo'])){
-        $articulo = $_SESSION['articulo'];
-        $serial = $articulo["serial"];
+	if(isset($_SESSION['articulos'])){
+        $articulos = $_SESSION['articulos'];
+        $filas = iterarArticulos($articulos, $conec);
+        $observaciones = isset($_SESSION['observaciones']) ? $_SESSION['observaciones'] : "Ninguna";
         $destino = $_SESSION['destino'];
+        $divisionDestino = mysqli_fetch_all(mysqli_query($conec,'SELECT nombre_division FROM divisiones WHERE id ='.$destino),MYSQLI_ASSOC)[0];
         $fregreso = $_SESSION['fregreso'];
         $operacion = $_SESSION['operacion'];
     }else{
@@ -17,44 +20,58 @@
         header('Location: index.php');
  	}
  	if(isset($_POST['button1'])){
-        $destino = mysqli_real_escape_string($conec,$destino);
-        $articulo['ubicacion'] = str_replace("En préstamo a ", "", $articulo['ubicacion']);
+        // Iniciar la transacción
+        mysqli_begin_transaction($conec);
+        $queryHistorial = "INSERT INTO historial_operaciones(observaciones, tipo_operacion, destino) VALUES('".$observaciones."','".$operacion."','".$destino."')";
+        mysqli_query($conec, $queryHistorial);
+        $idOperacion = mysqli_insert_id($conec);
 
-        $queryHistorial = "INSERT INTO historial_operaciones(tipo_operacion, serial, destino) VALUES('".$operacion."','".$serial."','".$destino."')";
+        try {
+            foreach ($articulos as $articulo) {
+                $queryUbicacion = "UPDATE articulos SET ubicacion = '".$destino."' WHERE id = '".$articulo['id']."'";
+                $queryOperacion = "INSERT INTO historial_operaciones_articulos(id_operacion, id_articulo, origen) VALUES('".$idOperacion."','".$articulo['id']."','".$articulo['ubicacion']."')";
+                if ($operacion === "Traspaso Temporal") {  
+                    $fregreso = $fregreso."  23:59:59";
+                    $queryTraspasoTemp = "INSERT INTO traspasos_temporales(articulo_id, fecha_de_retorno, id_operacion) VALUES('".$articulo['id']."','".$fregreso."','".$idOperacion."')";
+                    mysqli_query($conec, $queryTraspasoTemp);
+                } else if ($operacion === "Retorno") {
+                    $queryUbicacion = "UPDATE articulos SET ubicacion = '2' WHERE id = '".$articulo['articulo_id']."'";
+                    $queryOperacion = "DELETE FROM traspasos_temporales WHERE articulo_id = '".$articulo['articulo_id']."'";
+                } else if ($operacion === "Extensión") {
+                    $fregreso = $fregreso."  23:59:59";
+                    $queryUbicacion = "UPDATE traspasos_temporales SET fecha_de_retorno = '".$fregreso."' WHERE articulo_id = '".$articulo['id']."'";
+                } else if ($operacion === "Retiro") {
+                    $queryRetiro = "UPDATE articulos SET esta_retirado = 1 WHERE id = '".$articulo['id']."'";
+                    mysqli_query($conec, $queryRetiro);
+                }
+                $resultadoOp = mysqli_query($conec, $queryOperacion);
+                $resultadoUb = mysqli_query($conec, $queryUbicacion);
+                if (!$resultadoOp OR !$resultadoUb) {
+                    throw new Exception('Error al realizar la operación en el artículo ' . $articulo['id']);
+                }
+            }
 
- 		if($operacion === "Préstamo"){ 
-            $fregreso = $fregreso." 23:59:59";
-            $queryUbicacion = "UPDATE articulos_en_inventario SET ubicacion = 'En préstamo a ".$destino."' WHERE serial = '".$serial."'";
-            $queryOperacion = "INSERT INTO articulos_en_prestamo(serial, fecha_de_retorno, destino) VALUES('".$serial."','".$fregreso."','".$destino."')";
-        }else if($operacion === "Asignación"){
-            $queryUbicacion = "DELETE FROM articulos_en_inventario WHERE serial = '".$serial."'";
-        }else if($operacion === "Retorno"){
-            $queryUbicacion = "UPDATE articulos_en_inventario SET ubicacion = '".$destino."' WHERE serial = '".$serial."'";
-            $queryOperacion = "DELETE FROM articulos_en_prestamo WHERE serial = '".$serial."'";
-        }else if($operacion === "Extensión"){
-            $fregreso = $fregreso." 23:59:59";
-            $queryUbicacion = "UPDATE articulos_en_prestamo SET fecha_de_retorno = '".$fregreso."' WHERE serial = '".$serial."'";
-            $queryHistorial = "INSERT INTO historial_operaciones(tipo_operacion, serial, destino) VALUES('".$operacion."','".$serial."','".$articulo['ubicacion']."')"; 
-        }
-        mysqli_begin_transaction($conec,MYSQLI_TRANS_START_READ_WRITE);
-        if($queryOperacion){ 
-            mysqli_query($conec,$queryOperacion);
-        }
-        mysqli_query($conec,$queryUbicacion);
-        mysqli_query($conec,$queryHistorial);
-        mysqli_commit($conec);
-        mysqli_close($conec);
+            // Si todas las operaciones se realizaron con éxito, confirmar la transacción
+            mysqli_commit($conec);
+        } catch (Exception $e) {
+            // Si ocurre algún error, revertir la transacción
+            mysqli_rollback($conec);
 
-        if($_POST['pdf'] == "true"){
-            header('Location: pdf.php');
-        }else{
-            session_destroy();
-            header('Location: index.php');
+            // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+            echo 'Error: ' . $e->getMessage();
         }
+        if($_POST['excel'] == "true"){
+            setcookie('excel', $idOperacion, time() +  5, '/'); // La cookie expira en  5 segundos
+        }
+        if($_POST['nota'] == "true"){
+            setcookie('nota', $idOperacion, time() +  5, '/'); // La cookie expira en  5 segundos
+        }
+        session_destroy();
+        header('Location: index.php');
     } 
     if(isset($_POST['button2'])) { 
         session_destroy();
-        header('Location: transferencia.php');
+        header('Location: index.php');
     } 
 
  	echo '
@@ -64,65 +81,35 @@
 	 	<meta charset="UTF-8">
 	 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	 	<title>Confirmar Operación</title>
-        <link rel="stylesheet" href="css/estilo.css">
-        <link rel="stylesheet" href="css/bulma.css">
+        <link rel="stylesheet" href="css/output.css">
 	 </head>
 	 <body>
-     <div id="logo" class="columns is-gapless">
-        <div id="logo" class="column is-one-fifth">
-            <figure class="column image is-3by1">
-                <img src="./resources/goblogo.jpg">
-            </figure>
+    '.$header.'
+     <div class="flex items-start justify-between">
+        <div class="grid grid-cols-1 w-8/12 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
+         <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
+            <div class="col-span-1 text-lg"></div>
+            <div class="col-start-2 col-end-3 text-lg">N° Id.</div>
+            <div class="col-start-4 col-end-5 text-lg">Serial</div>
+            <div class="col-start-6 col-end-9 text-lg">Descripción</div>
+            <div class="col-start-10 col-end-12 text-lg">Valor</div>
+         </div>
+         '.$filas.'
         </div>
-        <div class="column is-three-fifths"></div>
-        <div id="logo" class="column is-one-fifth">
-            <figure class="column image is-3by1">
-                <img src="./resources/dirlogo.jpg">
-            </figure>
-        </div>
-    </div>
-    <nav class="navbar is-link">
-        <div class="navbar-brand">
-                <a role="button" class="navbar-burger burger" onclick="document.querySelector(`.navbar-menu`).classList.toggle(`is-active`);" aria-label="menu" aria-expanded="false">
-                  <span aria-hidden="true"></span>
-                  <span aria-hidden="true"></span>
-                  <span aria-hidden="true"></span>
-                </a>
-        </div>
-        <div class="navbar-menu">
-            <div class="navbar-start">
-                <a href="index.php" class="navbar-item">Inicio</a>
-                <a href="insertar.php" class="navbar-item">Registro</a>
-                <a href="transferencia.php" class="navbar-item">Transferencias</a>
-                <a href="historico.php" class="navbar-item">Histórico</a>
-                <a href="prestamos.php" class="navbar-item">Préstamos</a>
-                '.$opcionesUsuario.'
-
-            </div>
-                    '.$alerta.'
-        </div>
-
-    </nav>
-     <br>
-     <div id="box" class="box is-centered has-text-justified">
-        <div>
-    	    Está a punto de realizar la siguiente operación: <br>
-    	 	<strong>Tipo de Operación:</strong> '.$operacion.' <br>
-    	 	<strong>Articulo:</strong> '.$articulo["articulo"].' <br>
-    	 	<strong>Descripción:</strong> '.$articulo["descripcion"].'<br>
-    	 	<strong>Marca:</strong> '.$articulo["marca"].' <br>
-    	 	<strong>Serial:</strong> '.$articulo["serial"].' <br>
-    	 	'.confirmarDestino($operacion, $destino, $articulo).'
-    	 	<strong>Fecha de Regreso:</strong> '.
-            confirmarFechaRegreso($operacion, $fregreso).' <br>
- 
-        	<form class="has-text-centered" method="post"> 
-                            <label class="checkbox" for="pdf"><input type="checkbox" name="pdf" value="true"> Generar registro PDF</label> 
-                        <p class="has-text-centered">¿Proceder con la operación?</p> 
-                <input type="submit" name="button1"
+        <div class="font-karla text-gray-400 h-screen w-3/12 p-10 bg-gray-100 bg-opacity-80 flex flex-col gap-4 justify-end">
+    	    <p>Está a punto de realizar la siguiente operación con los artículos indicados:</p>
+    	 	<p><strong>Tipo de Operación:</strong> '.$operacion.' </p>
+    	 	'.confirmarDestino($operacion, $divisionDestino["nombre_division"], $articulos[0]).'
+    	 	<p><strong>Fecha de Regreso:</strong> '.
+            confirmarFechaRegreso($operacion, $fregreso).'</p>
+        	<form class="flex flex-col" method="post"> 
+                            <label style="display: none;" class="checkbox" for="excel"><input type="checkbox" name="excel" value="true"> Descargar BMU-2</label> 
+                            <label style="display: none;" class="checkbox" for="nota"><input type="checkbox" name="nota" value="true"> Generar Nota de Salida</label> 
+                        <p class="mt-16 text-center font-bold">¿Proceder con la operación?</p> 
+                <input type="submit" class="cursor-pointer my-2 bg-blue-500 hover:bg-white hover:text-blue-950 text-white rounded-xl px-5 py-3" name="button1"
                         value="Sí"/> 
                   
-                <input type="submit" name="button2"
+                <input type="submit" class="hover:bg-rose-400 my-2 cursor-pointer hover:text-white rounded-xl px-5 py-3" name="button2"
                         value="No"/>
                         <br>
 
@@ -130,23 +117,58 @@
         </div>
     </div>
     '.$scriptRespaldo.'
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var operacion = "'.$operacion.'";
+        var excelCheckbox = document.querySelector(\'label[for="excel"]\');
+        var notaCheckbox = document.querySelector(\'label[for="nota"]\');
+
+        if (operacion === "Traspaso" || operacion === "Traspaso Temporal") {
+            // Mostrar ambas checkboxes
+            excelCheckbox.style.display = "block";
+            notaCheckbox.style.display = "block";
+        } else if (operacion === "Retiro") {
+            // Mostrar solo la checkbox de BMU-2
+            excelCheckbox.style.display = "block";
+            notaCheckbox.style.display = "none";
+        } else {
+            // Ocultar ambas checkboxes
+            excelCheckbox.style.display = "none";
+            notaCheckbox.style.display = "none";
+        }
+    });
+</script>
+
 	 </body>
 	 </html>
  	';
 
     function confirmarFechaRegreso($operacion, $fregreso){
-        if($operacion !== 'Préstamo' AND $operacion !== 'Extensión'){ 
+        if($operacion !== 'Traspaso Temporal' AND $operacion !== 'Extensión'){
             return "Ninguna";
         }else{
             return date_format(date_create($fregreso), "d-m-Y");
         }
     };
     function confirmarDestino($operacion, $destino, $articulo){
-        if($operacion !== "Extensión"){
-            return "<strong>Destino:</strong> ".$destino."<br>";
-        }else{
-            return "<strong>Ubicación:</strong> ".$articulo['ubicacion']."<br>";
+        if($operacion !== "Retorno"){
+            return "<p><strong>Destino:</strong> ".$destino."</p>";
         }
     }
+    function iterarArticulos($articulos,$conec){
+    $temp = "";
+    $n_id = !empty($articulo['n_identificacion']) ? $articulo['n_identificacion'] : "S.C";
+    for($x =  0; $x < count($articulos); $x++){
+ $a = '
+             <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0">
+             <div class="flex items-center col-start-2 col-end-3">'.$n_id.'</div>
+                <div class="flex items-center col-start-4 col-end-5">'.$articulos[$x]["serial_fabrica"].'</div>
+                <div class="flex items-center col-start-6 col-end-9">'.$articulos[$x]["descripcion"].'</div>
+                <div class="flex items-center col-start-10 col-end-12">'.$articulos[$x]["monto_valor"].'</div>
+             </div>';
+        $temp .= $a;
+    }
+    return $temp;
+}
 ?>
 
