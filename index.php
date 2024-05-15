@@ -39,6 +39,8 @@ WHERE `articulos`.`esta_retirado` = 0";
 		<title>Inventario General</title>
 		<link rel="stylesheet" href="css/estilo.css">
 		<link href="./css/output.css" rel="stylesheet">
+		<link href="DataTables/datatables.min.css" rel="stylesheet">
+
 	</head>
 	<body class="w-11/12 mx-auto">
 	'.$header.'
@@ -161,6 +163,8 @@ function filtrar() {
 		});
 
 	</script>
+	 
+<script src="DataTables/datatables.min.js"></script>
 	'.$scriptRespaldo.'
 	</body>
 	</html>';

@@ -21,19 +21,37 @@
                         <a class="nav-item" href="/login.php?cerrarsesion=true"><img class="nav-icon" src="./resources/log-out-outline.svg"></img>Cerrar Sesión</a>
         </div>
       </div>
-      <script language="javascript">
-        function respaldoVentana(){
-            if(window.confirm("¿Desea crear un respaldo de la base de datos?")){
-                window.open("/respaldo.php","_blank");
+<script language="javascript">
+    function respaldoVentana(){
+        if(window.confirm("¿Desea crear un respaldo de la base de datos?")){
+            window.open("/respaldo.php","_blank");
+        }
+    }
+    var menu = document.getElementById("nav-menu");
+    var burger = document.getElementById("burger");
+
+    // Function to show or hide the menu
+    function toggleMenu() {
+        menu.classList.toggle("show");
+    }
+
+    // Event listener for the burger button
+    burger.addEventListener("click", function() {
+        toggleMenu();
+    });
+
+    // Event listener for the ESC key
+    document.addEventListener("keydown", function(event) {
+        // Check if the pressed key is the ESC key
+        if (event.keyCode === 27) {
+            // Check if the menu is currently shown
+            if (menu.classList.contains("show")) {
+                // Close the menu
+                toggleMenu();
             }
         }
-        var menu = document.getElementById("nav-menu");
-        var burger = document.getElementById("burger");
-        function burgerShowMenu() {
-            burger.classList.toggle("show");
-            menu.classList.toggle("show");
-        }
-      </script>
+    });
+</script>
     </nav>';
     ##          <a href="/direcciones.php" class="nav-item"><img class="nav-icon" src="./resources/business-outline.svg"></img>Direcciones</a>
 ?>
