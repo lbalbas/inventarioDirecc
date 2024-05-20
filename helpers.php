@@ -11,6 +11,7 @@
           <a href="/index.php" class="nav-item"><img class="nav-icon" src="./resources/home-outline.svg"></img>Inicio</a>
           <a href="/insertar.php" class="nav-item"><img class="nav-icon" src="./resources/create-outline.svg"></img>Registrar Articulo</a>
           <a href="/prestamos.php" class="nav-item"><img class="nav-icon" src="./resources/swap-vertical-outline.svg"></img>Traspasos Temporales</a>
+              <a href="/direcciones.php" class="nav-item"><img class="nav-icon" src="./resources/business-outline.svg"></img>Direcciones</a>
           <a href="/historico.php" class="nav-item"><img class="nav-icon" src="./resources/documents-outline.svg"></img>Historial de Operaciones</a>
           <a href="/historial_r.php" class="nav-item"><img class="nav-icon" src="./resources/list-circle-sharp.svg"></img>Historial de Respaldos</a>
           <a href="/reportes.php" class="nav-item"><img class="nav-icon" src="./resources/bar-chart-outline.svg"></img>Reportes</a>
@@ -53,5 +54,4 @@
     });
 </script>
     </nav>';
-    ##          <a href="/direcciones.php" class="nav-item"><img class="nav-icon" src="./resources/business-outline.svg"></img>Direcciones</a>
 ?>

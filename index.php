@@ -39,7 +39,7 @@ WHERE `articulos`.`esta_retirado` = 0";
 		<title>Inventario General</title>
 		<link rel="stylesheet" href="css/estilo.css">
 		<link href="./css/output.css" rel="stylesheet">
-		<link href="DataTables/datatables.min.css" rel="stylesheet">
+		<link href="./datatables.min.css" rel="stylesheet">
 
 	</head>
 	<body class="w-11/12 mx-auto">
@@ -75,17 +75,21 @@ WHERE `articulos`.`esta_retirado` = 0";
 		    <input type="checkbox" id="mostrarTodos" class="text-blue-900" onchange="mostrarTodosArticulos(this.checked)"> Mostrar todos los artículos</span>
 	</div>
 
-<div class="grid grid-cols-1 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
- <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
-    <div class="col-span-1 text-lg"></div>
-    <div class=" col-start-2 col-end-3 text-lg">Serial</div>
-    <div class="col-start-4 col-end-7 text-lg">Descripción</div>
-    <div class="col-start-7 col-end-8 text-lg">Marca</div>
-    <div class="col-start-8 col-end-10 text-lg">Modelo</div>
-    <div class="col-start-10 col-end-12 text-lg">Ubicación</div>
- </div>
- '.$filas.'
-</div>
+<table id="inventarioGeneral" class="text-sm display text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
+    <thead>
+        <tr>
+            <th>Serial</th>
+            <th>Descripción</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Ubicación</th>
+        </tr>
+    </thead>
+    <tbody>
+        '.$filas.'
+    </tbody>
+</table>
+
 	<script language="javascript">
 	function mostrarTodosArticulos(mostrarTodos) {
 	    var arts = document.querySelectorAll(".fuera");
@@ -164,12 +168,23 @@ function filtrar() {
 
 	</script>
 	 
-<script src="DataTables/datatables.min.js"></script>
+<script src="./datatables.min.js"></script>
+<script language="javascript">
+$(document).ready( function () {
+    $("#inventarioGeneral").DataTable({
+    	language: {
+    		url: "./resources/lng-es.json",
+    	},
+    	searching: true,
+    	responsive: true,
+    	});
+} );
+</script>
 	'.$scriptRespaldo.'
 	</body>
 	</html>';
 
-function iterarArticulos($articulos, $conec) {
+/*function iterarArticulos($articulos, $conec) {
     $temp = "";
 
     for($x = 0; $x < count($articulos); $x++) {
@@ -197,7 +212,33 @@ function iterarArticulos($articulos, $conec) {
         $temp .= $a;
     }
     return $temp;
+}*/
+
+function iterarArticulos($articulos, $conec) {
+    $rows = ""; // Initialize rows string
+
+    for($x = 0; $x < count($articulos); $x++) {
+        $enPrestamo = estaEnPrestamo($articulos[$x], $conec);
+        $claseFueraOficina = ($articulos[$x]["ubicacion"]!= 2)? 'fuera-articulo-fuera-oficina' : '';
+        $deshabilitado = ($enPrestamo || $articulos[$x]["ubicacion"]!= 2)? 'disabled' : '';
+        $modelo =!empty($articulos[$x]['nombre_modelo'])? $articulos[$x]['nombre_modelo'] : "Modelo no especificado";
+        $asterisco = ($enPrestamo)? '**' : '';
+
+        $row = '<tr>
+                    <td>'.$articulos[$x]["serial_fabrica"].'</td>
+                    <td>'.$articulos[$x]["descripcion"].'</td>
+                    <td>'.$articulos[$x]["fabricante"].'</td>
+                    <td>'.$modelo.'</td>
+                    <td>'.$articulos[$x]["nombre_division"].'</td>
+                </tr>';
+
+        $rows.= $row;
+    }
+
+    return $rows;
 }
+
+
 function estaEnPrestamo($articulo, $conec) {
 	$query = "SELECT * FROM traspasos_temporales WHERE articulo_id = " .$articulo['id'];
 	$exec = mysqli_query($conec, $query);
