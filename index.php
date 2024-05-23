@@ -78,6 +78,7 @@ WHERE `articulos`.`esta_retirado` = 0";
 <table id="inventarioGeneral" class="text-sm display text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
     <thead>
         <tr>
+        	<th></th>
             <th>Serial</th>
             <th>Descripción</th>
             <th>Marca</th>
@@ -86,8 +87,18 @@ WHERE `articulos`.`esta_retirado` = 0";
         </tr>
     </thead>
     <tbody>
-        '.$filas.'
+    '.$filas.'
     </tbody>
+    <tfoot>
+            <tr>
+                <th></th>
+	            <th>Serial</th>
+	            <th>Descripción</th>
+	            <th>Marca</th>
+	            <th>Modelo</th>
+	            <th>Ubicación</th>
+            </tr>
+        </tfoot>
 </table>
 
 	<script language="javascript">
@@ -170,19 +181,71 @@ function filtrar() {
 	 
 <script src="./datatables.min.js"></script>
 <script language="javascript">
-$(document).ready( function () {
-    $("#inventarioGeneral").DataTable({
-    	language: {
-    		url: "./resources/lng-es.json",
-    	},
-    	searching: true,
-    	responsive: true,
-    	});
-} );
+$(document).ready(function () {
+  var table = new DataTable("#inventarioGeneral", {
+    language: {
+      url: "./resources/lng-es.json",
+    },
+    searching: true,
+    responsive: true,
+  });
+  table.on("click", "td.dt-control", function (e) {
+    let tr = e.target.closest("tr");
+    let row = table.row(tr);
+ 
+    if (row.child.isShown()) {
+        // This row is already open - close it
+        row.child.hide();
+    }
+    else {
+        // Open this row
+        console.log(tr);
+       row.child(format(tr.dataset.name, tr.dataset.value)).show();
+
+    }
+});
+});
+function format (name, value) {
+    return "<div>Name: " + name + "<br />Value: " + value + "</div>";
+}
 </script>
 	'.$scriptRespaldo.'
 	</body>
 	</html>';
+
+function iterarArticulos($articulos, $conec) {
+$rows = ""; // Initialize rows string
+
+for ($x = 0; $x < count($articulos); $x++) {
+  $enPrestamo = estaEnPrestamo($articulos[$x], $conec);
+  $claseFueraOficina = ($articulos[$x]["ubicacion"] != 2) ? 'fuera-articulo-fuera-oficina' : '';
+  $deshabilitado = ($enPrestamo || $articulos[$x]["ubicacion"] != 2) ? 'disabled' : '';
+  $modelo = !empty($articulos[$x]['nombre_modelo']) ? $articulos[$x]['nombre_modelo'] : "Modelo no especificado";
+  $asterisco = ($enPrestamo) ? '**' : '';
+
+  $row = '<tr data-name="test1" data-value="10">
+  		<td class="dt-control"></td>
+          <td>' . $articulos[$x]["serial_fabrica"] . '</td>
+          <td>' . $articulos[$x]["descripcion"] . '</td>
+          <td>' . $articulos[$x]["fabricante"] . '</td>
+          <td>' . $modelo . '</td>
+          <td>' . $articulos[$x]["nombre_division"] . '</td>
+        </tr>';
+
+  $rows .= $row;
+}
+
+    return $rows;
+}
+
+
+function estaEnPrestamo($articulo, $conec) {
+	$query = "SELECT * FROM traspasos_temporales WHERE articulo_id = " .$articulo['id'];
+	$exec = mysqli_query($conec, $query);
+	$resultado = mysqli_fetch_all($exec, MYSQLI_ASSOC);
+	return !empty($resultado);
+};
+	mysqli_close($conec);
 
 /*function iterarArticulos($articulos, $conec) {
     $temp = "";
@@ -214,36 +277,5 @@ $(document).ready( function () {
     return $temp;
 }*/
 
-function iterarArticulos($articulos, $conec) {
-    $rows = ""; // Initialize rows string
-
-    for($x = 0; $x < count($articulos); $x++) {
-        $enPrestamo = estaEnPrestamo($articulos[$x], $conec);
-        $claseFueraOficina = ($articulos[$x]["ubicacion"]!= 2)? 'fuera-articulo-fuera-oficina' : '';
-        $deshabilitado = ($enPrestamo || $articulos[$x]["ubicacion"]!= 2)? 'disabled' : '';
-        $modelo =!empty($articulos[$x]['nombre_modelo'])? $articulos[$x]['nombre_modelo'] : "Modelo no especificado";
-        $asterisco = ($enPrestamo)? '**' : '';
-
-        $row = '<tr>
-                    <td>'.$articulos[$x]["serial_fabrica"].'</td>
-                    <td>'.$articulos[$x]["descripcion"].'</td>
-                    <td>'.$articulos[$x]["fabricante"].'</td>
-                    <td>'.$modelo.'</td>
-                    <td>'.$articulos[$x]["nombre_division"].'</td>
-                </tr>';
-
-        $rows.= $row;
-    }
-
-    return $rows;
-}
-
-
-function estaEnPrestamo($articulo, $conec) {
-	$query = "SELECT * FROM traspasos_temporales WHERE articulo_id = " .$articulo['id'];
-	$exec = mysqli_query($conec, $query);
-	$resultado = mysqli_fetch_all($exec, MYSQLI_ASSOC);
-	return !empty($resultado);
-};
-	mysqli_close($conec);
 ?>
+
