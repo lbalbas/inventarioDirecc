@@ -120,7 +120,7 @@
 						        <input  value="login" name="formEnviada" type="hidden">
 						      <input class="w-full px-6 py-3 cursor-pointer hover:bg-blue-300 hover:text-blue-600 bg-blue-600 text-white" value="Iniciar Sesión" type="submit">
 						    </form>
-						    <a class="text-blue-500 hover:text-blue-300" href="/recuperar.php"></a>
+						    <a class="text-blue-500 hover:text-blue-300" href="/recuperar.php">¿Olvidaste tu contraseña?</a>
 						</div>
 					  </div>
 					</body>
