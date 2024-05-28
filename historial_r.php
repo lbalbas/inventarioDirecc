@@ -20,17 +20,44 @@ echo '
     <title>Histórico de Operaciones</title>
     <link rel="stylesheet" href="css/estilo.css">
     <link href="./css/output.css" rel="stylesheet">
+    <link href="./datatables.min.css" rel="stylesheet">
 </head>
 <body class="w-11/12 mx-auto">
   '.$header.'
-  <h1 class="ml-6 mt-28 text-6xl font-rubik text-sky-900 font-bold">Historial de Respaldos</h1>
-  <div class="grid grid-cols-1 text-sm bg-blue-100 bg-opacity-60 rounded-xl my-4 px-4">
-   <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
-      <div class="col-start-2 col-end-7 text-lg">Fecha del Respaldo</div>
-      <div class="col-start-7 col-end-12 text-lg">Realizado por</div>
-   </div>
-   '.$filas.'
-  </div>
+  <h1 class="ml-6 mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Historial de Respaldos</h1>
+<table id="historialRespaldo" class="font-karla display text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
+    <thead>
+        <tr>
+            <th>Fecha del Respaldo</th>
+            <th>Realizado por</th>
+        </tr>
+    </thead>
+    <tbody>
+    '.$filas.'
+    </tbody>
+    <tfoot>
+            <tr>
+            <th>Fecha del Respaldo</th>
+            <th>Realizado por</th>
+            </tr>
+        </tfoot>
+</table>
+  <script src="./datatables.min.js"></script>
+
+<script language="javascript">
+$(document).ready(function () {
+  var table = $("#historialRespaldo").DataTable({
+    language: {
+      url: "./resources/lng-es.json",
+    },
+     "columnDefs": [ {
+"targets": 0,
+"className": "dt-left dt-head-left dt-body-left",
+} ],
+  });
+
+});
+</script>
   '.$scriptRespaldo.'
 </body>
 </html>';
@@ -40,10 +67,10 @@ function iterarRespaldos($respaldos){
   $respaldos = array_reverse($respaldos);
   for($x = 0; $x < count($respaldos); $x++){
     $a = '
-    <div class="grid grid-cols-12 text-blue-950 last:border-0 border-blue-200 font-karla border-solid border-b-2 py-2">
-       <div class="col-start-2 col-end-7">'.$respaldos[$x]["fecha_realizado"].'</div>
-        <div class="col-start-7 col-end-12">'.$respaldos[$x]["nombre_usuario"].'</div>
-    </div>';
+    <tr>
+       <td>'.$respaldos[$x]["fecha_realizado"].'</td>
+        <td>'.$respaldos[$x]["nombre_usuario"].'</td>
+    </tr>';
     $temp .= $a;
   }
   return $temp;

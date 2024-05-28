@@ -82,21 +82,37 @@
 	 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	 	<title>Confirmar Operación</title>
         <link rel="stylesheet" href="css/output.css">
+        <link href="./datatables.min.css" rel="stylesheet">
 	 </head>
 	 <body>
     '.$header.'
      <div class="flex items-start justify-between">
-        <div class="grid grid-cols-1 w-8/12 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
-         <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
-            <div class="col-span-1 text-lg"></div>
-            <div class="col-start-2 col-end-3 text-lg">N° Id.</div>
-            <div class="col-start-4 col-end-5 text-lg">Serial</div>
-            <div class="col-start-6 col-end-9 text-lg">Descripción</div>
-            <div class="col-start-10 col-end-12 text-lg">Valor</div>
-         </div>
-         '.$filas.'
-        </div>
-        <div class="font-karla text-gray-400 h-screen w-3/12 p-10 bg-gray-100 bg-opacity-80 flex flex-col gap-4 justify-end">
+        <div class="w-full  px-2 py-6">
+        <table id="tableConfirm" class="w-8/12 text-sm font-karla display text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Serial</th>
+            <th>Descripción</th>
+            <th>Marca</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+    '.$filas.'
+    </tbody>
+    <tfoot>
+            <tr>
+            <th></th>
+            <th>Serial</th>
+            <th>Descripción</th>
+            <th>Marca</th>
+            <th>Valor</th>
+            </tr>
+        </tfoot>
+</table>
+</div>
+        <div class="font-karla text-gray-400 h-screen w-4/12 p-10 bg-gray-100 bg-opacity-80 flex flex-col gap-4 justify-end">
     	    <p>Está a punto de realizar la siguiente operación con los artículos indicados:</p>
     	 	<p><strong>Tipo de Operación:</strong> '.$operacion.' </p>
     	 	'.confirmarDestino($operacion, $divisionDestino["nombre_division"], $articulos[0]).'
@@ -116,6 +132,49 @@
             </form> 
         </div>
     </div>
+    <script src="./datatables.min.js"></script>
+<script language="javascript">
+$(document).ready(function () {
+
+  var table = $("#tableConfirm").DataTable({
+    language: {
+      url: "./resources/lng-es.json",
+    },
+    paging: false,
+    scrollY: "600px",
+    scrollX: false,
+    scrollCollapse: true,
+    searching: false,
+    "columnDefs": [ {
+        width: "30px",
+"targets": 0,
+"orderable": false
+},{
+    targets: 4,
+    width: "75px"
+    } ],
+  });
+
+  table.on("click", "td.dt-control", function (e) {
+    let tr = e.target.closest("tr");
+    let row = table.row(tr);
+ 
+    if (row.child.isShown()) {
+        // This row is already open - close it
+        row.child.hide();
+    }
+    else {
+        // Open this row
+       row.child(format(tr.dataset.modelo, tr.dataset.nid)).show();
+
+    }
+});
+});
+function format (modelo, nid) {
+    return `<div class="flex flex-col items-start">
+    <div class="py-2 border-b border-solid border-gray-300">Modelo:  ` + modelo +  `</div><div class="py-2">Nro. Id.:  ` + nid +  `</div></div> `;
+}
+</script>
     '.$scriptRespaldo.'
     <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -157,15 +216,18 @@
     }
     function iterarArticulos($articulos,$conec){
     $temp = "";
-    $n_id = !empty($articulo['n_identificacion']) ? $articulo['n_identificacion'] : "S.C";
     for($x =  0; $x < count($articulos); $x++){
+          $n_id = !empty($articulos[$x]['n_identificacion']) ? $articulos[$x]['n_identificacion'] : "S.C";
+            $modelo = !empty($articulos[$x]['nombre_modelo']) ? $articulos[$x]['nombre_modelo'] : "Modelo no especificado";
+
  $a = '
-             <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0">
-             <div class="flex items-center col-start-2 col-end-3">'.$n_id.'</div>
-                <div class="flex items-center col-start-4 col-end-5">'.$articulos[$x]["serial_fabrica"].'</div>
-                <div class="flex items-center col-start-6 col-end-9">'.$articulos[$x]["descripcion"].'</div>
-                <div class="flex items-center col-start-10 col-end-12">'.$articulos[$x]["monto_valor"].'</div>
-             </div>';
+             <tr class="font-karla" data-modelo="'.$modelo.'" data-nid="'.$n_id.'">
+        <td class="dt-control"></td>
+                <td>'.$articulos[$x]["serial_fabrica"].'</td>
+                <td>'.$articulos[$x]["descripcion"].'</td>
+                <td>'.$articulos[$x]["fabricante"].'</td>
+                <td>'.$articulos[$x]["monto_valor"].'</td>
+             </tr>';
         $temp .= $a;
     }
     return $temp;

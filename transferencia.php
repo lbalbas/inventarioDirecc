@@ -8,7 +8,7 @@
 	include "./alerta.php";
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
 		$idArray = $_GET["ids"];
-		$query = "SELECT articulos.*, divisiones.nombre_division FROM articulos LEFT JOIN divisiones ON articulos.ubicacion = divisiones.id WHERE articulos.id IN ({$idArray})";
+		$query = "SELECT articulos.*, divisiones.nombre_division, nro_identificacion_articulo.n_identificacion FROM articulos LEFT JOIN divisiones ON articulos.ubicacion = divisiones.id LEFT JOIN nro_identificacion_articulo ON articulos.id = nro_identificacion_articulo.id_articulo WHERE articulos.id IN ({$idArray})";
 		$resultado = mysqli_query($conec, $query);
 		$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 
@@ -107,6 +107,7 @@ echo '
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Transferencia de Artículos</title>
 	<link rel="stylesheet" href="css/output.css">
+	
 </head>
 <body class="w-11/12 mx-auto">
 	'.$header.'

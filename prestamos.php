@@ -22,10 +22,12 @@ echo '
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Préstamos</title>
     <link rel="stylesheet" href="css/output.css">
+    		<link href="./datatables.min.css" rel="stylesheet">
+
 </head>
 <body class="w-11/12 mx-auto">
 	'.$header.'
-	<h1 class="ml-12 mt-28 text-6xl font-rubik text-sky-900 font-bold">Traspasos Temporales</h1>
+	<h1 class="ml-12 mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Traspasos Temporales</h1>
 
 	<div id="selectOperation" style="align-items: center !important; border-radius: 25px; position:fixed; padding: 5px 10px;" class="bg-blue-600 shadow-xl hidden">
 					<a class="text-white h-10 w-10" title="Retorno" id="r" href="#">
@@ -33,17 +35,31 @@ echo '
 				  	</a>
 	</div>
 
-<div class="grid grid-cols-1 text-sm bg-blue-100 bg-opacity-60 rounded-xl m-4 px-4">
- <div class="grid grid-cols-12 text-blue-900 rounded-xl bg-white shadow-xl py-4 my-5 font-bold tracking-wider font-rubik rounded-lg">
-    <div class="col-span-1 text-lg"></div>
-    <div class=" col-start-2 col-end-3 text-lg">Serial</div>
-    <div class="col-start-4 col-end-7 text-lg">Descripción</div>
-    <div class="col-start-7 col-end-8 text-lg">Marca</div>
-    <div class="col-start-8 col-end-10 text-lg">Fecha de R.</div>
-    <div class="col-start-10 col-end-12 text-lg">Ubicación</div>
- </div>
- '.$filas.'
-</div>
+<table id="prestamos" class="display font-karla text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
+    <thead>
+        <tr>
+	            <th>Serial</th>
+	            <th>Descripción</th>
+	            <th>Marca</th>
+	            <th>F.Regreso</th>
+	            <th>Ubicación</th>
+	            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    '.$filas.'
+    </tbody>
+    <tfoot>
+            <tr>
+	            <th>Serial</th>
+	            <th>Descripción</th>
+	            <th>Marca</th>
+	            <th>F.Regreso</th>
+	            <th>Ubicación</th>
+	            <th></th>
+            </tr>
+        </tfoot>
+</table>
   <script>
 	function filtrar() {
 	  var input, filtro, tabla, tr, td, i, txtValor, filtroAtrib;
@@ -107,6 +123,22 @@ echo '
 		    });
 		});
   </script>
+  	<script src="./datatables.min.js"></script>
+	<script language="javascript">
+		$(document).ready(function () {
+			 var table = $("#prestamos").DataTable({
+			    language: {
+			      url: "./resources/lng-es.json",
+			    },
+			    responsive: true,
+			    "columnDefs": [ {
+					"targets": 5,
+					"orderable": false
+					} ],
+
+		});
+		});
+	</script>
   '.$scriptRespaldo.'
 </body>
 </html>';
@@ -115,16 +147,16 @@ function iterarPrestamos($prestamos){
 	$temp = "";
 	for($x = 0; $x < count($prestamos); $x++){
 		$a = '
-        	 <div class="grid grid-cols-12 text-blue-950 border-blue-300 font-karla border-solid border-b-2 py-2 last:border-0">
-			    <div class="col-span-1 items-center justify-center flex">
-			          <input type="checkbox" value="'.$prestamos[$x]["articulo_id"].'"  onClick="handleCheckboxChange(\''.$prestamos[$x]["articulo_id"].'\')"  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-			    </div>
-			    <div class="flex items-center col-start-2 col-end-3">'.$prestamos[$x]["serial_fabrica"].'</div>
-			    <div class="flex items-center col-start-4 col-end-7">'.$prestamos[$x]["descripcion"].'</div>
-			    <div class="flex items-center col-start-7 col-end-8">'.$prestamos[$x]["fabricante"].'</div>
-			    <div class="flex items-center col-start-8 col-end-10">'.date("d-m-Y",strtotime($prestamos[$x]["fecha_de_retorno"])).'</div>
-			    <div class="flex items-center col-start-10 col-end-12">'.$prestamos[$x]["nombre_division"].'</div>
-			 </div>';
+        	 <tr>
+			    <td>'.$prestamos[$x]["serial_fabrica"].'</td>
+			    <td>'.$prestamos[$x]["descripcion"].'</td>
+			    <td>'.$prestamos[$x]["fabricante"].'</td>
+			    <td>'.date("d-m-Y",strtotime($prestamos[$x]["fecha_de_retorno"])).'</td>
+			    <td>'.$prestamos[$x]["nombre_division"].'</td>
+			    			    <td class="items-center justify-center flex">
+			          <input type="checkbox" value="'.$prestamos[$x]["articulo_id"].'"  onClick="handleCheckboxChange(\''.$prestamos[$x]["articulo_id"].'\')"  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+			    </td>
+			 </tr>';
 		$temp .= $a;
 	}
 	return $temp;

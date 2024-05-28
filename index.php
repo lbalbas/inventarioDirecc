@@ -22,9 +22,8 @@
 	if(! $conec) {
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
-	$query = "SELECT articulos.*, divisiones.nombre_division, modelo_articulo.* FROM `articulos`
-LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id LEFT JOIN `divisiones` ON `articulos`.`ubicacion` = `divisiones`.`id`
-WHERE `articulos`.`esta_retirado` = 0";
+	$query = "SELECT articulos.*, divisiones.nombre_division, modelo_articulo.*, nro_identificacion_articulo.n_identificacion FROM `articulos`
+LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id LEFT JOIN `divisiones` ON `articulos`.`ubicacion` = `divisiones`.`id` LEFT JOIN nro_identificacion_articulo ON articulos.id = nro_identificacion_articulo.id_articulo WHERE `articulos`.`esta_retirado` = 0";
 
 	$resultado = mysqli_query($conec, $query);
 	$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
@@ -40,7 +39,6 @@ WHERE `articulos`.`esta_retirado` = 0";
 		<link rel="stylesheet" href="css/estilo.css">
 		<link href="./css/output.css" rel="stylesheet">
 		<link href="./datatables.min.css" rel="stylesheet">
-
 	</head>
 	<body class="w-11/12 mx-auto">
 	'.$header.'
@@ -59,31 +57,17 @@ WHERE `articulos`.`esta_retirado` = 0";
 						  	</a>
 	</div>
 
-	<h1 class="ml-6 mt-28 text-6xl font-rubik text-sky-900 font-bold">Inventario General</h1>
+	<h1 class="ml-6 mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Inventario General</h1>
 
-	<div class="w-full flex items-center flex-col py-10 font-karla">
-			<div class="flex justify-center">
-			<input placeholder="Filtrar Inventario" id="filtroInventario" type="text" class="bg-white shadow-md w-72 border-gray-300 border-solid rounded-l-xl border-2 border-r-0 px-6 py-3" onkeyup="filtrar()">
-			<select class="bg-white shadow-md rounded-r-xl border-gray-300 border-2 pl-3 py-3" name="filtroCampos" id="selectFiltro">
-				<option value="2">Serial</option>
-				<option value="3">Descripción</option>
-				<option value="4">Marca</option>
-				<option value="6">Ubicación</option>
-			</select>
-			</div>
-			<span class="flex items-center">
-		    <input type="checkbox" id="mostrarTodos" class="text-blue-900" onchange="mostrarTodosArticulos(this.checked)"> Mostrar todos los artículos</span>
-	</div>
-
-<table id="inventarioGeneral" class="text-sm display text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
+<table id="inventarioGeneral" class="font-karla display text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
     <thead>
         <tr>
         	<th></th>
             <th>Serial</th>
             <th>Descripción</th>
             <th>Marca</th>
-            <th>Modelo</th>
             <th>Ubicación</th>
+			<th></th>
         </tr>
     </thead>
     <tbody>
@@ -95,8 +79,8 @@ WHERE `articulos`.`esta_retirado` = 0";
 	            <th>Serial</th>
 	            <th>Descripción</th>
 	            <th>Marca</th>
-	            <th>Modelo</th>
 	            <th>Ubicación</th>
+	            <th></th>
             </tr>
         </tfoot>
 </table>
@@ -182,13 +166,47 @@ function filtrar() {
 <script src="./datatables.min.js"></script>
 <script language="javascript">
 $(document).ready(function () {
-  var table = new DataTable("#inventarioGeneral", {
+  var showAllFlag = false;
+
+  // Custom filtering function
+  $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+    if (showAllFlag) {
+      return true;
+    }
+    var value = "OFICINA DE ADMINISTRACION Y GESTION INTERNA";
+    var location = data[4]; // Assuming "Ubicación" is in the 6th column (index 5)
+    if (location == value) {
+      return true;
+    }
+
+    return false;
+  });
+
+  var table = $("#inventarioGeneral").DataTable({
     language: {
       url: "./resources/lng-es.json",
     },
-    searching: true,
     responsive: true,
+        layout: {
+        topStart: "buttons"
+    },
+    "columnDefs": [ {
+"targets": 0,
+"orderable": false
+} ],
+    buttons: [
+      {
+        text: "Mostrar artículos fuera de la oficina",
+        className: "filter-cols bg-blue-400 my-2 border-0 bg cursor-pointer text-white rounded-xl px-5 py-3",
+        action: function (e, dt, node, config) {
+          showAllFlag = !showAllFlag;
+          dt.draw();
+          e.target.innerHTML = showAllFlag ? "<span>Ocultar artículos fuera de la oficina</span>" : "<span>Mostrar artículos fuera de la oficina</span>";;
+        },
+      },
+    ],
   });
+
   table.on("click", "td.dt-control", function (e) {
     let tr = e.target.closest("tr");
     let row = table.row(tr);
@@ -199,14 +217,14 @@ $(document).ready(function () {
     }
     else {
         // Open this row
-        console.log(tr);
-       row.child(format(tr.dataset.name, tr.dataset.value)).show();
+       row.child(format(tr.dataset.modelo, tr.dataset.nid)).show();
 
     }
 });
 });
-function format (name, value) {
-    return "<div>Name: " + name + "<br />Value: " + value + "</div>";
+function format (modelo, nid) {
+    return `<div class="flex flex-col items-start">
+    <div class="py-2 border-b border-solid border-gray-300">Modelo:  ` + modelo +  `</div><div class="py-2">Nro. Id.:  ` + nid +  `</div></div> `;
 }
 </script>
 	'.$scriptRespaldo.'
@@ -218,18 +236,20 @@ $rows = ""; // Initialize rows string
 
 for ($x = 0; $x < count($articulos); $x++) {
   $enPrestamo = estaEnPrestamo($articulos[$x], $conec);
-  $claseFueraOficina = ($articulos[$x]["ubicacion"] != 2) ? 'fuera-articulo-fuera-oficina' : '';
+  $claseFueraOficina = ($articulos[$x]["ubicacion"] != 2) ? 'fuera articulo-fuera-oficina' : '';
   $deshabilitado = ($enPrestamo || $articulos[$x]["ubicacion"] != 2) ? 'disabled' : '';
   $modelo = !empty($articulos[$x]['nombre_modelo']) ? $articulos[$x]['nombre_modelo'] : "Modelo no especificado";
+  $n_id = !empty($articulos[$x]['n_identificacion']) ? $articulos[$x]['n_identificacion'] : "S.C";
   $asterisco = ($enPrestamo) ? '**' : '';
 
-  $row = '<tr data-name="test1" data-value="10">
+  $row = '<tr class="font-karla" data-modelo="'.$modelo.'" data-nid="'.$n_id.'">
   		<td class="dt-control"></td>
           <td>' . $articulos[$x]["serial_fabrica"] . '</td>
           <td>' . $articulos[$x]["descripcion"] . '</td>
           <td>' . $articulos[$x]["fabricante"] . '</td>
-          <td>' . $modelo . '</td>
           <td>' . $articulos[$x]["nombre_division"] . '</td>
+          <td>
+                    <input type="checkbox" value="'.$articulos[$x]["id"].'" '.$deshabilitado.' onClick="handleCheckboxChange(\''.$articulos[$x]["id"].'\')" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></td>
         </tr>';
 
   $rows .= $row;

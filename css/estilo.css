@@ -24,7 +24,7 @@
 }
 
 .articulo-fuera-oficina {
-    display: none;
+    display: none !important;
 }
 #selectOperation {
   position: fixed;
