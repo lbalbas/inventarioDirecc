@@ -1,7 +1,6 @@
 <?php 
 	if(!isset($_COOKIE['login'])){
 		echo '<script language="javascript">
-			alert("Por favor inicie sesión e inténtelo de nuevo");
 			document.location="/login.php";
 		</script>';
 	}

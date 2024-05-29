@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manual de Usuario</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <link href="./css/output.css" rel="stylesheet">
+</head>
+<body class="w-11/12 mx-auto">
+    <h1 class="ml-6 mt-16 mb-10 text-6xl font-rubik text-sky-900 font-bold">Manual de Usuario</h1>
+    <div class="mx-auto flex font-karla text-gray-400">
+        <div class="w-4/12 h-fit bg-gray-100 shadow-4xl rounded-l-xl bg-opacity-70 pl-10 pb-10 pt-10 pr-4 border-r border-solid border-gray-300 text-sky-900">
+            <ul class="font-karla">
+                <li><a class="nav-item" href="#registroInicial">Registro Inicial</a></li>
+                <li><a class="nav-item" href="#inicioDeSesion">Inicio de Sesión</a></li>
+                <li><a class="nav-item" href="#menuPrincipal">Menú Principal</a></li>
+                <li><a class="nav-item" href="#inventarioGeneral">Inventario General</a></li>
+                <li><a class="nav-item" href="#realizarUnaOperacion">Realizar una Operación</a></li>
+                <li><a class="nav-item" href="#regresarPrestamo">Reincorporar un Bien tras una Transferencia Temporal</a></li>
+                <li><a class="nav-item" href="#ingresar">Registrar un Nuevo Artículo</a></li>
+                <li><a class="nav-item" href="#historial">Historial de Operaciones</a></li>
+                <li><a class="nav-item" href="#reportes">Generar Reportes</a></li>
+                <li><a class="nav-item" href="#respaldo">Respaldar la Base de Datos</a></li>
+                <li><a class="nav-item" href="#registrarNuevosUsuarios">Registrar Nuevos Usuarios</a></li>
+            </ul>
+        </div>
+        <div style="overflow: -moz-scrollbars-none; overflow: -webkit-scrollbar: none; scrollbar-width: none;scrollbar-color: transparent;" class="w-8/12 p-10 bg-gray-100 rounded-r-xl rounded-bl-xl overflow-y-scroll shadow-4xl bg-opacity-70 max-h-[80vh] font-karla">
+            <h2 id="registroInicial" class="mb-2 text-2xl font-rubik text-sky-900 font-bold">Registro Inicial</h2>
+            <p>Al ingresar al sistema por primera vez nos encontraremos con la pantalla de registro inicial, solo tiene que llenar el formulario con los datos correspondientes para crear su cuenta como administrador del sistema (los administradores poseen acceso a todas las funciones del sistema, mientras que los usuarios tienen algunas de estas limitadas por razones de seguridad). Tras la creación de su cuenta será redirigido a la pantalla de inicio de sesión.</p>
+            <h2 id="inicioDeSesion" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Inicio de Sesión</h2>
+            <p>En esta pantalla podemos acceder al sistema ingresando nuestros datos de inicio de sesión.</p>
+            <p>Adicionalmente, desde esta pantalla tiene acceso al presente manual y al sistema de recuperación de contraseñas, con el cual, siguiendo los pasos indicados, puede cambiar la contraseña de su cuenta.</p>
+            <h2 id="menuPrincipal" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Menú Principal</h2>
+            <p>Lo primero que verá tras ingresar al sistema será la página del Inventario General, sin embargo, si fija su mira en la parte superior izquierda de la pantalla podrá observar un círculo azul con líneas blancas, al hacer clic en el mismo se desplegará el menú principal, desde el mismo puede acceder directamente a todas las funciones a las cuales tenga acceso su cuenta, para cerrar el menú haga clic una vez más en el círculo azul o presione la tecla Escape de su teclado.</p>
+            <h2 id="inventarioGeneral" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Inventario General</h2>
+            <p>La pantalla principal de la aplicación desde aquí puede apreciar todos los artículos en el sistema, por defecto solo puede visualizar los artículos que se encuentren en la Oficina de Gestión Interna y Administración, haciendo clic en el botón correspondiente puede mostrar y ocultar el resto de artículos.</p>
+            <br>
+            <p>Desde la tabla de artículos puede realizar múltiples acciones, desde buscar un artículo específico utilizando la barra de búsqueda, ver información adicional de cada artículo, modificar los datos de un artículo y seleccionar los artículos con los cuales desea realizar una operación.</p>
+            <br>
+            <p>Al marcar una de las casillas a la izquierda de cada fila de la tabla, se seleccionará ese artículo para la operación a realizar, tras seleccionar al menos un artículo podrá visualizar en la parte superior derecha una barra azul con distintos íconos, tras haber seleccionado todos los artículos con los que va a trabajar puede presionar el botón correspondiente a la operación a realizar en la parte superior derecha, estos botones corresponden a: Transferencia Temporal (Préstamo), Transferencia y Retiro, además tiene un último botón con el cual el sistema generará un archivo zip conteniendo BMU-1 con los datos de los artículos seleccionados. En caso de presionar un botón correspondiente a una operación será llevado a la siguiente pantalla.</p>
+            <h2 id="realizarUnaOperacion" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Realizar una Operación</h2>
+            <p>En esta pantalla debe ingresar los datos correspondientes a la operación a realizar, también puede cambiar la operación que está realizando si así lo desea, el menú desplegable contiene por defecto todas las divisiones de la Dirección de Informática y Sistemas en el caso de Transferencias y el Almacén de la Sabanita en el caso de Retiros, de querer realizar una operación a un destino que no se encuentre registrado marque la casilla correspondiente e ingrese los datos correspondientes, el destino se guardará y aparecerá en el desplegable para operaciones futuras.</p>
+            <p>Tras haber llenado los datos correspondientes visualizará la pantalla de confirmación, en la cual podrá apreciar todos los artículos seleccionados y los detalles de la operación a realizar una última vez antes de efectuarse, también puede marcar las casillas correspondientes para generar una Nota de Salida y/o BMU-2 de la operación.</p>
+            <h2 id="regresarPrestamo" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Reincorporar un Bien tras una Transferencia Temporal</h2>
+            <p>Para indicar la reincorporación de un bien tras su préstamo, solo tiene que dirigirse a la página de Transferencias Temporales a través del menú principal, seleccionar los artículos que desea reincorporar y presionar el botón que aparece en la parte superior derecha, tras lo cual será llevado a una pantalla de confirmación, tras aceptar los artículos serán reincorporados a la Oficina de Gestión Interna y Administración dentro del sistema.</p>
+            <h2 id="ingresar" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Registrar un Nuevo Artículo</h2>
+            <p>Para registrar un nuevo artículo al sistema dirija a la pantalla correspondiente mediante el menú principal, luego llene el formulario con los datos correspondientes del artículo y presione el botón para registrar el artículo, todos los artículos son registrados por defecto en la Oficina de Gestión Interna y Administración.</p>
+            <h2 id="historial" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Historial de Operaciones</h2>
+            <p>Puede ingresar al Historial de Operaciones desde el menú principal desde el cual podrá ver todas las operaciones realizadas, al poner el cursor encima de ciertas filas podrá apreciar uno o dos botones, estos botones generarán un BMU-2 o una Nota de Salida con los datos de esa operación, estos botones solo se encuentran disponibles en las operaciones correspondientes con el formato que se desea generar.</p>
+            <h2 id="reportes" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Generar Reportes</h2>
+            <p>Seleccione la opción desde su menú principal, y podrá ver la pantalla con gráficos de las operaciones realizadas, por defecto solo verá los datos correspondientes a las operaciones de los últimos 7 días, utilizando el desplegable y presionando el botón correspondiente puede llegar a ver un periodo de tiempo más amplio.</p>
+            <h2 id="respaldo" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Respaldar la Base de Datos</h2>
+            <p>Para respaldar la base de datos solo tiene que presionar la opción correspondiente desde el menú principal, tras lo cual el sistema le mostrará un diálogo de confirmación y, de aceptar, descargará un archivo.sql con el cual podrá restaurar el sistema al estado actual del mismo.</p>
+            <h2 id="registrarNuevosUsuarios" class="mt-12 mb-2 text-2xl font-rubik text-sky-900 font-bold">Registrar Nuevos Usuarios</h2>
+            <p>Habiendo ingresado al sistema como administrador, presione la opción correspondiente, tras lo cual será llevado al formulario correspondiente para registrar nuevos usuarios, llene los datos y asegúrese de asignarle el rol (nivel de acceso) deseado a la cuenta a crear.</p>
+        </div>
+    </div>
+</body>
+</html>

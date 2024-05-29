@@ -48,6 +48,8 @@
 				$nombre_usuario = mysqli_real_escape_string($conec,$_POST['nombre_usuario']);
 				$contrasena = md5($_POST['contrasena']);
 				$rol = $_POST['rol'];
+				$pregunta = $_POST['pregunta'];
+				$respuesta = md5($_POST['respuesta']);
 				$checkRegistro = "SELECT * FROM usuarios WHERE nombre_usuario = '".$nombre_usuario."'";
 				$queryCheckRegistro = mysqli_query($conec, $checkRegistro);
 				$resultadoCheckRegistro = mysqli_fetch_all($queryCheckRegistro, MYSQLI_ASSOC);
@@ -55,7 +57,7 @@
 					echo '<script language="javascript">alert("Nombre de usuario ingresado ya se encuentra en uso");</script>';
 					muestraRegistro($header);
 				}else{
-					$registrarUsuario = "INSERT INTO usuarios(nombre_usuario, contrasena, rol) VALUES('".$nombre_usuario."','".$contrasena."','".$rol."')";
+					$registrarUsuario = "INSERT INTO usuarios(nombre_usuario, contrasena, rol, pregunta_recup, respuesta_recup) VALUES('".$nombre_usuario."','".$contrasena."','".$rol."','".$pregunta."','".$respuesta."')";
 					mysqli_query($conec,$registrarUsuario);
 					echo '<script language="javascript">alert("Registro existoso");</script>';
 					muestraRegistro($header);
@@ -121,6 +123,7 @@
 						      <input class="w-full px-6 py-3 cursor-pointer hover:bg-blue-300 hover:text-blue-600 bg-blue-600 text-white" value="Iniciar Sesión" type="submit">
 						    </form>
 						    <a class="text-blue-500 hover:text-blue-300" href="/recuperar.php">¿Olvidaste tu contraseña?</a>
+						    <a class="text-blue-500 hover:text-blue-300" href="/manual.html" target="_blank">Manual de Usuario</a>
 						</div>
 					  </div>
 					</body>
@@ -151,13 +154,27 @@
 					        <label class="label" for="clave">Contraseña</label>
 					        <input required class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="contrasena" type="password">
 					      </div>
-					      
-							<div class="bg-gray-50 py-2 w-36">
-							  <select name="rol">
+					      							<div class="py-2 w-36">
+							  <label class="label" for="rol">Nivel de Acceso</label>	
+							  <select class="py-2" name="rol">
 							    <option value="admin">Administrador</option>
 							    <option value="usuario">Usuario</option>
 							  </select>
 							</div>
+					      <div class="flex flex-col gap-1">
+					        <label class="label" for="pregunta">Pregunta de Seguridad</label>
+					        <select class="w-96 py-2" name="pregunta">
+							    <option value="¿Cual es tu ciudad natal?">¿Cual es tu ciudad natal?</option>
+							    <option value="¿Cual es tu libro favorito?">¿Cual es tu libro favorito?</option>
+							    <option value="¿Cual fue el nombre de tu primera mascota?">¿Cual fue el nombre de tu primera mascota?</option>
+							    <option value="¿Cual es tu comida favorita?">¿Cual es tu comida favorita?</option>
+							    <option value="¿Cual es tu deporte favorito?">¿Cual es tu deporte favorito?</option>
+							  </select>
+					      </div>
+					      <div class="flex flex-col gap-1">
+					        <label class="label" for="clave">Respuesta</label>
+					        <input required class="w-96 bg-gray-50 shadow-inner px-4 py-2" name="respuesta" type="text">
+					      </div>
 					      
 					        <input  value="registro" name="formEnviada" type="hidden">
 					       

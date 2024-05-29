@@ -16,6 +16,7 @@
           <a href="/reportes.php" class="nav-item"><img class="nav-icon" src="./resources/bar-chart-outline.svg"></img>Reportes</a>
         </div>
         <div class="nav-end">
+                        <a href="/manual.html" class="nav-item"><img class="nav-icon" src="./resources/help-circle-outline.svg"></img>Manual de Usuario</a>
                         <a class="nav-item" href="/login.php?registro=true"><img class="nav-icon" src="./resources/person-add-outline.svg"></img>Registrar Usuarios</a>
                         <a class="nav-item" href="#" onclick="respaldoVentana()"><img class="nav-icon" src="./resources/save-outline.svg"></img>Respaldar Datos</a>
                         <a class="nav-item" href="/login.php?cerrarsesion=true"><img class="nav-icon" src="./resources/log-out-outline.svg"></img>Cerrar Sesión</a>
