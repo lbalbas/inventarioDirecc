@@ -2,9 +2,9 @@
 require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xls; // Changed from Xlsx to Xls
 
-// Cargar el archivo .ods
+// Cargar el archivo.ods
 $spreadsheet = IOFactory::load('./resources/bm-1.xls');
 
 // Obtener la hoja activa para trabajar con ella
@@ -22,7 +22,7 @@ $fecha = date('d-m-Y');
 // Crear un archivo ZIP temporal
 $zip = new ZipArchive();
 $zipName = "BMU-1 ({$fecha}).zip";
-if ($zip->open($zipName, ZipArchive::CREATE) !== TRUE) {
+if ($zip->open($zipName, ZipArchive::CREATE)!== TRUE) {
     exit("No se puede abrir el archivo ZIP <$zipName>\n");
 }
 
@@ -48,20 +48,20 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
     $articulosParaEsteArchivo = array_slice($articulos, $i * $articulosPorPagina, $articulosPorPagina);
     foreach ($articulosParaEsteArchivo as $index => $articulo) {
         $row = $startRow + $index;
-        $sheet->setCellValue('D' . $row, !empty($articulo['n_identificacion']) ? $articulo['n_identificacion'] : $articulo['serial_fabrica']);
-        $sheet->setCellValue('G' . $row, $articulo['descripcion']);
-        $sheet->setCellValue('F' . $row, "1");
-        $sheet->setCellValue('L' . $row, $articulo['monto_valor']);
-        $sheet->setCellValue('M' . $row, "0,00");
+        $sheet->setCellValue('D'. $row,!empty($articulo['n_identificacion'])? $articulo['n_identificacion'] : $articulo['serial_fabrica']);
+        $sheet->setCellValue('G'. $row, $articulo['descripcion']);
+        $sheet->setCellValue('F'. $row, "1");
+        $sheet->setCellValue('L'. $row, $articulo['monto_valor']);
+        $sheet->setCellValue('M'. $row, "0,00");
     }
 
-    $tempFile = tempnam(sys_get_temp_dir(), 'xlsx');
-    $writer = new Xlsx($spreadsheet);
+    $tempFile = tempnam(sys_get_temp_dir(), 'xls'); // Adjusted to use 'xls'
+    $writer = new Xls($spreadsheet); // Changed from Xlsx to Xls
     $writer->save($tempFile);
 
     // Agregar el archivo de Excel al archivo ZIP
     $n = $i + 1;
-    $zip->addFile($tempFile, "BMU-1_({$n} de {$numeroDeArchivos})_{$fecha}.xlsx");
+    $zip->addFile($tempFile, "BMU-1_({$n} de {$numeroDeArchivos})_{$fecha}.xls"); // Adjusted to use '.xls'
 }
 
 // Cerrar el archivo ZIP
@@ -69,8 +69,8 @@ $zip->close();
 
 // Enviar el archivo ZIP al usuario para descarga
 header('Content-Type: application/zip');
-header('Content-Disposition: attachment; filename="' . basename($zipName) . '"');
-header('Content-Length: ' . filesize($zipName));
+header('Content-Disposition: attachment; filename="'. basename($zipName). '"');
+header('Content-Length'. filesize($zipName));
 readfile($zipName);
 
 // Eliminar el archivo ZIP temporal

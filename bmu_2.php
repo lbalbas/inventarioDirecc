@@ -2,17 +2,13 @@
 require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xls; // Use Xls writer instead of Xlsx
 
-// Cargar el archivo .ods
+// Cargar el archivo.ods
 $spreadsheet = IOFactory::load('./resources/bm-2.xls');
 
 // Obtener la hoja activa para trabajar con ella
 $sheet = $spreadsheet->getActiveSheet();
-
-
-
-
 
 if(isset($_GET['operacion'])){
   $conec = mysqli_connect('localhost', 'root', '','inventario');
@@ -32,7 +28,7 @@ $fecha = date('d-m-Y');
 // Crear un archivo ZIP temporal
 $zip = new ZipArchive();
 $zipName = "BMU-2 ({$fecha}).zip";
-if ($zip->open($zipName, ZipArchive::CREATE) !== TRUE) {
+if ($zip->open($zipName, ZipArchive::CREATE)!== TRUE) {
     exit("No se puede abrir el archivo ZIP <$zipName>\n");
 }
 
@@ -47,12 +43,12 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
     $sheet = $spreadsheet->getActiveSheet();
 
     // Configurar datos generales
-    $sheet->setCellValue('G1', "Codigo: " . "42");
-    $sheet->setCellValue('G2', "Concepto: " . strtoupper($operacion));
-    $sheet->setCellValue('G4', "Fecha: " . date('d/m/Y'));
-    $sheet->setCellValue('F8', "Destino: " . $destino);
-    $sheet->setCellValue('F9', "Dirección: " . $direccion);
-    $sheet->setCellValue('F10', "Municipio: " . $municipio);
+    $sheet->setCellValue('G1', "Codigo: ". "42");
+    $sheet->setCellValue('G2', "Concepto: ". strtoupper($operacion));
+    $sheet->setCellValue('G4', "Fecha: ". date('d/m/Y'));
+    $sheet->setCellValue('F8', "Destino: ". $destino);
+    $sheet->setCellValue('F9', "Dirección: ". $direccion);
+    $sheet->setCellValue('F10', "Municipio: ". $municipio);
     $sheet->setCellValue('E14', $observaciones);
     if($operacion == "Retiro"){
         $sheet->setCellValue('C14', "x");
@@ -68,19 +64,19 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
     $articulosParaEsteArchivo = array_slice($articulos, $i * $articulosPorPagina, $articulosPorPagina);
     foreach ($articulosParaEsteArchivo as $index => $articulo) {
         $row = $startRow + $index;
-        $sheet->setCellValue('D' . $row, !empty($articulo['n_identificacion']) ? $articulo['n_identificacion'] : $articulo['serial_fabrica']);
-        $sheet->setCellValue('E' . $row, $articulo['descripcion']);
-        $sheet->setCellValue('G' . $row, $articulo['monto_valor']);
-        $sheet->setCellValue('H' . $row, "00.00");
+        $sheet->setCellValue('D'. $row,!empty($articulo['n_identificacion'])? $articulo['n_identificacion'] : $articulo['serial_fabrica']);
+        $sheet->setCellValue('E'. $row, $articulo['descripcion']);
+        $sheet->setCellValue('G'. $row, $articulo['monto_valor']);
+        $sheet->setCellValue('H'. $row, "00.00");
     }
 
-    $tempFile = tempnam(sys_get_temp_dir(), 'xlsx');
-    $writer = new Xlsx($spreadsheet);
+    $tempFile = tempnam(sys_get_temp_dir(), 'xls'); // Adjusted to use 'xls'
+    $writer = new Xls($spreadsheet); // Use Xls writer
     $writer->save($tempFile);
 
     // Agregar el archivo de Excel al archivo ZIP
     $n = $i + 1;
-    $zip->addFile($tempFile, "BMU-2_({$n} de {$numeroDeArchivos})_{$fecha}.xlsx");
+    $zip->addFile($tempFile, "BMU-2_({$n} de {$numeroDeArchivos})_{$fecha}.xls"); // Adjusted to use '.xls'
 }
 
 // Cerrar el archivo ZIP
@@ -88,8 +84,8 @@ $zip->close();
 
 // Enviar el archivo ZIP al usuario para descarga
 header('Content-Type: application/zip');
-header('Content-Disposition: attachment; filename="' . basename($zipName) . '"');
-header('Content-Length: ' . filesize($zipName));
+header('Content-Disposition: attachment; filename="'. basename($zipName). '"');
+header('Content-Length'. filesize($zipName));
 readfile($zipName);
 
 // Eliminar el archivo ZIP temporal

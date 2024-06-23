@@ -67,6 +67,8 @@ LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id LEFT JOI
             <th>Descripción</th>
             <th>Marca</th>
             <th>Ubicación</th>
+                            <th>Modelo</th>
+                <th>N. Identificacion</th>
 			<th></th>
         </tr>
     </thead>
@@ -80,6 +82,8 @@ LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id LEFT JOI
 	            <th>Descripción</th>
 	            <th>Marca</th>
 	            <th>Ubicación</th>
+                <th>Modelo</th>
+                <th>N. Identificacion</th>
 	            <th></th>
             </tr>
         </tfoot>
@@ -193,7 +197,11 @@ $(document).ready(function () {
     "columnDefs": [ {
 "targets": 0,
 "orderable": false
-} ],
+},{
+    targets: [5,6],
+    searchable: true,
+      visible: false
+    } ],
     buttons: [
       {
         text: "Mostrar artículos fuera de la oficina",
@@ -217,15 +225,38 @@ $(document).ready(function () {
     }
     else {
         // Open this row
-       row.child(format(tr.dataset.modelo, tr.dataset.nid)).show();
+       row.child(format(tr.dataset.modelo, tr.dataset.nid, tr.dataset.id, tr.dataset.ubicacion)).show();
 
     }
 });
 });
-function format (modelo, nid) {
-    return `<div class="flex flex-col items-start">
-    <div class="py-2 border-b border-solid border-gray-300">Modelo:  ` + modelo +  `</div><div class="py-2">Nro. Id.:  ` + nid +  `</div></div> `;
+function format(modelo, nid, id, ubicacion) {
+    console.log(ubicacion);
+    let htmlString = `<div class="flex flex-col items-start">
+        <div class="flex">`;
+
+    // Include the first anchor for modifying
+    htmlString += `<a href="modificar.php?id=${id}">
+                    <img title="Modificar." class="w-6" src="./resources/settings-outline.svg">
+                </a>`;
+
+    // Conditionally include the second anchor based on ubicacion
+    if (ubicacion < 0) {
+        htmlString += `<a href="transferencia.php?operacion=r&ids=${id}">
+                        <img title="Retornar." class="w-6" src="./resources/arrow-down-circle-outline.svg">
+                    </a>`;
+    }
+
+    // Close the divs and append the rest of the content
+    htmlString += `
+        </div>
+        <div class="py-2 border-b border-solid border-gray-300">Modelo: ${modelo}</div>
+        <div class="py-2">Nro. Id.: ${nid}</div>
+    </div>`;
+
+    return htmlString;
 }
+
 </script>
 	'.$scriptRespaldo.'
 	</body>
@@ -242,12 +273,14 @@ for ($x = 0; $x < count($articulos); $x++) {
   $n_id = !empty($articulos[$x]['n_identificacion']) ? $articulos[$x]['n_identificacion'] : "S.C";
   $asterisco = ($enPrestamo) ? '**' : '';
 
-  $row = '<tr class="font-karla" data-modelo="'.$modelo.'" data-nid="'.$n_id.'">
+  $row = '<tr class="font-karla" data-id="'.$articulos[$x]["id"].'" data-ubicacion="'.$articulos[$x]["ubicacion"].'" data-modelo="'.$modelo.'" data-nid="'.$n_id.'">
   		<td class="dt-control"></td>
           <td>' . $articulos[$x]["serial_fabrica"] . '</td>
           <td>' . $articulos[$x]["descripcion"] . '</td>
           <td>' . $articulos[$x]["fabricante"] . '</td>
           <td>' . $articulos[$x]["nombre_division"] . '</td>
+          <td>'.$modelo.'</td>
+          <td>'.$n_id.'</td>
           <td>
                     <input type="checkbox" value="'.$articulos[$x]["id"].'" '.$deshabilitado.' onClick="handleCheckboxChange(\''.$articulos[$x]["id"].'\')" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></td>
         </tr>';
