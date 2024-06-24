@@ -81,8 +81,18 @@
 		$_SESSION['destino'] = 2;
 		$_SESSION['fregreso'] = "Ninguna";
 		header('Location: confirmar.php');
+	}else if(isset($_GET['operacion']) AND $_GET['operacion'] === 're'){
+		$idArray = $_GET["ids"];
+		$query = "SELECT articulos.*, divisiones.nombre_division FROM articulos LEFT JOIN divisiones ON articulos.ubicacion = divisiones.id WHERE articulos.id IN ($idArray)";
+		$resultado = mysqli_query($conec, $query);
+		$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
+		session_start();
+		$_SESSION['articulos'] = $articulos;
+		$_SESSION['operacion'] = "Reentrada";
+		$_SESSION['destino'] = 2;
+		$_SESSION['fregreso'] = "Ninguna";
+		header('Location: confirmar.php');
 	}
-
 
 	$destinos = mysqli_fetch_all(mysqli_query($conec,"SELECT * FROM divisiones WHERE es_destino_retiro = 0 AND id != 2"),MYSQLI_ASSOC);
 

@@ -27,7 +27,7 @@ echo '
 </head>
 <body class="w-11/12 mx-auto">
 	'.$header.'
-	<h1 class="ml-12 mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Traspasos Temporales</h1>
+	<h1 class="mt-12 mb-4 md:mt-28 md:mb-10 text-4xl md:text-6xl font-rubik text-sky-900 font-bold">Traspasos Temporales</h1>
 
 	<div id="selectOperation" style="align-items: center !important; border-radius: 25px; position:fixed; padding: 5px 10px;" class="bg-blue-600 shadow-xl hidden">
 					<a class="text-white h-10 w-10" title="Retorno" id="r" href="#">
@@ -35,14 +35,14 @@ echo '
 				  	</a>
 	</div>
 
-<table id="prestamos" class="display font-karla text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
+<table id="prestamos" class="display font-karla text-sky-900 responsive bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4" style="width:100%">
     <thead>
         <tr>
-	            <th>Serial</th>
+	            <th >Serial</th>
 	            <th>Descripción</th>
-	            <th>Marca</th>
-	            <th>F.Regreso</th>
-	            <th>Ubicación</th>
+	            <th class="hidden md:table-cell">Marca</th>
+	            <th class="hidden md:table-cell">F.Regreso</th>
+	            <th class="hidden lg:table-cell">Ubicación</th>
 	            <th></th>
         </tr>
     </thead>
@@ -51,11 +51,11 @@ echo '
     </tbody>
     <tfoot>
             <tr>
-	            <th>Serial</th>
+	            <th >Serial</th>
 	            <th>Descripción</th>
-	            <th>Marca</th>
-	            <th>F.Regreso</th>
-	            <th>Ubicación</th>
+	            <th class="hidden md:table-cell">Marca</th>
+	            <th class="hidden md:table-cell">F.Regreso</th>
+	            <th class="hidden lg:table-cell">Ubicación</th>
 	            <th></th>
             </tr>
         </tfoot>
@@ -148,11 +148,11 @@ function iterarPrestamos($prestamos){
 	for($x = 0; $x < count($prestamos); $x++){
 		$a = '
         	 <tr>
-			    <td>'.$prestamos[$x]["serial_fabrica"].'</td>
+			    <td class="hidden md:table-cell">'.$prestamos[$x]["serial_fabrica"].'</td>
 			    <td>'.$prestamos[$x]["descripcion"].'</td>
 			    <td>'.$prestamos[$x]["fabricante"].'</td>
-			    <td>'.date("d-m-Y",strtotime($prestamos[$x]["fecha_de_retorno"])).'</td>
-			    <td>'.$prestamos[$x]["nombre_division"].'</td>
+			    <td class="hidden md:table-cell">'.date("d-m-Y",strtotime($prestamos[$x]["fecha_de_retorno"])).'</td>
+			    <td class="hidden lg:table-cell">'.$prestamos[$x]["nombre_division"].'</td>
 			    			    <td class="items-center justify-center flex">
 			          <input type="checkbox" value="'.$prestamos[$x]["articulo_id"].'"  onClick="handleCheckboxChange(\''.$prestamos[$x]["articulo_id"].'\')"  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
 			    </td>

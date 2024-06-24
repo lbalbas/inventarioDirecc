@@ -23,15 +23,15 @@ echo '
     </head>
 <body class="w-11/12 mx-auto">
   '.$header.'
-  <h1 class="ml-6 mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Historial de Operaciones</h1>
+  <h1 class="mt-12 mb-4 md:mt-28 md:mb-10 text-4xl md:text-6xl font-rubik text-sky-900 font-bold">Historial de Operaciones</h1>
 
-<table id="historialOperaciones" class="font-karla display text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
+<table id="historialOperaciones"  style="width:100%" class="font-karla display responsive text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
     <thead>
         <tr>
             <th></th>
             <th>Operación</th>
             <th>Fecha Realizada</th>
-            <th>Destino</th>
+            <th class="hidden md:table-cell">Destino</th>
         </tr>
     </thead>
     <tbody>
@@ -42,7 +42,7 @@ echo '
                 <th></th>
                 <th>Operación</th>
                 <th>Fecha Realizada</th>
-                <th>Destino</th>
+                <th class="hidden md:table-cell">Destino</th>
             </tr>
         </tfoot>
 </table>
@@ -117,7 +117,7 @@ function iterarOperaciones($operaciones){
     $a .= '</td>
     <td>'.$operaciones[$x]["tipo_operacion"].'</td>
     <td>'.$operaciones[$x]["fecha_operacion"].'</td>
-    <td>'.$operaciones[$x]["nombre_division"].'</td>
+    <td class="hidden md:table-cell">'.$operaciones[$x]["nombre_division"].'</td>
 </tr>';
     $temp .= $a;
  }

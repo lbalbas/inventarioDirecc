@@ -66,8 +66,8 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
         $row = $startRow + $index;
         $sheet->setCellValue('D'. $row,!empty($articulo['n_identificacion'])? $articulo['n_identificacion'] : $articulo['serial_fabrica']);
         $sheet->setCellValue('E'. $row, $articulo['descripcion']);
-        $sheet->setCellValue('G'. $row, $articulo['monto_valor']);
-        $sheet->setCellValue('H'. $row, "00.00");
+        $sheet->setCellValue('G'. $row, floatval($articulo['monto_valor']));
+        $sheet->setCellValue('H'. $row, floatval($articulo['monto_valor']));
     }
 
     $tempFile = tempnam(sys_get_temp_dir(), 'xls'); // Adjusted to use 'xls'
@@ -85,7 +85,7 @@ $zip->close();
 // Enviar el archivo ZIP al usuario para descarga
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="'. basename($zipName). '"');
-header('Content-Length'. filesize($zipName));
+header('Content-Length: '. filesize($zipName));
 readfile($zipName);
 
 // Eliminar el archivo ZIP temporal

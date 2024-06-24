@@ -30,19 +30,22 @@
             foreach ($articulos as $articulo) {
                 $queryUbicacion = "UPDATE articulos SET ubicacion = '".$destino."' WHERE id = '".$articulo['id']."'";
                 $queryOperacion = "INSERT INTO historial_operaciones_articulos(id_operacion, id_articulo, origen) VALUES('".$idOperacion."','".$articulo['id']."','".$articulo['ubicacion']."')";
+                $fregresoFormatted = $fregreso. " 23:59:59"; // Ensure proper formatting for each article
+
                 if ($operacion === "Traspaso Temporal") {  
-                    $fregreso = $fregreso."  23:59:59";
-                    $queryTraspasoTemp = "INSERT INTO traspasos_temporales(articulo_id, fecha_de_retorno, id_operacion) VALUES('".$articulo['id']."','".$fregreso."','".$idOperacion."')";
+                    $queryTraspasoTemp = "INSERT INTO traspasos_temporales(articulo_id, fecha_de_retorno, id_operacion) VALUES('".$articulo['id']."','".$fregresoFormatted."','".$idOperacion."')";
                     mysqli_query($conec, $queryTraspasoTemp);
                 } else if ($operacion === "Retorno") {
                     $queryUbicacion = "UPDATE articulos SET ubicacion = '2' WHERE id = '".$articulo['articulo_id']."'";
                     $queryOperacion = "DELETE FROM traspasos_temporales WHERE articulo_id = '".$articulo['articulo_id']."'";
                 } else if ($operacion === "Extensión") {
-                    $fregreso = $fregreso."  23:59:59";
-                    $queryUbicacion = "UPDATE traspasos_temporales SET fecha_de_retorno = '".$fregreso."' WHERE articulo_id = '".$articulo['id']."'";
+                    $queryUbicacion = "UPDATE traspasos_temporales SET fecha_de_retorno = '".$fregresoFormatted."' WHERE articulo_id = '".$articulo['id']."'";
                 } else if ($operacion === "Retiro") {
                     $queryRetiro = "UPDATE articulos SET esta_retirado = 1 WHERE id = '".$articulo['id']."'";
                     mysqli_query($conec, $queryRetiro);
+                } else if ($operacion === "Reentrada") {
+                    $queryUbicacion = "UPDATE articulos SET ubicacion = '2' WHERE id = '".$articulo['id']."'";
+                    mysqli_query($conec, $queryUbicacion);
                 }
                 $resultadoOp = mysqli_query($conec, $queryOperacion);
                 $resultadoUb = mysqli_query($conec, $queryUbicacion);
@@ -60,12 +63,12 @@
             // Manejar el error, por ejemplo, mostrar un mensaje al usuario
             echo 'Error: ' . $e->getMessage();
         }
-        if($_POST['excel'] == "true"){
-            setcookie('excel', $idOperacion, time() +  5, '/'); // La cookie expira en  5 segundos
-        }
-        if($_POST['nota'] == "true"){
-            setcookie('nota', $idOperacion, time() +  5, '/'); // La cookie expira en  5 segundos
-        }
+     if(isset($_POST['excel']) && $_POST['excel'] == "true") {
+        setcookie('excel', $idOperacion, time() + 5, '/');
+    }
+    if(isset($_POST['nota']) && $_POST['nota'] == "true") {
+        setcookie('nota', $idOperacion, time() + 5, '/');
+    }
         session_destroy();
         header('Location: index.php');
     } 

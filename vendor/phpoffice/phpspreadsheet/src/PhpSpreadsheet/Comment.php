@@ -2,75 +2,66 @@
 
 namespace PhpOffice\PhpSpreadsheet;
 
+use PhpOffice\PhpSpreadsheet\Exception as PhpSpreadsheetException;
 use PhpOffice\PhpSpreadsheet\Helper\Size;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Shared\Drawing as SharedDrawing;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use Stringable;
 
-class Comment implements IComparable
+class Comment implements IComparable, Stringable
 {
     /**
      * Author.
-     *
-     * @var string
      */
-    private $author;
+    private string $author;
 
     /**
      * Rich text comment.
-     *
-     * @var RichText
      */
-    private $text;
+    private RichText $text;
 
     /**
      * Comment width (CSS style, i.e. XXpx or YYpt).
-     *
-     * @var string
      */
-    private $width = '96pt';
+    private string $width = '96pt';
 
     /**
      * Left margin (CSS style, i.e. XXpx or YYpt).
-     *
-     * @var string
      */
-    private $marginLeft = '59.25pt';
+    private string $marginLeft = '59.25pt';
 
     /**
      * Top margin (CSS style, i.e. XXpx or YYpt).
-     *
-     * @var string
      */
-    private $marginTop = '1.5pt';
+    private string $marginTop = '1.5pt';
 
     /**
      * Visible.
-     *
-     * @var bool
      */
-    private $visible = false;
+    private bool $visible = false;
 
     /**
      * Comment height (CSS style, i.e. XXpx or YYpt).
-     *
-     * @var string
      */
-    private $height = '55.5pt';
+    private string $height = '55.5pt';
 
     /**
      * Comment fill color.
-     *
-     * @var Color
      */
-    private $fillColor;
+    private Color $fillColor;
 
     /**
      * Alignment.
-     *
-     * @var string
      */
-    private $alignment;
+    private string $alignment;
+
+    /**
+     * Background image in comment.
+     */
+    private Drawing $backgroundImage;
 
     /**
      * Create a new Comment.
@@ -82,6 +73,7 @@ class Comment implements IComparable
         $this->text = new RichText();
         $this->fillColor = new Color('FFFFFFE1');
         $this->alignment = Alignment::HORIZONTAL_GENERAL;
+        $this->backgroundImage = new Drawing();
     }
 
     /**
@@ -264,16 +256,17 @@ class Comment implements IComparable
     public function getHashCode(): string
     {
         return md5(
-            $this->author .
-            $this->text->getHashCode() .
-            $this->width .
-            $this->height .
-            $this->marginLeft .
-            $this->marginTop .
-            ($this->visible ? 1 : 0) .
-            $this->fillColor->getHashCode() .
-            $this->alignment .
-            __CLASS__
+            $this->author
+            . $this->text->getHashCode()
+            . $this->width
+            . $this->height
+            . $this->marginLeft
+            . $this->marginTop
+            . ($this->visible ? 1 : 0)
+            . $this->fillColor->getHashCode()
+            . $this->alignment
+            . ($this->hasBackgroundImage() ? $this->backgroundImage->getHashCode() : '')
+            . __CLASS__
         );
     }
 
@@ -298,5 +291,53 @@ class Comment implements IComparable
     public function __toString(): string
     {
         return $this->text->getPlainText();
+    }
+
+    /**
+     * Check is background image exists.
+     */
+    public function hasBackgroundImage(): bool
+    {
+        $path = $this->backgroundImage->getPath();
+
+        if (empty($path)) {
+            return false;
+        }
+
+        return getimagesize($path) !== false;
+    }
+
+    /**
+     * Returns background image.
+     */
+    public function getBackgroundImage(): Drawing
+    {
+        return $this->backgroundImage;
+    }
+
+    /**
+     * Sets background image.
+     */
+    public function setBackgroundImage(Drawing $objDrawing): self
+    {
+        if (!array_key_exists($objDrawing->getType(), Drawing::IMAGE_TYPES_CONVERTION_MAP)) {
+            throw new PhpSpreadsheetException('Unsupported image type in comment background. Supported types: PNG, JPEG, BMP, GIF.');
+        }
+        $this->backgroundImage = $objDrawing;
+
+        return $this;
+    }
+
+    /**
+     * Sets size of comment as size of background image.
+     */
+    public function setSizeAsBackgroundImage(): self
+    {
+        if ($this->hasBackgroundImage()) {
+            $this->setWidth(SharedDrawing::pixelsToPoints($this->backgroundImage->getWidth()) . 'pt');
+            $this->setHeight(SharedDrawing::pixelsToPoints($this->backgroundImage->getHeight()) . 'pt');
+        }
+
+        return $this;
     }
 }

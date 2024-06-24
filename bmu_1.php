@@ -26,8 +26,8 @@ if ($zip->open($zipName, ZipArchive::CREATE)!== TRUE) {
     exit("No se puede abrir el archivo ZIP <$zipName>\n");
 }
 
-$maxArticulosPorArchivo = 10;
-$articulosPorPagina = 10;
+$maxArticulosPorArchivo = 20;
+$articulosPorPagina = 20;
 $totalArticulos = count($articulos);
 $numeroDeArchivos = ceil($totalArticulos / $articulosPorPagina);
 
@@ -51,8 +51,8 @@ for ($i = 0; $i < $numeroDeArchivos; $i++) {
         $sheet->setCellValue('D'. $row,!empty($articulo['n_identificacion'])? $articulo['n_identificacion'] : $articulo['serial_fabrica']);
         $sheet->setCellValue('G'. $row, $articulo['descripcion']);
         $sheet->setCellValue('F'. $row, "1");
-        $sheet->setCellValue('L'. $row, $articulo['monto_valor']);
-        $sheet->setCellValue('M'. $row, "0,00");
+        $sheet->setCellValue('L'. $row, floatval($articulo['monto_valor']));
+        $sheet->setCellValue('M'. $row, floatval($articulo['monto_valor']));
     }
 
     $tempFile = tempnam(sys_get_temp_dir(), 'xls'); // Adjusted to use 'xls'
@@ -70,7 +70,7 @@ $zip->close();
 // Enviar el archivo ZIP al usuario para descarga
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="'. basename($zipName). '"');
-header('Content-Length'. filesize($zipName));
+header('Content-Length: '. filesize($zipName));
 readfile($zipName);
 
 // Eliminar el archivo ZIP temporal

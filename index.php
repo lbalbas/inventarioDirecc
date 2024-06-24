@@ -22,8 +22,13 @@
 	if(! $conec) {
 		die ('No se pudo conectar con la base de datos: '. mysqli_connect_errno());
 	}
-	$query = "SELECT articulos.*, divisiones.nombre_division, modelo_articulo.*, nro_identificacion_articulo.n_identificacion FROM `articulos`
-LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id LEFT JOIN `divisiones` ON `articulos`.`ubicacion` = `divisiones`.`id` LEFT JOIN nro_identificacion_articulo ON articulos.id = nro_identificacion_articulo.id_articulo WHERE `articulos`.`esta_retirado` = 0";
+	$query = "SELECT articulos.*, divisiones.nombre_division, modelo_articulo.*, nro_identificacion_articulo.n_identificacion 
+FROM `articulos`
+LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id 
+LEFT JOIN `divisiones` ON `articulos`.`ubicacion` = `divisiones`.`id` 
+LEFT JOIN nro_identificacion_articulo ON articulos.id = nro_identificacion_articulo.id_articulo 
+LEFT JOIN traspasos_temporales ON articulos.id = traspasos_temporales.articulo_id 
+WHERE `articulos`.`esta_retirado` = 0 AND traspasos_temporales.articulo_id IS NULL";
 
 	$resultado = mysqli_query($conec, $query);
 	$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
@@ -57,19 +62,19 @@ LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id LEFT JOI
 						  	</a>
 	</div>
 
-	<h1 class="ml-6 mt-28 mb-10 text-6xl font-rubik text-sky-900 font-bold">Inventario General</h1>
+	<h1 class="mt-12 mb-4 md:mt-28 md:mb-10 text-4xl md:text-6xl font-rubik text-sky-900 font-bold">Inventario General</h1>
 
-<table id="inventarioGeneral" class="font-karla display text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4">
+<table id="inventarioGeneral" class="font-karla display responsive text-sky-900 bg-blue-200 bg-opacity-30 rounded-xl m-4 px-4" style="width:100%">
     <thead>
         <tr>
-        	<th></th>
-            <th>Serial</th>
-            <th>Descripción</th>
-            <th>Marca</th>
-            <th>Ubicación</th>
-                            <th>Modelo</th>
-                <th>N. Identificacion</th>
-			<th></th>
+        	<th class="all"></th>
+            <th class="all">Serial</th>
+            <th class="all">Descripción</th>
+            <th class="hidden md:table-cell">Marca</th>
+            <th class="hidden lg:table-cell">Ubicación</th>
+            <th class="never">Modelo</th>
+            <th class="never">N. Identificacion</th>
+			<th class="all"></th>
         </tr>
     </thead>
     <tbody>
@@ -77,14 +82,14 @@ LEFT JOIN modelo_articulo ON modelo_articulo.id_articulo = articulos.id LEFT JOI
     </tbody>
     <tfoot>
             <tr>
-                <th></th>
-	            <th>Serial</th>
-	            <th>Descripción</th>
-	            <th>Marca</th>
-	            <th>Ubicación</th>
-                <th>Modelo</th>
-                <th>N. Identificacion</th>
-	            <th></th>
+            <th class="all"></th>
+            <th class="all">Serial</th>
+            <th class="all">Descripción</th>
+            <th class="hidden md:table-cell">Marca</th>
+            <th class="hidden lg:table-cell">Ubicación</th>
+            <th class="never">Modelo</th>
+            <th class="never">N. Identificacion</th>
+            <th class="all"></th>
             </tr>
         </tfoot>
 </table>
@@ -225,12 +230,12 @@ $(document).ready(function () {
     }
     else {
         // Open this row
-       row.child(format(tr.dataset.modelo, tr.dataset.nid, tr.dataset.id, tr.dataset.ubicacion)).show();
+       row.child(format(tr.dataset.modelo, tr.dataset.nid, tr.dataset.id, tr.dataset.ubicacion,tr.dataset.division,tr.dataset.marca)).show();
 
     }
 });
 });
-function format(modelo, nid, id, ubicacion) {
+function format(modelo, nid, id, ubicacion, division, marca) {
     console.log(ubicacion);
     let htmlString = `<div class="flex flex-col items-start">
         <div class="flex">`;
@@ -241,8 +246,8 @@ function format(modelo, nid, id, ubicacion) {
                 </a>`;
 
     // Conditionally include the second anchor based on ubicacion
-    if (ubicacion < 0) {
-        htmlString += `<a href="transferencia.php?operacion=r&ids=${id}">
+    if (ubicacion != 2) {
+        htmlString += `<a href="transferencia.php?operacion=re&ids=${id}">
                         <img title="Retornar." class="w-6" src="./resources/arrow-down-circle-outline.svg">
                     </a>`;
     }
@@ -250,6 +255,8 @@ function format(modelo, nid, id, ubicacion) {
     // Close the divs and append the rest of the content
     htmlString += `
         </div>
+        <div class="py-2 border-b border-solid border-gray-300 lg:hidden">Ubicación: ${division}</div>
+        <div class="py-2 border-b border-solid border-gray-300 md:hidden">Marca: ${marca}</div>
         <div class="py-2 border-b border-solid border-gray-300">Modelo: ${modelo}</div>
         <div class="py-2">Nro. Id.: ${nid}</div>
     </div>`;
@@ -273,12 +280,12 @@ for ($x = 0; $x < count($articulos); $x++) {
   $n_id = !empty($articulos[$x]['n_identificacion']) ? $articulos[$x]['n_identificacion'] : "S.C";
   $asterisco = ($enPrestamo) ? '**' : '';
 
-  $row = '<tr class="font-karla" data-id="'.$articulos[$x]["id"].'" data-ubicacion="'.$articulos[$x]["ubicacion"].'" data-modelo="'.$modelo.'" data-nid="'.$n_id.'">
+  $row = '<tr class="font-karla" data-id="'.$articulos[$x]["id"].'" data-marca="'.$articulos[$x]["fabricante"].'" data-division="'.$articulos[$x]["nombre_division"].'" data-ubicacion="'.$articulos[$x]["ubicacion"].'" data-modelo="'.$modelo.'" data-nid="'.$n_id.'">
   		<td class="dt-control"></td>
           <td>' . $articulos[$x]["serial_fabrica"] . '</td>
           <td>' . $articulos[$x]["descripcion"] . '</td>
-          <td>' . $articulos[$x]["fabricante"] . '</td>
-          <td>' . $articulos[$x]["nombre_division"] . '</td>
+          <td class="hidden md:table-cell  ">' . $articulos[$x]["fabricante"] . '</td>
+          <td class="hidden lg:table-cell  ">' . $articulos[$x]["nombre_division"] . '</td>
           <td>'.$modelo.'</td>
           <td>'.$n_id.'</td>
           <td>
