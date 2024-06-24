@@ -61,7 +61,7 @@ $replacements['{{destino}}'] = $operacion["nombre_division"];
         $pdfOutputPath = "./resources/pdf/modified_{$i}.pdf"; // Change the extension to.pdf
 
         // Convert.docx to PDF using LibreOffice
-$command = '"C:\Program Files\LibreOffice\program\soffice.exe" --headless --convert-to pdf:writer_pdf_Export --outdir "C:\xampp\htdocs\resources\pdf" "'.$output.'"';
+$command = '"C:\Program Files\LibreOffice\program\soffice.exe" --headless --convert-to pdf:writer_pdf_Export --outdir "C:\wampp\www\resources\pdf" "'.$output.'"';
 
 // Execute the command and capture the output
 $cmdResult = shell_exec($command);
