@@ -8,30 +8,17 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class PageSettings
 {
-    private string $officeNs = '';
+    private $officeNs;
 
-    private string $stylesNs = '';
+    private $stylesNs;
 
-    private string $stylesFo = '';
+    private $stylesFo;
 
-    private string $tableNs = '';
+    private $pageLayoutStyles = [];
 
-    /**
-     * @var string[]
-     */
-    private array $tableStylesCrossReference = [];
+    private $masterStylesCrossReference = [];
 
-    private array $pageLayoutStyles = [];
-
-    /**
-     * @var string[]
-     */
-    private array $masterStylesCrossReference = [];
-
-    /**
-     * @var string[]
-     */
-    private array $masterPrintStylesCrossReference = [];
+    private $masterPrintStylesCrossReference = [];
 
     public function __construct(DOMDocument $styleDom)
     {
@@ -42,16 +29,16 @@ class PageSettings
 
     private function setDomNameSpaces(DOMDocument $styleDom): void
     {
-        $this->officeNs = (string) $styleDom->lookupNamespaceUri('office');
-        $this->stylesNs = (string) $styleDom->lookupNamespaceUri('style');
-        $this->stylesFo = (string) $styleDom->lookupNamespaceUri('fo');
-        $this->tableNs = (string) $styleDom->lookupNamespaceUri('table');
+        $this->officeNs = $styleDom->lookupNamespaceUri('office');
+        $this->stylesNs = $styleDom->lookupNamespaceUri('style');
+        $this->stylesFo = $styleDom->lookupNamespaceUri('fo');
     }
 
     private function readPageSettingStyles(DOMDocument $styleDom): void
     {
-        $item0 = $styleDom->getElementsByTagNameNS($this->officeNs, 'automatic-styles')->item(0);
-        $styles = ($item0 === null) ? [] : $item0->getElementsByTagNameNS($this->stylesNs, 'page-layout');
+        $styles = $styleDom->getElementsByTagNameNS($this->officeNs, 'automatic-styles')
+            ->item(0)
+            ->getElementsByTagNameNS($this->stylesNs, 'page-layout');
 
         foreach ($styles as $styleSet) {
             $styleName = $styleSet->getAttributeNS($this->stylesNs, 'name');
@@ -79,20 +66,21 @@ class PageSettings
                 'horizontalCentered' => $centered === 'horizontal' || $centered === 'both',
                 'verticalCentered' => $centered === 'vertical' || $centered === 'both',
                 // margin size is already stored in inches, so no UOM conversion is required
-                'marginLeft' => (float) ($marginLeft ?? 0.7),
-                'marginRight' => (float) ($marginRight ?? 0.7),
-                'marginTop' => (float) ($marginTop ?? 0.3),
-                'marginBottom' => (float) ($marginBottom ?? 0.3),
-                'marginHeader' => (float) ($marginHeader ?? 0.45),
-                'marginFooter' => (float) ($marginFooter ?? 0.45),
+                'marginLeft' => (float) $marginLeft ?? 0.7,
+                'marginRight' => (float) $marginRight ?? 0.7,
+                'marginTop' => (float) $marginTop ?? 0.3,
+                'marginBottom' => (float) $marginBottom ?? 0.3,
+                'marginHeader' => (float) $marginHeader ?? 0.45,
+                'marginFooter' => (float) $marginFooter ?? 0.45,
             ];
         }
     }
 
     private function readStyleMasterLookup(DOMDocument $styleDom): void
     {
-        $item0 = $styleDom->getElementsByTagNameNS($this->officeNs, 'master-styles')->item(0);
-        $styleMasterLookup = ($item0 === null) ? [] : $item0->getElementsByTagNameNS($this->stylesNs, 'master-page');
+        $styleMasterLookup = $styleDom->getElementsByTagNameNS($this->officeNs, 'master-styles')
+            ->item(0)
+            ->getElementsByTagNameNS($this->stylesNs, 'master-page');
 
         foreach ($styleMasterLookup as $styleMasterSet) {
             $styleMasterName = $styleMasterSet->getAttributeNS($this->stylesNs, 'name');
@@ -103,37 +91,17 @@ class PageSettings
 
     public function readStyleCrossReferences(DOMDocument $contentDom): void
     {
-        $item0 = $contentDom->getElementsByTagNameNS($this->officeNs, 'automatic-styles')->item(0);
-        $styleXReferences = ($item0 === null) ? [] : $item0->getElementsByTagNameNS($this->stylesNs, 'style');
+        $styleXReferences = $contentDom->getElementsByTagNameNS($this->officeNs, 'automatic-styles')
+            ->item(0)
+            ->getElementsByTagNameNS($this->stylesNs, 'style');
 
         foreach ($styleXReferences as $styleXreferenceSet) {
             $styleXRefName = $styleXreferenceSet->getAttributeNS($this->stylesNs, 'name');
             $stylePageLayoutName = $styleXreferenceSet->getAttributeNS($this->stylesNs, 'master-page-name');
-            $styleFamilyName = $styleXreferenceSet->getAttributeNS($this->stylesNs, 'family');
-            if (!empty($styleFamilyName) && $styleFamilyName === 'table') {
-                $styleVisibility = 'true';
-                foreach ($styleXreferenceSet->getElementsByTagNameNS($this->stylesNs, 'table-properties') as $tableProperties) {
-                    $styleVisibility = $tableProperties->getAttributeNS($this->tableNs, 'display');
-                }
-                $this->tableStylesCrossReference[$styleXRefName] = $styleVisibility;
-            }
             if (!empty($stylePageLayoutName)) {
                 $this->masterStylesCrossReference[$styleXRefName] = $stylePageLayoutName;
             }
         }
-    }
-
-    public function setVisibilityForWorksheet(Worksheet $worksheet, string $styleName): void
-    {
-        if (!array_key_exists($styleName, $this->tableStylesCrossReference)) {
-            return;
-        }
-
-        $worksheet->setSheetState(
-            $this->tableStylesCrossReference[$styleName] === 'false'
-                ? Worksheet::SHEETSTATE_HIDDEN
-                : Worksheet::SHEETSTATE_VISIBLE
-        );
     }
 
     public function setPrintSettingsForWorksheet(Worksheet $worksheet, string $styleName): void

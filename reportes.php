@@ -86,13 +86,13 @@ echo '
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Reportes</title>
+		<title>Estadísticas</title>
 		<link rel="stylesheet" href="css/output.css">
 		<script src="./canvasjs-chart-3.7.43/canvasjs.min.js"></script>
 	</head>
 	<body class="w-11/12 mx-auto">
 	'.$header.'
-    <h1 class="mt-28 text-6xl font-rubik text-sky-900 font-bold">Reporte de Operaciones</h1>
+    <h1 class="mt-28 text-6xl font-rubik text-sky-900 font-bold">Estadísticas de Operaciones</h1>
 
         <form class="font-karla w-full flex flex-col gap-2 items-center justify-center my-6" id="redirectForm" method="get">
         <select class="rounded-xl py-2 px-3" id="timeFrame" name="lastNDays">
