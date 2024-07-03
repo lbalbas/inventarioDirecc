@@ -88,7 +88,7 @@
 		$articulos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 		session_start();
 		$_SESSION['articulos'] = $articulos;
-		$_SESSION['operacion'] = "Reentrada";
+		$_SESSION['operacion'] = "Reincorporación";
 		$_SESSION['destino'] = 2;
 		$_SESSION['fregreso'] = "Ninguna";
 		header('Location: confirmar.php');

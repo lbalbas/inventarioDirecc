@@ -12,8 +12,7 @@
           <a href="/insertar.php" class="nav-item"><img class="nav-icon" src="./resources/create-outline.svg"></img>Registrar Articulo</a>
           <a href="/prestamos.php" class="nav-item"><img class="nav-icon" src="./resources/swap-vertical-outline.svg"></img>Traspasos Temporales</a>
           <a href="/historico.php" class="nav-item"><img class="nav-icon" src="./resources/documents-outline.svg"></img>Historial de Operaciones</a>
-          <a  class="nav-item"><img class="nav-icon" src="./resources/list-circle-sharp.svg"></img>Historial de Respaldos</a>
-          <a href="/reportes.php" class="nav-item"><img class="nav-icon" src="./resources/bar-chart-outline.svg"></img>Reportes</a>
+          <a href="/reportes.php" class="nav-item"><img class="nav-icon" src="./resources/bar-chart-outline.svg"></img>Estadísticas</a>
         </div>
         <div class="flex flex-col pt-2 pb-2 mx-auto w-11/12 items-center border-t border-solid border-gray-100 md:pt-4 md:pb-4">
                         <a href="/manual.html" target="_blank" class="nav-item"><img class="nav-icon" src="./resources/help-circle-outline.svg"></img>Manual de Usuario</a>

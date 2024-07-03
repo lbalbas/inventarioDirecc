@@ -52,27 +52,13 @@ $replacements['{Y}'] = date('Y');
 $replacements['{{destino}}'] = $operacion["nombre_division"];
 
     // Generar el archivo de Word para este grupo de artículos
-    $input = '.\resources\nota.docx';
-    $output = '.\resources\modified_'.$i.'.docx';
+    $input = './resources/nota.docx';
+    $output = "./resources/modified_{$i}.docx";
     $successful = searchReplaceWordDocument($input, $output, $replacements);
 
     if ($successful) {
         // Agregar el archivo de Word al archivo ZIP
-        $pdfOutputPath = "./resources/pdf/modified_{$i}.pdf"; // Change the extension to.pdf
-
-        // Convert.docx to PDF using LibreOffice
-$command = '"C:\Program Files\LibreOffice\program\soffice.exe" --headless --convert-to pdf:writer_pdf_Export --outdir "C:\xampp\htdocs\resources\pdf" "'.$output.'"';
-
-// Execute the command and capture the output
-$cmdResult = shell_exec($command);
-
-// Check if the command returned an error
-if (strpos($cmdResult, 'ERROR')!== false) {
-    die("{$cmdResult}");
-}
-        // Now, add the PDF file to the ZIP archive
-        $zip->addFile($pdfOutputPath, "Nota_de_Salida_(".$fecha.")_".$i.".pdf");
-        //$zip->addFile($output, "Nota_de_Salida_($fecha)_{$i}.docx");
+        $zip->addFile($output, "Nota_de_Salida_($fecha)_{$i}.docx");
     }
 }
 
@@ -91,12 +77,8 @@ unlink($zipName);
 // Eliminar los archivos de Word generados
 foreach ($articulos as $index => $articulo) {
     $output = "./resources/modified_{$index}.docx";
-    $pdfOutput = "./resources/pdf/modified_{$index}.pdf";
     if (file_exists($output)) {
         unlink($output);
-    }
-    if (file_exists($pdfOutput)) {
-        unlink($pdfOutput);
     }
 }
 

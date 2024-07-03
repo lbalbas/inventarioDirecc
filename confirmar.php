@@ -43,7 +43,7 @@
                 } else if ($operacion === "Retiro") {
                     $queryRetiro = "UPDATE articulos SET esta_retirado = 1 WHERE id = '".$articulo['id']."'";
                     mysqli_query($conec, $queryRetiro);
-                } else if ($operacion === "Reentrada") {
+                } else if ($operacion === "Reincorporación") {
                     $queryUbicacion = "UPDATE articulos SET ubicacion = '2' WHERE id = '".$articulo['id']."'";
                     mysqli_query($conec, $queryUbicacion);
                 }
